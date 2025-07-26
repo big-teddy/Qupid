@@ -40,7 +40,7 @@ const BottomTabBar: React.FC<BottomTabBarProps> = ({ activeTab, onTabChange }) =
   ];
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 bottom-tab-bar border-t border-gray-100 shadow-lg safe-area-bottom z-50">
+    <div className="absolute bottom-0 left-0 right-0 bottom-tab-bar border-t border-gray-100 shadow-lg safe-area-bottom z-50 bg-white">
       <div className="flex justify-around items-center h-16 px-2 max-w-md mx-auto">
         {tabs.map((tab) => {
           const IconComponent = tab.icon;

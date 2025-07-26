@@ -41,7 +41,7 @@ const NicknameInput: React.FC<NicknameInputProps> = ({
   return (
     <div className="flex flex-col h-full bg-white">
       {/* Header */}
-      <header className="flex items-center px-4 py-4 border-b border-gray-200">
+      <header className="flex items-center px-4 py-4 border-b border-gray-200 safe-area-top">
         <button onClick={onBack} className="p-2 -ml-2">
           <ArrowLeftIcon className="w-6 h-6 text-gray-600" />
         </button>
@@ -49,7 +49,7 @@ const NicknameInput: React.FC<NicknameInputProps> = ({
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 px-6 py-8">
+      <main className="flex-1 px-6 py-8 scrollable-content">
         <div className="max-w-sm mx-auto">
           {/* Welcome Message */}
           <div className="text-center mb-8">

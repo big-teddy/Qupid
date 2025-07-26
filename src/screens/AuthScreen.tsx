@@ -55,7 +55,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onBack }) => {
   };
 
   return (
-    <div className="h-full">
+    <div className="h-full flex flex-col">
       {authMode === 'login' ? (
         <LoginScreen
           onBack={onBack}

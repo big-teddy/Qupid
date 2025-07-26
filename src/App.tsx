@@ -291,7 +291,7 @@ const AppContent: React.FC = () => {
 
   // Get recommended personas based on user gender
   const getRecommendedPersonas = () => {
-    const partnerGender = userProfile?.userGender === 'female' ? 'male' : 'female';
+    const partnerGender = userProfile?.user_gender === 'female' ? 'male' : 'female';
     return PREDEFINED_PERSONAS.filter(p => p.gender === partnerGender).slice(0, 1);
   };
 
@@ -474,13 +474,9 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <div className="w-full h-full bg-black flex items-center justify-center font-sans">
-      <div 
-        className="w-full h-full sm:max-w-[430px] sm:h-[90vh] sm:max-h-[932px] sm:rounded-[2.5rem] shadow-2xl mobile-container bg-white" 
-      >
-        <div className="mobile-content flex flex-col">
-          {renderContent()}
-        </div>
+    <div className="mobile-container bg-white">
+      <div className="mobile-content">
+        {renderContent()}
       </div>
     </div>
   );

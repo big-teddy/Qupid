@@ -39,7 +39,7 @@ const SimplifiedHomeScreen: React.FC<SimplifiedHomeScreenProps> = ({
   return (
     <div className="flex flex-col h-full bg-white">
       {/* Header */}
-      <header className="flex items-center justify-between px-4 py-4 border-b border-gray-200">
+      <header className="flex items-center justify-between px-4 py-4 border-b border-gray-200 safe-area-top">
         <div className="flex items-center">
           <div className="w-10 h-10 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
             {userProfile?.name?.charAt(0) || 'U'}
@@ -60,7 +60,7 @@ const SimplifiedHomeScreen: React.FC<SimplifiedHomeScreenProps> = ({
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 px-4 py-6 overflow-y-auto">
+      <main className="flex-1 px-4 py-6 scrollable-content">
         {/* Tutorial Completion Banner */}
         {showTutorialCompletion && (
           <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-2xl p-6 text-white mb-6">
