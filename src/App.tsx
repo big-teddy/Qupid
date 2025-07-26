@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { useState, useCallback, useEffect } from 'react';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ChatScreen from './screens/ChatScreen';
 import PersonaSelection from './screens/PersonaSelection';
 import PersonaDetailScreen from './screens/PersonaDetailScreen';
@@ -23,12 +24,15 @@ import { OnboardingFlow } from './screens/OnboardingFlow';
 import CustomPersonaForm from './components/CustomPersonaForm';
 import DatabaseTest from './components/DatabaseTest';
 import BottomTabBar from './components/BottomTabBar';
+import AuthScreen from './screens/AuthScreen';
 import { Persona, Screen, UserProfile, ConversationAnalysis } from './types/index';
 import { PREDEFINED_PERSONAS, PERFORMANCE_DATA, BADGES_DATA } from './constants/index';
 import useLocalStorage from './hooks/useLocalStorage';
 import { addPersona, getPersonas } from './services/personaService';
+import { userDataService } from './services/userDataService';
+import DebugPanel from './components/DebugPanel';
 
-type AppState = 'splash' | 'onboarding' | 'main';
+type AppState = 'splash' | 'auth' | 'onboarding' | 'main';
 
 const SplashScreen: React.FC = () => (
   <div className="flex flex-col items-center justify-center h-full w-full bg-white animate-fade-in">
@@ -42,7 +46,8 @@ const SplashScreen: React.FC = () => (
   </div>
 );
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
+  const { user, loading } = useAuth();
   const [appState, setAppState] = useState<AppState>('splash');
   const [currentScreen, setCurrentScreen] = useState<Screen>(Screen.Home);
   const [selectedPersona, setSelectedPersona] = useState<Persona | null>(null);
@@ -50,26 +55,84 @@ const App: React.FC = () => {
   const [isTutorialCompleted, setIsTutorialCompleted] = useLocalStorage<boolean>('tutorialCompleted', false);
   const [onboardingComplete, setOnboardingComplete] = useLocalStorage<boolean>('onboardingComplete', false);
   const [analysisResult, setAnalysisResult] = useState<ConversationAnalysis | null>(null);
-  const [favoriteIds, setFavoriteIds] = useState<string[]>(['f1', 'm2']);
+  const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [isChatInTutorialMode, setIsChatInTutorialMode] = useState(false);
   const [customPersonas, setCustomPersonas] = useState<Persona[]>([]);
   const [personaLoading, setPersonaLoading] = useState(false);
   const [personaError, setPersonaError] = useState<string | null>(null);
+  const [dataLoading, setDataLoading] = useState(false);
 
   // Tab state
   const [activeTab, setActiveTab] = useState('home');
   const [showTutorialCompletion, setShowTutorialCompletion] = useState(false);
 
-  useEffect(() => {
-    const savedProfile = localStorage.getItem('userProfile');
-    if (savedProfile) {
-      setUserProfile(JSON.parse(savedProfile));
-      setAppState('main');
-      setCurrentScreen(Screen.Home);
-    } else {
-      setAppState('onboarding');
+  // 사용자 데이터 로드
+  const loadUserData = useCallback(async (userId: string) => {
+    if (!userId) return;
+    
+    setDataLoading(true);
+    try {
+               // 사용자 프로필 로드 (없으면 생성)
+         const profile = await userDataService.createOrGetUserProfile(userId);
+         if (profile) {
+           setUserProfile(profile);
+         }
+
+      // 즐겨찾기 로드
+      const favorites = await userDataService.getUserFavorites(userId);
+      setFavoriteIds(favorites);
+
+      // 맞춤 페르소나 로드
+      const customPersonasData = await userDataService.getUserCustomPersonas(userId);
+      setCustomPersonas(customPersonasData.map((p: any) => ({
+        id: p.id,
+        user_id: p.user_id,
+        name: p.name,
+        age: p.age,
+        gender: p.gender,
+        job: p.job,
+        mbti: p.mbti,
+        intro: p.intro,
+        avatar: p.avatar,
+        matchRate: p.match_rate,
+        personalityTraits: p.personality_traits || [],
+        interests: p.interests || [],
+        tags: p.tags || [],
+        conversationPreview: p.conversation_preview || [],
+        systemInstruction: p.system_instruction,
+        custom: true,
+        description: p.description,
+        created_at: p.created_at
+      })));
+
+      // 주간 목표 생성 (없으면)
+      await userDataService.createWeeklyGoalsIfNotExist(userId);
+
+    } catch (error) {
+      console.error('Load user data error:', error);
+    } finally {
+      setDataLoading(false);
     }
-  }, []);
+  }, [setUserProfile]);
+
+  useEffect(() => {
+    if (loading) return;
+
+    if (user) {
+      // 사용자가 로그인되어 있음
+      loadUserData(user.id);
+      
+      if (userProfile) {
+        setAppState('main');
+        setCurrentScreen(Screen.Home);
+      } else {
+        setAppState('onboarding');
+      }
+    } else {
+      // 사용자가 로그인되어 있지 않음
+      setAppState('auth');
+    }
+  }, [user, loading, userProfile, loadUserData]);
 
   // Fetch personas from Supabase on userProfile load
   useEffect(() => {
@@ -98,14 +161,14 @@ const App: React.FC = () => {
     setSelectedPersona(persona);
     setCurrentScreen(Screen.ConversationPrep);
   }, []);
-  
+
   const handleStartPrep = useCallback((persona: Persona) => {
     setSelectedPersona(persona);
     setIsChatInTutorialMode(false);
     setCurrentScreen(Screen.ConversationPrep);
   }, []);
 
-    const handleStartTutorial = useCallback(() => {
+  const handleStartTutorial = useCallback(() => {
     const tutorialPersona = PREDEFINED_PERSONAS.find(p => p.id === 'f1');
     if(tutorialPersona) {
       setSelectedPersona(tutorialPersona);
@@ -119,22 +182,35 @@ const App: React.FC = () => {
     setCurrentScreen(Screen.Chat);
   }, []);
 
-  const handleCompleteChat = useCallback((analysis: ConversationAnalysis | null) => {
-    if (isChatInTutorialMode) {
-        localStorage.setItem('tutorialCompleted', 'true');
-        setIsTutorialCompleted(true);
-        setIsChatInTutorialMode(false);
-        // 튜토리얼 완료 후 홈 화면으로 이동하고 완료 카드 표시
-        setActiveTab('home');
-        setCurrentScreen(Screen.Home);
-        setShowTutorialCompletion(true);
-        // 5초 후 완료 카드 숨기기
-        setTimeout(() => setShowTutorialCompletion(false), 5000);
-        return;
+  const handleCompleteChat = useCallback(async (analysis: ConversationAnalysis | null) => {
+    if (!user?.id || !selectedPersona) return;
+
+    try {
+      // 대화 세션 완료 처리
+      if (analysis) {
+        // 실제 구현에서는 대화 세션 ID를 추적해야 함
+        // 여기서는 간단히 분석 결과만 저장
+        console.log('Conversation completed with analysis:', analysis);
+      }
+
+      if (isChatInTutorialMode) {
+          localStorage.setItem('tutorialCompleted', 'true');
+          setIsTutorialCompleted(true);
+          setIsChatInTutorialMode(false);
+          // 튜토리얼 완료 후 홈 화면으로 이동하고 완료 카드 표시
+          setActiveTab('home');
+          setCurrentScreen(Screen.Home);
+          setShowTutorialCompletion(true);
+          // 5초 후 완료 카드 숨기기
+          setTimeout(() => setShowTutorialCompletion(false), 5000);
+          return;
+      }
+      setAnalysisResult(analysis);
+      setCurrentScreen(Screen.ConversationAnalysis);
+    } catch (error) {
+      console.error('Complete chat error:', error);
     }
-    setAnalysisResult(analysis);
-    setCurrentScreen(Screen.ConversationAnalysis);
-  }, [isChatInTutorialMode]);
+  }, [isChatInTutorialMode, user?.id, selectedPersona, setIsTutorialCompleted]);
 
   const handleBackToHome = useCallback(() => {
     setSelectedPersona(null);
@@ -170,7 +246,7 @@ const App: React.FC = () => {
         personalityTraits: data.personalityTraits && data.personalityTraits.length > 0 ? data.personalityTraits : ['직접 설정'],
         interests: (data.interests || []).map((topic: string) => ({ topic, emoji: '✨', description: '' })),
         tags: ['맞춤'],
-        conversationPreview: [{ text: '안녕하세요! 나만의 맞춤 페르소나입니다.' }],
+        conversationPreview: [{ sender: 'ai', text: '안녕하세요! 나만의 맞춤 페르소나입니다.' }],
         custom: true,
         description: data.intro,
       };
@@ -185,13 +261,22 @@ const App: React.FC = () => {
     }
   };
 
-  const toggleFavorite = useCallback((personaId: string) => {
-    setFavoriteIds(prev => 
-      prev.includes(personaId) 
-        ? prev.filter(id => id !== personaId)
-        : [...prev, personaId]
-    );
-  }, []);
+  const toggleFavorite = useCallback(async (personaId: string) => {
+    if (!user?.id) return;
+
+    try {
+      const success = await userDataService.toggleFavorite(user.id, personaId);
+      if (success) {
+        setFavoriteIds(prev => 
+          prev.includes(personaId) 
+            ? prev.filter(id => id !== personaId)
+            : [...prev, personaId]
+        );
+      }
+    } catch (error) {
+      console.error('Toggle favorite error:', error);
+    }
+  }, [user?.id]);
 
   // Handle tab change
   const handleTabChange = (tab: string) => {
@@ -356,6 +441,8 @@ const App: React.FC = () => {
     switch(appState) {
       case 'splash':
         return <SplashScreen />;
+      case 'auth':
+        return <AuthScreen onBack={() => setAppState('splash')} />;
       case 'onboarding':
         return <OnboardingFlow onComplete={handleOnboardingComplete} />;
       case 'main':
@@ -376,6 +463,9 @@ const App: React.FC = () => {
                 onTabChange={handleTabChange}
               />
             )}
+            
+            {/* Debug Panel */}
+            <DebugPanel />
           </div>
         );
       default:
@@ -393,6 +483,14 @@ const App: React.FC = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 };
 

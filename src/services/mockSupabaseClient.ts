@@ -197,15 +197,48 @@ class MockSupabaseClient {
       data: { session: null },
       error: null
     }),
+    getUser: () => Promise.resolve({
+      data: { user: null },
+      error: null
+    }),
     signUp: (credentials: any) => Promise.resolve({
-      data: { user: { id: 'mock-user-id' }, session: null },
+      data: { 
+        user: { 
+          id: 'mock-user-id',
+          email: credentials.email,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }, 
+        session: { 
+          user: { 
+            id: 'mock-user-id',
+            email: credentials.email
+          }
+        }
+      },
       error: null
     }),
     signInWithPassword: (credentials: any) => Promise.resolve({
-      data: { user: { id: 'mock-user-id' }, session: null },
+      data: { 
+        user: { 
+          id: 'mock-user-id',
+          email: credentials.email,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }, 
+        session: { 
+          user: { 
+            id: 'mock-user-id',
+            email: credentials.email
+          }
+        }
+      },
       error: null
     }),
-    signOut: () => Promise.resolve({ error: null })
+    signOut: () => Promise.resolve({ error: null }),
+    onAuthStateChange: (callback: any) => ({
+      data: { subscription: { unsubscribe: () => {} } }
+    })
   };
 }
 

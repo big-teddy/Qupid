@@ -1,7 +1,7 @@
 
 export interface Persona {
   id: string;
-  user_id: string;
+  user_id?: string;
   name: string;
   age: number;
   gender: 'male' | 'female';
@@ -14,6 +14,7 @@ export interface Persona {
   interests: { topic: string; emoji: string; description: string }[];
   tags: string[];
   conversationPreview: { sender: 'user' | 'ai'; text: string }[];
+  systemInstruction?: string; // AI 시스템 지시사항
   custom?: boolean; // 맞춤 페르소나 여부
   description?: string; // 맞춤 페르소나용 설명
   created_at?: string;
@@ -47,11 +48,18 @@ export enum Screen {
 export interface UserProfile {
   id: string;
   name: string; // Add name for personalization
-  userGender: 'male' | 'female' | null;
+  email: string; // 사용자 이메일
+  user_gender: 'male' | 'female' | null;
   experience: string | null;
   confidence: string | null;
   difficulty: string | null;
   interests: string[];
+  profile_image_url: string | null; // 프로필 이미지 URL
+  created_at: string; // 생성일
+  updated_at: string; // 수정일
+  last_login_at: string; // 마지막 로그인일
+  is_active: boolean; // 활성 상태
+  subscription_tier: string; // 구독 등급
   level: number; // 사용자 레벨 (1-10)
   experiencePoints: number; // 경험치
   totalConversations: number; // 총 대화 수
@@ -61,13 +69,13 @@ export interface UserProfile {
 }
 
 export interface ConversationAnalysis {
-    totalScore: number;
-    feedback: string;
-    friendliness: { score: number; feedback: string };
-    curiosity: { score: number; feedback: string };
-    empathy: { score: number; feedback: string };
-    positivePoints: string[];
-    pointsToImprove: { topic: string; suggestion: string }[];
+  overallScore: number;
+  friendliness: number;
+  curiosity: number;
+  empathy: number;
+  feedback: string;
+  positivePoints: string[];
+  pointsToImprove: any;
 }
 
 export interface RealtimeFeedback {
@@ -117,37 +125,45 @@ export interface PerformanceData {
 
 export interface Badge {
   id: string;
-  icon: string;
-  name: string;
-  description: string;
-  category: '대화' | '성장' | '특별';
-  rarity: 'Common' | 'Rare' | 'Epic';
+  badgeId: string;
+  badgeName: string;
+  badgeDescription: string;
+  badgeIcon: string;
+  badgeCategory: string;
+  badgeRarity: string;
   acquired: boolean;
-  progress?: { current: number; total: number; };
-  featured?: boolean;
+  acquiredDate?: string;
+  progressCurrent: number;
+  progressTotal: number;
+  featured: boolean;
 }
 
 export interface Achievement {
   id: string;
-  name: string;
-  description: string;
-  icon: string;
-  category: '대화' | '성장' | '특별' | '연속';
+  achievementId: string;
+  achievementName: string;
+  achievementDescription: string;
+  achievementIcon: string;
+  achievementCategory: string;
   acquired: boolean;
   acquiredDate?: string;
-  progress?: { current: number; total: number; };
+  progressCurrent: number;
+  progressTotal: number;
 }
 
 export interface WeeklyGoal {
   id: string;
-  title: string;
-  description: string;
-  target: number;
-  current: number;
-  unit: string; // '회', '분', '점' 등
-  category: '대화' | '점수' | '시간';
+  goalId: string;
+  goalTitle: string;
+  goalDescription: string;
+  targetValue: number;
+  currentValue: number;
+  unit: string;
+  category: string;
   completed: boolean;
   reward?: string;
+  weekStartDate: string;
+  weekEndDate: string;
 }
 
 export interface GrowthData {
@@ -166,4 +182,48 @@ export interface GrowthData {
     mostLaughs: number;
     bestScore: number;
   };
+}
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  created_at: string;
+  updated_at: string;
+  user_metadata?: {
+    full_name?: string;
+    name?: string;
+    avatar_url?: string;
+    user_gender?: string;
+  };
+}
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface SignUpCredentials {
+  email: string;
+  password: string;
+  name: string;
+  userGender: 'male' | 'female' | null;
+}
+
+export interface AuthState {
+  user: AuthUser | null;
+  session: any | null;
+  loading: boolean;
+  error: string | null;
+}
+
+export interface PasswordResetRequest {
+  email: string;
+}
+
+export interface ChatHistory {
+  id: string;
+  personaName: string;
+  date: Date;
+  score: number;
+  isTutorial: boolean;
 }

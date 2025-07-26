@@ -11,6 +11,16 @@ export interface HomeScreenProps {
   onSelectCustomPersona: (persona: Persona) => void;
 }
 
+export interface SimplifiedHomeScreenProps {
+  userProfile: UserProfile | null;
+  recommendedPersonas: Persona[];
+  onNavigate: (screen: string) => void;
+  onSelectPersona: (persona: Persona) => void;
+  isTutorialCompleted: boolean;
+  onStartTutorial: () => void;
+  showTutorialCompletion: boolean;
+}
+
 export interface PersonaSelectionProps {
   personas: Persona[];
   userProfile: UserProfile | null;

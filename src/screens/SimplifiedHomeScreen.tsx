@@ -1,330 +1,248 @@
-import * as React from 'react';
-import { CalendarDaysIcon, ChevronRightIcon, BellIcon, SettingsIcon, LightbulbIcon, TrophyIcon, TargetIcon } from '../components/Icons';
-import { UserProfile, Persona, Achievement, WeeklyGoal } from '../types';
-import { ACHIEVEMENTS, WEEKLY_GOALS } from '../constants';
+import React from 'react';
+import { UserProfile, Persona } from '../types';
+import { SimplifiedHomeScreenProps } from '../types/props';
+import { SparklesIcon, ChevronRightIcon, UserIcon } from '../components/Icons';
 
-interface SimplifiedHomeScreenProps {
-  userProfile: UserProfile | null;
-  onNavigate: (screen: string) => void;
-  onSelectPersona: (persona: Persona) => void;
-  recommendedPersonas: Persona[];
-  isTutorialCompleted: boolean;
-  onStartTutorial: () => void;
-  showTutorialCompletion?: boolean;
-}
-
-const SimplifiedHomeScreen: React.FC<SimplifiedHomeScreenProps> = ({ 
-  userProfile, 
-  onNavigate, 
-  onSelectPersona, 
+const SimplifiedHomeScreen: React.FC<SimplifiedHomeScreenProps> = ({
+  userProfile,
   recommendedPersonas,
+  onNavigate,
+  onSelectPersona,
   isTutorialCompleted,
   onStartTutorial,
-  showTutorialCompletion = false
+  showTutorialCompletion
 }) => {
-  // Mock data - 실제로는 DB에서 가져올 데이터
-  const todayGoal = {
-    completed: 2,
-    target: 3,
-    progress: 66
+  // 실제 userProfile 데이터 사용 (하드코딩 제거)
+  const stats = {
+    level: userProfile?.level || 1,
+    experiencePoints: userProfile?.experiencePoints || 0,
+    totalConversations: userProfile?.totalConversations || 0,
+    averageScore: userProfile?.averageScore || 0,
+    streakDays: userProfile?.streakDays || 0
   };
 
-  const weeklyGrowth = {
-    score: 12,
-    percentage: 18
+  const getLevelProgress = () => {
+    const currentLevel = stats.level;
+    const baseExp = (currentLevel - 1) * 100;
+    const currentExp = stats.experiencePoints - baseExp;
+    const nextLevelExp = currentLevel * 100;
+    return Math.min((currentExp / nextLevelExp) * 100, 100);
   };
 
-  const hasNewAchievement = true;
-
-  // 사용자 성장 데이터 (실제로는 userProfile에서 가져올 데이터)
-  const growthData = {
-    level: userProfile?.level || 3,
-    experiencePoints: userProfile?.experiencePoints || 750,
-    totalConversations: userProfile?.totalConversations || 15,
-    averageScore: userProfile?.averageScore || 78,
-    streakDays: userProfile?.streakDays || 5
+  const getLevelColor = (level: number) => {
+    if (level >= 8) return 'text-purple-600';
+    if (level >= 5) return 'text-blue-600';
+    if (level >= 3) return 'text-green-600';
+    return 'text-gray-600';
   };
-
-  // 최근 획득한 성취 (실제로는 DB에서 가져올 데이터)
-  const recentAchievements = ACHIEVEMENTS.filter(a => a.acquired).slice(0, 2);
-
-  // 주간 목표 진행 상황 (실제로는 DB에서 가져올 데이터)
-  const weeklyGoals = WEEKLY_GOALS.map(goal => ({
-    ...goal,
-    current: goal.id === 'conversations_5' ? 2 : goal.id === 'score_80' ? 78 : 45
-  }));
 
   return (
-    <div className="flex flex-col h-full bg-gray-50">
+    <div className="flex flex-col h-full bg-white">
       {/* Header */}
-      <header className="bg-white px-6 py-4 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-gray-800">
-              안녕하세요, {userProfile?.name}님! 👋
-            </h1>
-            <p className="text-sm text-gray-600 mt-1">오늘도 대화 실력을 키워볼까요?</p>
+      <header className="flex items-center justify-between px-4 py-4 border-b border-gray-200">
+        <div className="flex items-center">
+          <div className="w-10 h-10 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+            {userProfile?.name?.charAt(0) || 'U'}
           </div>
-          <div className="flex items-center space-x-2">
-            <button className="p-2 rounded-full hover:bg-gray-100 relative">
-              <BellIcon className="w-6 h-6 text-gray-600" />
-              <div className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></div>
-            </button>
-            <button 
-              onClick={() => onNavigate('settings')} 
-              className="p-2 rounded-full hover:bg-gray-100"
-            >
-              <SettingsIcon className="w-6 h-6 text-gray-600" />
-            </button>
+          <div className="ml-3">
+            <h1 className="text-lg font-bold text-gray-800">
+              안녕하세요, {userProfile?.name || '사용자'}님!
+            </h1>
+            <p className="text-sm text-gray-600">오늘도 대화 실력을 키워보세요</p>
           </div>
         </div>
+        <button 
+          onClick={() => onNavigate('profile')}
+          className="p-2 text-gray-600 hover:text-gray-800"
+        >
+          <UserIcon className="w-6 h-6" />
+        </button>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto px-4 py-4 space-y-4 pb-24">
-        <div className="max-w-md mx-auto space-y-4">
-          
-          {/* Tutorial Card for new users */}
-          {!isTutorialCompleted && (
-            <div 
-              onClick={onStartTutorial}
-              className="bg-gradient-to-br from-[#FDF2F8] to-[#EBF2FF] rounded-2xl p-6 border border-[#F093B0] cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
-            >
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-[#F093B0] rounded-full flex items-center justify-center mr-4">
-                  <LightbulbIcon className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-gray-800">🎯 첫 대화 연습하기</h3>
-                  <p className="text-sm text-gray-600">5분만에 기본 대화법을 배워보세요</p>
-                </div>
+      <main className="flex-1 px-4 py-6 overflow-y-auto">
+        {/* Tutorial Completion Banner */}
+        {showTutorialCompletion && (
+          <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-2xl p-6 text-white mb-6">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-4">
+                <span className="text-white text-xl">🎉</span>
               </div>
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center text-sm text-gray-700">
-                  <span className="w-2 h-2 bg-[#F093B0] rounded-full mr-2"></span>
-                  AI와 안전한 대화 연습
-                </div>
-                <div className="flex items-center text-sm text-gray-700">
-                  <span className="w-2 h-2 bg-[#F093B0] rounded-full mr-2"></span>
-                  실시간 피드백 제공
-                </div>
-                <div className="flex items-center text-sm text-gray-700">
-                  <span className="w-2 h-2 bg-[#F093B0] rounded-full mr-2"></span>
-                  대화 실력 향상 팁
-                </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-lg">튜토리얼 완료!</h3>
+                <p className="text-sm opacity-90">첫 대화를 성공적으로 완료했습니다</p>
               </div>
-              <button className="w-full bg-[#F093B0] text-white font-bold py-3 rounded-xl hover:bg-[#E085A0] transition-colors">
-                튜토리얼 시작하기
+              <button className="bg-white bg-opacity-20 px-4 py-2 rounded-lg text-sm font-medium">
+                확인
               </button>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Tutorial Completion Card */}
-          {showTutorialCompletion && (
-            <div className="bg-gradient-to-br from-[#E6F9F6] to-[#F0FFF4] rounded-2xl p-6 border border-[#0AC5A8] animate-pulse">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-[#0AC5A8] rounded-full flex items-center justify-center mr-4">
-                  <TrophyIcon className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-gray-800">🎉 튜토리얼 완료!</h3>
-                  <p className="text-sm text-gray-600">첫 대화 연습을 성공적으로 마쳤습니다</p>
-                </div>
+        {/* Level and Progress */}
+        <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-2xl p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center">
+              <div className={`w-12 h-12 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg ${getLevelColor(stats.level)}`}>
+                {stats.level}
               </div>
-              <div className="bg-white rounded-xl p-4 mb-4">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">획득한 경험치</span>
-                  <span className="font-bold text-[#0AC5A8]">+50 XP</span>
-                </div>
-                <div className="flex items-center justify-between text-sm mt-2">
-                  <span className="text-gray-600">새로운 성취</span>
-                  <span className="font-bold text-[#0AC5A8]">첫 대화 💬</span>
-                </div>
+              <div className="ml-3">
+                <h2 className="text-lg font-bold text-gray-800">레벨 {stats.level}</h2>
+                <p className="text-sm text-gray-600">{stats.experiencePoints} XP</p>
               </div>
             </div>
-          )}
+            <SparklesIcon className="w-6 h-6 text-yellow-500" />
+          </div>
+          
+          {/* Progress Bar */}
+          <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+            <div 
+              className="bg-gradient-to-r from-pink-400 to-purple-500 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${getLevelProgress()}%` }}
+            ></div>
+          </div>
+          <p className="text-xs text-gray-600 text-center">
+            다음 레벨까지 {Math.max(0, (stats.level * 100) - stats.experiencePoints)} XP 필요
+          </p>
+        </div>
 
-          {/* User Level & Progress */}
-          <div className="bg-white rounded-2xl p-6 border border-gray-200">
-            <div className="flex items-center justify-between mb-4">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="bg-white border border-gray-200 rounded-xl p-4">
+            <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-bold text-gray-800">Level {growthData.level}</h3>
-                <p className="text-sm text-gray-600">대화 중급자</p>
+                <p className="text-sm text-gray-600">총 대화</p>
+                <p className="text-2xl font-bold text-gray-800">{stats.totalConversations}</p>
               </div>
-              <div className="text-right">
-                <p className="text-sm text-gray-600">경험치</p>
-                <p className="text-lg font-bold text-[#F093B0]">{growthData.experiencePoints} XP</p>
-              </div>
-            </div>
-            
-            {/* Progress Bar */}
-            <div className="mb-4">
-              <div className="flex justify-between text-sm text-gray-600 mb-2">
-                <span>다음 레벨까지</span>
-                <span>{growthData.experiencePoints % 1000}/1000</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-gradient-to-r from-[#F093B0] to-[#DB7093] h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${(growthData.experiencePoints % 1000) / 10}%` }}
-                ></div>
-              </div>
-            </div>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-3 gap-4">
-              <div className="text-center">
-                <p className="text-lg font-bold text-gray-800">{growthData.totalConversations}</p>
-                <p className="text-xs text-gray-600">총 대화</p>
-              </div>
-              <div className="text-center">
-                <p className="text-lg font-bold text-gray-800">{growthData.averageScore}</p>
-                <p className="text-xs text-gray-600">평균 점수</p>
-              </div>
-              <div className="text-center">
-                <p className="text-lg font-bold text-gray-800">{growthData.streakDays}</p>
-                <p className="text-xs text-gray-600">연속 일수</p>
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <span className="text-blue-600 text-lg">💬</span>
               </div>
             </div>
           </div>
-
-          {/* Weekly Goals */}
-          <div className="bg-white rounded-2xl p-6 border border-gray-200">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-gray-800">이번 주 목표</h3>
-              <TargetIcon className="w-5 h-5 text-[#F093B0]" />
+          
+          <div className="bg-white border border-gray-200 rounded-xl p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">평균 점수</p>
+                <p className="text-2xl font-bold text-gray-800">{stats.averageScore}</p>
+              </div>
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <span className="text-green-600 text-lg">📊</span>
+              </div>
             </div>
-            
-            <div className="space-y-4">
-              {weeklyGoals.map((goal) => (
-                <div key={goal.id} className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center mb-1">
-                      <span className="text-sm font-medium text-gray-800">{goal.title}</span>
-                      {goal.completed && (
-                        <span className="ml-2 text-xs bg-[#0AC5A8] text-white px-2 py-1 rounded-full">
-                          완료
-                        </span>
-                      )}
+          </div>
+          
+          <div className="bg-white border border-gray-200 rounded-xl p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">연속 사용</p>
+                <p className="text-2xl font-bold text-gray-800">{stats.streakDays}일</p>
+              </div>
+              <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                <span className="text-orange-600 text-lg">🔥</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white border border-gray-200 rounded-xl p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">경험치</p>
+                <p className="text-2xl font-bold text-gray-800">{stats.experiencePoints}</p>
+              </div>
+              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                <span className="text-purple-600 text-lg">⭐</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="mb-6">
+          <h3 className="text-lg font-bold text-gray-800 mb-4">빠른 시작</h3>
+          <div className="space-y-3">
+            <button
+              onClick={() => onNavigate('chat')}
+              className="w-full bg-gradient-to-r from-pink-400 to-purple-500 text-white p-4 rounded-xl flex items-center justify-between hover:shadow-lg transition-all duration-200"
+            >
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3">
+                  <span className="text-white text-lg">💬</span>
+                </div>
+                <div className="text-left">
+                  <p className="font-semibold">대화 연습하기</p>
+                  <p className="text-sm opacity-90">AI와 함께 대화 실력을 키워보세요</p>
+                </div>
+              </div>
+              <ChevronRightIcon className="w-5 h-5" />
+            </button>
+
+            {!isTutorialCompleted && (
+              <button
+                onClick={onStartTutorial}
+                className="w-full bg-gradient-to-r from-blue-400 to-cyan-500 text-white p-4 rounded-xl flex items-center justify-between hover:shadow-lg transition-all duration-200"
+              >
+                <div className="flex items-center">
+                  <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3">
+                    <span className="text-white text-lg">🎯</span>
+                  </div>
+                  <div className="text-left">
+                    <p className="font-semibold">튜토리얼 시작</p>
+                    <p className="text-sm opacity-90">첫 대화를 시작해보세요</p>
+                  </div>
+                </div>
+                <ChevronRightIcon className="w-5 h-5" />
+              </button>
+            )}
+
+            <button
+              onClick={() => onNavigate('coaching')}
+              className="w-full bg-gradient-to-r from-green-400 to-teal-500 text-white p-4 rounded-xl flex items-center justify-between hover:shadow-lg transition-all duration-200"
+            >
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3">
+                  <span className="text-white text-lg">🎓</span>
+                </div>
+                <div className="text-left">
+                  <p className="font-semibold">AI 코칭</p>
+                  <p className="text-sm opacity-90">개인 맞춤 대화 팁을 받아보세요</p>
+                </div>
+              </div>
+              <ChevronRightIcon className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Recommended Personas */}
+        {recommendedPersonas.length > 0 && (
+          <div>
+            <h3 className="text-lg font-bold text-gray-800 mb-4">추천 페르소나</h3>
+            <div className="space-y-3">
+              {recommendedPersonas.map((persona) => (
+                <div key={persona.id} className="bg-white border border-gray-200 rounded-xl p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="w-12 h-12 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg mr-3">
+                        {persona.name.charAt(0)}
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-800">{persona.name}</h4>
+                        <p className="text-sm text-gray-600">{persona.age}세 • {persona.job}</p>
+                        <p className="text-xs text-gray-500">매칭률 {persona.matchRate}%</p>
+                      </div>
                     </div>
-                    <div className="flex justify-between text-xs text-gray-600 mb-2">
-                      <span>{goal.description}</span>
-                      <span>{goal.current}/{goal.target} {goal.unit}</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
-                        className="bg-[#F093B0] h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${Math.min((goal.current / goal.target) * 100, 100)}%` }}
-                      ></div>
-                    </div>
+                    <button
+                      onClick={() => onSelectPersona(persona)}
+                      className="bg-pink-500 text-white px-3 py-1 rounded-lg text-sm font-medium hover:bg-pink-600 transition-colors"
+                    >
+                      대화하기
+                    </button>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-
-          {/* Recent Achievements */}
-          {recentAchievements.length > 0 && (
-            <div className="bg-white rounded-2xl p-6 border border-gray-200">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-gray-800">최근 성취</h3>
-                <button 
-                  onClick={() => onNavigate('badges')}
-                  className="text-sm text-[#F093B0] font-medium"
-                >
-                  모두 보기
-                </button>
-              </div>
-              
-              <div className="space-y-3">
-                {recentAchievements.map((achievement) => (
-                  <div key={achievement.id} className="flex items-center p-3 bg-gradient-to-r from-[#FDF2F8] to-[#EBF2FF] rounded-xl">
-                    <div className="w-10 h-10 bg-[#F093B0] rounded-full flex items-center justify-center mr-3">
-                      <span className="text-lg">{achievement.icon}</span>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-medium text-gray-800">{achievement.name}</h4>
-                      <p className="text-sm text-gray-600">{achievement.description}</p>
-                    </div>
-                    <div className="text-xs text-[#F093B0] font-medium">
-                      {achievement.acquiredDate && '방금 전'}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Today's Recommended AI */}
-          <div className="bg-white rounded-2xl p-6 border border-gray-200">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-gray-800">오늘의 추천 AI</h3>
-              <button 
-                onClick={() => onNavigate('chat')}
-                className="text-sm text-[#F093B0] font-medium"
-              >
-                모두 보기
-              </button>
-            </div>
-            
-            {recommendedPersonas.length > 0 ? (
-              <div 
-                onClick={() => onSelectPersona(recommendedPersonas[0])}
-                className="flex items-center p-4 bg-gradient-to-r from-[#FDF2F8] to-[#EBF2FF] rounded-xl cursor-pointer hover:shadow-md transition-shadow border border-[#F093B0]"
-              >
-                <img
-                  src={recommendedPersonas[0].avatar}
-                  alt={recommendedPersonas[0].name}
-                  className="w-12 h-12 rounded-full object-cover mr-4"
-                />
-                <div className="flex-1">
-                  <h4 className="font-bold text-gray-800">
-                    {recommendedPersonas[0].name}, {recommendedPersonas[0].age}세
-                  </h4>
-                  <p className="text-sm text-gray-600 mb-1">{recommendedPersonas[0].intro}</p>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-xs font-medium text-[#F093B0]">
-                      {recommendedPersonas[0].matchRate}% 매칭
-                    </span>
-                    <div className="flex space-x-1">
-                      {recommendedPersonas[0].tags.slice(0, 2).map((tag, index) => (
-                        <span
-                          key={index}
-                          className="px-2 py-1 bg-gray-100 text-xs text-gray-600 rounded-full"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <ChevronRightIcon className="w-5 h-5 text-gray-400" />
-              </div>
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                <p>추천 AI를 준비 중입니다...</p>
-              </div>
-            )}
-          </div>
-
-          {/* New Badge Banner */}
-          {hasNewAchievement && (
-            <div className="bg-gradient-to-r from-[#B794F6] to-[#9F7AEA] rounded-2xl p-6 text-white">
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-4">
-                  <TrophyIcon className="w-6 h-6 text-white" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-lg">새로운 배지 획득!</h3>
-                  <p className="text-sm opacity-90">대화 지속왕 배지를 획득했습니다</p>
-                </div>
-                <button className="bg-white bg-opacity-20 px-4 py-2 rounded-lg text-sm font-medium">
-                  확인
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+        )}
       </main>
     </div>
   );

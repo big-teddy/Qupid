@@ -269,7 +269,28 @@ const CompletionScreen: React.FC<{ profile: UserProfile, onComplete: () => void 
     );
 }
 
-const initialProfile: UserProfile = { name: '준호', userGender: null, experience: null, confidence: null, difficulty: null, interests: [] };
+  const initialProfile: UserProfile = { 
+    id: '',
+    name: '사용자', 
+    email: '',
+    user_gender: null, 
+    experience: null, 
+    confidence: null, 
+    difficulty: null, 
+    interests: [],
+    profile_image_url: null,
+    created_at: '',
+    updated_at: '',
+    last_login_at: '',
+    is_active: true,
+    subscription_tier: 'free',
+    level: 1,
+    experiencePoints: 0,
+    totalConversations: 0,
+    averageScore: 0,
+    streakDays: 0,
+    lastActiveDate: ''
+  };
 
 const surveyQuestions = [
     { key: 'experience', main: <>이성과의 연애 경험이<br/>어느 정도인가요?</>, sub: "경험에 맞는 적절한 난이도로 시작해드려요", options: [

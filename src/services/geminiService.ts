@@ -28,9 +28,25 @@ export const sendMessageToAI = async (chat: Chat, message: string): Promise<stri
 
   try {
     const response: GenerateContentResponse = await chat.sendMessage({ message });
-    return response.text ?? "";
+    const text = response.text;
+    if (!text || text.trim() === '') {
+      return "죄송해요, 지금은 답변하기 어렵네요. 잠시 후 다시 시도해주세요.";
+    }
+    return text;
   } catch (error) {
     console.error("Error sending message to AI:", error);
+    
+    // 구체적인 오류 메시지 제공
+    if (error instanceof Error) {
+      if (error.message.includes('API_KEY')) {
+        return "AI 서비스 키가 올바르지 않습니다. 설정을 확인해주세요.";
+      } else if (error.message.includes('quota')) {
+        return "AI 서비스 사용량이 초과되었습니다. 잠시 후 다시 시도해주세요.";
+      } else if (error.message.includes('network')) {
+        return "네트워크 연결을 확인해주세요.";
+      }
+    }
+    
     return "죄송해요, 지금은 답변하기 어렵네요. 잠시 후 다시 시도해주세요.";
   }
 };

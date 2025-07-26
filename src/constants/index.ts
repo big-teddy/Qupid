@@ -245,62 +245,53 @@ export const PREDEFINED_PERSONAS: Persona[] = [
   },
 ];
 
+// 튜토리얼 단계 데이터
 export const TUTORIAL_STEPS: TutorialStep[] = [
   {
     step: 1,
-    title: "자연스럽게 인사해보세요",
-    description: "예시: '안녕하세요!', '처음 뵙겠습니다' 등",
-    quickReplies: ["안녕하세요! 반갑습니다 😊", "안녕하세요, 처음 뵙겠습니다!", "만나서 반가워요!"],
-    successCriteria: (message) => {
-        const greetings = ["안녕", "반갑", "뵙겠습니다"];
-        return greetings.some(word => message.includes(word));
-    }
+    title: "첫 인사",
+    description: "친근하게 인사해보세요",
+    quickReplies: ["안녕하세요!", "반가워요!", "처음 뵙겠습니다"],
+    successCriteria: (message: string) => message.length > 0 && message.includes("안녕") || message.includes("반가워") || message.includes("처음")
   },
   {
     step: 2,
-    title: "간단히 자기소개를 해보세요",
-    description: "이름이나 관심사를 간단히 소개하며 대화를 시작하세요.",
-    quickReplies: ["저는 게임하는걸 좋아해요, 혹시 좋아하세요?", "저는 영화보는걸 좋아하는데, 어떤 장르 좋아하세요?", "저는 ㅇㅇㅇ입니다. 잘 부탁드려요."],
-    successCriteria: (message) => {
-        const intros = ["저는", "이름은", "좋아해요", "취미는"];
-        return intros.some(word => message.includes(word));
-    }
+    title: "관심사 묻기",
+    description: "상대방의 관심사를 물어보세요",
+    quickReplies: ["무엇을 좋아하세요?", "취미가 있나요?", "어떤 일을 하시나요?"],
+    successCriteria: (message: string) => message.includes("?") || message.includes("무엇") || message.includes("어떤")
   },
   {
     step: 3,
-    title: "공통 관심사를 찾아보세요",
-    description: "상대방의 프로필을 참고하여 질문해보세요.",
-    quickReplies: ["프로필 보니 게임 좋아하시는 것 같던데, 맞나요?", "영화 좋아하신다고 들었어요! 최근에 본 거 있으세요?", "저도 운동 좋아하는데, 주로 어떤 운동 하세요?"],
-    successCriteria: (message) => {
-        return message.includes("?");
-    }
-  },
-  {
-    step: 4,
-    title: "상대방의 말에 공감하고 반응해주세요",
-    description: "상대의 답변에 리액션을 보여주며 대화를 이어가세요.",
-    quickReplies: ["오, 정말요? 대단하네요!", "아 그랬구나, 저도 공감돼요.", "그거 정말 재밌겠네요! 더 자세히 알려주세요."],
-    successCriteria: (message, context) => {
-        const lastAiMessage = context.filter(m => m.sender === 'ai').pop();
-        if (!lastAiMessage) return false;
-        // This is a simplified check. A real implementation might use NLP.
-        const reactions = ["정말", "대단", "재밌", "그렇구나", "공감"];
-        return reactions.some(word => message.includes(word));
-    }
-  },
-  {
-    step: 5,
-    title: "자연스럽게 대화를 마무리해보세요",
-    description: "즐거웠다는 표현과 함께 다음을 기약하며 대화를 끝내세요.",
-    quickReplies: ["오늘 대화 정말 즐거웠어요! 다음에 또 얘기해요.", "시간 가는 줄 몰랐네요. 다음에 또 봬요!", "오늘 정말 즐거웠습니다. 좋은 하루 보내세요!"],
-    successCriteria: (message) => {
-        const closings = ["즐거웠", "다음에", "마무리", "다음에 또"];
-        return closings.some(word => message.includes(word));
-    }
+    title: "공감하기",
+    description: "상대방의 이야기에 공감을 표현해보세요",
+    quickReplies: ["정말 재미있겠네요!", "이해가 됩니다", "좋은 선택이네요"],
+    successCriteria: (message: string) => message.includes("재미") || message.includes("이해") || message.includes("좋은")
   }
 ];
 
-export const initialProfile: UserProfile = { name: '준호', userGender: null, experience: null, confidence: null, difficulty: null, interests: [] };
+export const initialProfile: UserProfile = { 
+  id: '',
+  name: '사용자', 
+  email: '',
+  user_gender: null, 
+  experience: null, 
+  confidence: null, 
+  difficulty: null, 
+  interests: [],
+  profile_image_url: null,
+  created_at: '',
+  updated_at: '',
+  last_login_at: '',
+  is_active: true,
+  subscription_tier: 'free',
+  level: 1,
+  experiencePoints: 0,
+  totalConversations: 0,
+  averageScore: 0,
+  streakDays: 0,
+  lastActiveDate: ''
+};
 
 
 export const PERFORMANCE_DATA: PerformanceData = {
