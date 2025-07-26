@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#F093B0" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="연애 박사" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>연애 박사</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Pretendard:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+      /* CSS Variables for theming */
+      :root {
+        /* 토스/당근 스타일 그레이 시스템 */
+        --surface: #ffffff;
+        --background: #f9fafb;
+        --card: #ffffff;
+        --text-primary: #191f28;
+        --text-secondary: #8b95a1;
+        --text-tertiary: #b0b8c1;
+        --text-disabled: #d1d6db;
+        --border: #e5e8eb;
+        --divider: #f2f4f6;
+        
+        /* 연애 앱 특화 파스텔 핑크 */
+        --primary: #f093b0;
+        --primary-light: #fdf2f8;
+        --primary-dark: #db7093;
+        
+        /* 신뢰감 있는 블루 */
+        --secondary: #4f7aba;
+        --secondary-light: #ebf2ff;
+        --secondary-dark: #3a5a8a;
+        
+        /* 고급스러운 라벤더 */
+        --accent: #b794f6;
+        --accent-light: #f7f4ff;
+        --accent-dark: #9f7aea;
+        
+        /* 토스 성공 컬러 스타일 */
+        --success: #0ac5a8;
+        --success-light: #e6f9f6;
+        --success-dark: #059682;
+        
+        /* 당근 스타일 경고 */
+        --warning: #ff8a00;
+        --warning-light: #fff4e6;
+        --warning-dark: #e67800;
+        
+        /* 절제된 에러 컬러 */
+        --error: #ff4757;
+        --error-light: #ffe8ea;
+        --error-dark: #e6404e;
+      }
+
+      body.dark-mode {
+        --surface: #1a1a1a;
+        --background: #0d0d0d;
+        --card: #262626;
+        --text-primary: #ffffff;
+        --text-secondary: #a0a0a0;
+        --text-tertiary: #808080;
+        --text-disabled: #404040;
+        --border: #333333;
+        --divider: #262626;
+        --primary: #f093b0;
+        --primary-light: #2a1a1f;
+        --primary-dark: #db7093;
+        --secondary: #4f7aba;
+        --secondary-light: #1a2333;
+        --secondary-dark: #3a5a8a;
+        --accent: #b794f6;
+        --accent-light: #2a1f3a;
+        --accent-dark: #9f7aea;
+        --success: #0ac5a8;
+        --success-light: #1a3a33;
+        --success-dark: #059682;
+        --warning: #ff8a00;
+        --warning-light: #3a2a1a;
+        --warning-dark: #e67800;
+        --error: #ff4757;
+        --error-light: #3a1a1f;
+        --error-dark: #e6404e;
+      }
+
+      /* Mobile optimization */
+      * {
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        box-sizing: border-box;
+      }
+
+      /* Allow text selection for input fields */
+      input, textarea {
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
+      }
+
+      /* Prevent zoom on input focus */
+      input[type="text"], input[type="email"], input[type="password"], input[type="number"], textarea {
+        font-size: 16px;
+      }
+
+      /* Mobile touch optimization */
+      button, [role="button"] {
+        min-height: 44px;
+        min-width: 44px;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      /* Bottom tab bar specific styles */
+      .bottom-tab-bar {
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        background-color: rgba(255, 255, 255, 0.95);
+      }
+
+      /* Active state for mobile */
+      .mobile-active {
+        transform: scale(0.95);
+        transition: transform 0.1s ease;
+      }
+
+      /* Safe area support */
+      .safe-area-top {
+        padding-top: env(safe-area-inset-top);
+      }
+
+      .safe-area-bottom {
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+
+      .safe-area-left {
+        padding-left: env(safe-area-inset-left);
+      }
+
+      .safe-area-right {
+        padding-right: env(safe-area-inset-right);
+      }
+
+      /* Smooth scrolling */
+      html {
+        scroll-behavior: smooth;
+      }
+
+      /* Prevent horizontal scroll */
+      body {
+        overflow-x: hidden;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        overscroll-behavior: none;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* Mobile screen container */
+      .mobile-container {
+        position: relative;
+        overflow: hidden;
+        border-radius: 2rem;
+      }
+
+      /* Ensure content doesn't overflow mobile container */
+      .mobile-content {
+        height: 100%;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Mobile-specific styles */
+      @media (max-width: 768px) {
+        body {
+          font-size: 14px;
+        }
+        
+        /* Enhanced mobile scrolling */
+        .overflow-y-auto {
+          -webkit-overflow-scrolling: touch;
+          scroll-behavior: smooth;
+        }
+      }
+
+      /* Prevent pull-to-refresh on mobile */
+      html, body {
+        overscroll-behavior: none;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* Custom scrollbar for webkit browsers */
+      ::-webkit-scrollbar {
+        width: 4px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 2px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 0, 0, 0.3);
+      }
+    </style>
+    <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.11.0",
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "react": "https://esm.sh/react@^19.1.0",
+    "chart.js/": "https://esm.sh/chart.js@^4.5.0/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="antialiased">
+    <div id="root"></div>
+    <script type="module" src="/src/index.tsx"></script>
+  </body>
+</html>
