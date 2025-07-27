@@ -1,0 +1,119 @@
+
+export interface Persona {
+  id: string;
+  name: string;
+  age: number;
+  gender: 'male' | 'female';
+  job: string;
+  mbti: string;
+  avatar: string;
+  intro: string;
+  tags: string[];
+  matchRate: number;
+  systemInstruction: string;
+  personalityTraits: string[];
+  interests: { emoji: string; topic: string; description: string; }[];
+  conversationPreview: { sender: 'ai'; text: string; }[];
+}
+
+export interface Message {
+  sender: 'user' | 'ai' | 'system';
+  text: string;
+}
+
+export enum Screen {
+  Home,
+  PersonaRecommendationIntro,
+  PersonaSelection,
+  PersonaDetail,
+  ConversationPrep,
+  Chat,
+  ConversationAnalysis,
+  CustomPersona,
+  StylingCoach,
+  PerformanceDetail,
+  Favorites,
+  Badges,
+  Settings,
+  ProfileEdit,
+  LearningGoals,
+  NotificationSettings,
+  DataExport,
+  DeleteAccount,
+}
+
+export interface UserProfile {
+  name: string; // Add name for personalization
+  userGender: 'male' | 'female' | null;
+  experience: string | null;
+  confidence: string | null;
+  difficulty: string | null;
+  interests: string[];
+}
+
+export interface ConversationAnalysis {
+    totalScore: number;
+    feedback: string;
+    friendliness: { score: number; feedback: string };
+    curiosity: { score: number; feedback: string };
+    empathy: { score: number; feedback: string };
+    positivePoints: string[];
+    pointsToImprove: { topic: string; suggestion: string }[];
+}
+
+export interface RealtimeFeedback {
+    isGood: boolean;
+    message: string;
+}
+
+export interface TutorialStep {
+    step: number;
+    title: string;
+    description: string;
+    quickReplies: string[];
+    successCriteria: (message: string, context: Message[]) => boolean;
+}
+
+export interface PerformanceData {
+  weeklyScore: number;
+  scoreChange: number;
+  scoreChangePercentage: number;
+  dailyScores: number[];
+  radarData: {
+    labels: string[];
+    datasets: {
+      label: string;
+      data: number[];
+      backgroundColor: string;
+      borderColor: string;
+      borderWidth: number;
+    }[];
+  };
+  stats: {
+    totalTime: string;
+    sessionCount: number;
+    avgTime: string;
+    longestSession: { time: string; persona: string; };
+    preferredType: string;
+  };
+  categoryScores: {
+    title: string;
+    emoji: string;
+    score: number;
+    change: number;
+    goal: number;
+  }[];
+}
+
+
+export interface Badge {
+  id: string;
+  icon: string;
+  name: string;
+  description: string;
+  category: '대화' | '성장' | '특별';
+  rarity: 'Common' | 'Rare' | 'Epic';
+  acquired: boolean;
+  progress?: { current: number; total: number; };
+  featured?: boolean;
+}

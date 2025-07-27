@@ -1,246 +1,81 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta name="theme-color" content="#F093B0" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="연애 박사" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="format-detection" content="telephone=no" />
-    
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="AI와 함께하는 대화 연습 앱. 연애 대화 실력을 키워보세요!" />
-    <meta name="keywords" content="연애, 대화, AI, 연습, 데이팅, 커뮤니케이션" />
-    <meta name="author" content="연애 박사" />
-    <meta name="robots" content="index, follow" />
-    
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="연애 박사 - AI 대화 연습" />
-    <meta property="og:description" content="AI와 함께하는 대화 연습 앱. 연애 대화 실력을 키워보세요!" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://qupid-app.vercel.app" />
-    <meta property="og:image" content="/og-image.png" />
-    
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="연애 박사 - AI 대화 연습" />
-    <meta name="twitter:description" content="AI와 함께하는 대화 연습 앱. 연애 대화 실력을 키워보세요!" />
-    <meta name="twitter:image" content="/og-image.png" />
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json" />
-    
-    <title>연애 박사 - AI 대화 연습</title>
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>연애 박사 (Dating Master)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Pretendard:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-      /* CSS Variables for theming */
       :root {
-        /* 토스/당근 스타일 그레이 시스템 */
-        --surface: #ffffff;
-        --background: #f9fafb;
-        --card: #ffffff;
-        --text-primary: #191f28;
-        --text-secondary: #8b95a1;
-        --text-tertiary: #b0b8c1;
-        --text-disabled: #d1d6db;
-        --border: #e5e8eb;
-        --divider: #f2f4f6;
+        /* Primary Colors */
+        --primary-pink-main: #F093B0;
+        --primary-pink-light: #FDF2F8;
+        --primary-pink-dark: #DB7093;
+        --secondary-blue-main: #4F7ABA;
+        --secondary-blue-light: #EBF2FF;
+        --secondary-blue-dark: #3A5A8A;
+        --accent-lavender: #B794F6;
+
+        /* Functional Colors */
+        --success-green: #0AC5A8;
+        --warning-orange: #FF8A00;
+        --error-red: #FF4757;
+        --error-red-light: #FFE8EA;
         
-        /* 연애 앱 특화 파스텔 핑크 */
-        --primary: #f093b0;
-        --primary-light: #fdf2f8;
-        --primary-dark: #db7093;
-        
-        /* 신뢰감 있는 블루 */
-        --secondary: #4f7aba;
-        --secondary-light: #ebf2ff;
-        --secondary-dark: #3a5a8a;
-        
-        /* 고급스러운 라벤더 */
-        --accent: #b794f6;
-        --accent-light: #f7f4ff;
-        --accent-dark: #9f7aea;
-        
-        /* 토스 성공 컬러 스타일 */
-        --success: #0ac5a8;
-        --success-light: #e6f9f6;
-        --success-dark: #059682;
-        
-        /* 당근 스타일 경고 */
-        --warning: #ff8a00;
-        --warning-light: #fff4e6;
-        --warning-dark: #e67800;
-        
-        /* 절제된 에러 컬러 */
-        --error: #ff4757;
-        --error-light: #ffe8ea;
-        --error-dark: #e6404e;
+        /* Neutral Colors (Light Mode) */
+        --surface: #FFFFFF;
+        --background: #F9FAFB;
+        --card: #FFFFFF;
+        --border: #E5E8EB;
+        --divider: #F2F4F6;
+        --text-primary: #191F28;
+        --text-secondary: #8B95A1;
+        --text-tertiary: #B0B8C1;
+        --text-disabled: #D1D6DB;
       }
 
-      body.dark-mode {
-        --surface: #1a1a1a;
-        --background: #0d0d0d;
-        --card: #262626;
-        --text-primary: #ffffff;
-        --text-secondary: #a0a0a0;
-        --text-tertiary: #808080;
-        --text-disabled: #404040;
-        --border: #333333;
-        --divider: #262626;
-        --primary: #f093b0;
-        --primary-light: #2a1a1f;
-        --primary-dark: #db7093;
-        --secondary: #4f7aba;
-        --secondary-light: #1a2333;
-        --secondary-dark: #3a5a8a;
-        --accent: #b794f6;
-        --accent-light: #2a1f3a;
-        --accent-dark: #9f7aea;
-        --success: #0ac5a8;
-        --success-light: #1a3a33;
-        --success-dark: #059682;
-        --warning: #ff8a00;
-        --warning-light: #3a2a1a;
-        --warning-dark: #e67800;
-        --error: #ff4757;
-        --error-light: #3a1a1f;
-        --error-dark: #e6404e;
+      html, body, #root {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overscroll-behavior: none;
       }
 
-      /* Mobile optimization */
-      * {
-        -webkit-tap-highlight-color: transparent;
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-        box-sizing: border-box;
-      }
-
-      /* Allow text selection for input fields */
-      input, textarea {
-        -webkit-user-select: text;
-        -moz-user-select: text;
-        -ms-user-select: text;
-        user-select: text;
-      }
-
-      /* Prevent zoom on input focus */
-      input[type="text"], input[type="email"], input[type="password"], input[type="number"], textarea {
-        font-size: 16px;
-      }
-
-      /* Mobile touch optimization */
-      button, [role="button"] {
-        min-height: 44px;
-        min-width: 44px;
-        touch-action: manipulation;
-        -webkit-tap-highlight-color: transparent;
-      }
-
-      /* Bottom tab bar specific styles */
-      .bottom-tab-bar {
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        background-color: rgba(255, 255, 255, 0.95);
-      }
-
-      /* Active state for mobile */
-      .mobile-active {
-        transform: scale(0.95);
-        transition: transform 0.1s ease;
-      }
-
-      /* Safe area support */
-      .safe-area-top {
-        padding-top: env(safe-area-inset-top);
-      }
-
-      .safe-area-bottom {
-        padding-bottom: env(safe-area-inset-bottom);
-      }
-
-      .safe-area-left {
-        padding-left: env(safe-area-inset-left);
-      }
-
-      .safe-area-right {
-        padding-right: env(safe-area-inset-right);
-      }
-
-      /* Smooth scrolling */
-      html {
-        scroll-behavior: smooth;
-      }
-
-      /* Prevent horizontal scroll */
       body {
-        overflow-x: hidden;
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        overscroll-behavior: none;
-        -webkit-overflow-scrolling: touch;
+        font-family: 'Pretendard', 'Inter', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background-color: #0E0E12; /* Dark background for desktop frame */
+        color: var(--text-primary);
+      }
+      
+      /* Animations */
+      @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes fade-out { from { opacity: 1; } to { opacity: 0; } }
+      @keyframes fade-in-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      @keyframes scale-in { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+      @keyframes shake {
+        10%, 90% { transform: translate3d(-1px, 0, 0); }
+        20%, 80% { transform: translate3d(2px, 0, 0); }
+        30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+        40%, 60% { transform: translate3d(3px, 0, 0); }
       }
 
-      /* Mobile screen container */
-      .mobile-container {
-        position: relative;
-        overflow: hidden;
-        border-radius: 2rem;
-      }
+      .animate-fade-in { animation: fade-in 0.4s ease-out forwards; }
+      .animate-fade-out { animation: fade-out 0.3s ease-in forwards; }
+      .animate-fade-in-up { animation: fade-in-up 0.5s ease-out forwards; opacity: 0; }
+      .animate-scale-in { animation: scale-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; opacity: 0; }
+      .animate-shake { animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both; }
 
-      /* Ensure content doesn't overflow mobile container */
-      .mobile-content {
-        height: 100%;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-      }
-
-      /* Mobile-specific styles */
-      @media (max-width: 768px) {
-        body {
-          font-size: 14px;
-        }
-        
-        /* Enhanced mobile scrolling */
-        .overflow-y-auto {
-          -webkit-overflow-scrolling: touch;
-          scroll-behavior: smooth;
-        }
-      }
-
-      /* Prevent pull-to-refresh on mobile */
-      html, body {
-        overscroll-behavior: none;
-        -webkit-overflow-scrolling: touch;
-      }
-
-      /* Custom scrollbar for webkit browsers */
-      ::-webkit-scrollbar {
-        width: 4px;
-      }
-
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-
-      ::-webkit-scrollbar-thumb {
-        background: rgba(0, 0, 0, 0.2);
-        border-radius: 2px;
-      }
-
-      ::-webkit-scrollbar-thumb:hover {
-        background: rgba(0, 0, 0, 0.3);
-      }
+      .delay-100 { animation-delay: 0.1s; }
+      .delay-200 { animation-delay: 0.2s; }
+      .delay-300 { animation-delay: 0.3s; }
+      .delay-400 { animation-delay: 0.4s; }
+      .delay-500 { animation-delay: 0.5s; }
     </style>
     <script type="importmap">
 {
@@ -257,6 +92,6 @@
 </head>
   <body class="antialiased">
     <div id="root"></div>
-    <script type="module" src="/src/index.tsx"></script>
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>

@@ -6,7 +6,6 @@
     "module": "ESNext",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
-    "baseUrl": "src",
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -25,7 +24,7 @@
     "noUncheckedSideEffectImports": true,
 
     "paths": {
-      "@/*": ["./*"]
+      "@/*" :  ["./*"]
     }
   }
 }
