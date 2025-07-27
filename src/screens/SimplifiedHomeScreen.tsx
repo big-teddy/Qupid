@@ -55,9 +55,9 @@ const SimplifiedHomeScreen: React.FC<SimplifiedHomeScreenProps> = ({
   }));
 
   return (
-    <div className="flex flex-col h-full bg-gray-50">
+    <div className="flex flex-col h-full bg-gray-50 mobile-container">
       {/* Header */}
-      <header className="bg-white px-6 py-4 border-b border-gray-200">
+      <header className="bg-white px-6 py-4 border-b border-gray-200 safe-area-top">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold text-gray-800">
@@ -81,7 +81,7 @@ const SimplifiedHomeScreen: React.FC<SimplifiedHomeScreenProps> = ({
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto px-4 py-4 space-y-4 pb-24">
+      <main className="flex-1 overflow-y-auto px-4 py-4 space-y-4 pb-24 scrollable-content">
         <div className="max-w-md mx-auto space-y-4">
           
           {/* Tutorial Card for new users */}
