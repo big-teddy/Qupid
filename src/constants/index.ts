@@ -324,14 +324,14 @@ export const PERFORMANCE_DATA: PerformanceData = {
 };
 
 export const BADGES_DATA: Badge[] = [
-    { id: 'b1', icon: '💬', name: '첫 대화', description: '첫 AI와 대화 완료', category: '대화', rarity: 'Common', acquired: true, featured: true },
-    { id: 'b2', icon: '🎯', name: '꾸준함의 달인', description: '7일 연속 대화 달성', category: '성장', rarity: 'Rare', acquired: true },
-    { id: 'b3', icon: '👑', name: '대화왕', description: '50회 대화 달성', category: '대화', rarity: 'Epic', acquired: false, progress: { current: 12, total: 50 } },
-    { id: 'b4', icon: '🔥', name: '열정의 시작', description: '하루에 3명과 대화', category: '대화', rarity: 'Common', acquired: true },
-    { id: 'b5', icon: '📈', name: '성장 모멘텀', description: '종합 점수 80점 돌파', category: '성장', rarity: 'Rare', acquired: false, progress: { current: 78, total: 80 } },
-    { id: 'b6', icon: '❤️', name: '단짝친구', description: '한 AI와 10회 이상 대화', category: '특별', rarity: 'Rare', acquired: false, progress: { current: 3, total: 10 } },
-    { id: 'b7', icon: '🦉', name: '밤의 대화가', description: '자정 넘어 대화 시작', category: '특별', rarity: 'Common', acquired: true },
-    { id: 'b8', icon: '🧐', name: '탐험가', description: '5명 이상의 다른 AI와 대화', category: '대화', rarity: 'Common', acquired: false, progress: { current: 4, total: 5 } },
+    { id: 'b1', badgeId: 'first_conversation', badgeName: '첫 대화', badgeDescription: '첫 AI와 대화 완료', badgeIcon: '💬', badgeCategory: '대화', badgeRarity: 'Common', acquired: true, progressCurrent: 1, progressTotal: 1, featured: true },
+    { id: 'b2', badgeId: 'streak_master', badgeName: '꾸준함의 달인', badgeDescription: '7일 연속 대화 달성', badgeIcon: '🎯', badgeCategory: '성장', badgeRarity: 'Rare', acquired: true, progressCurrent: 7, progressTotal: 7, featured: false },
+    { id: 'b3', badgeId: 'conversation_king', badgeName: '대화왕', badgeDescription: '50회 대화 달성', badgeIcon: '👑', badgeCategory: '대화', badgeRarity: 'Epic', acquired: false, progressCurrent: 12, progressTotal: 50, featured: true },
+    { id: 'b4', badgeId: 'passion_start', badgeName: '열정의 시작', badgeDescription: '하루에 3명과 대화', badgeIcon: '🔥', badgeCategory: '대화', badgeRarity: 'Common', acquired: true, progressCurrent: 3, progressTotal: 3, featured: false },
+    { id: 'b5', badgeId: 'growth_momentum', badgeName: '성장 모멘텀', badgeDescription: '종합 점수 80점 돌파', badgeIcon: '📈', badgeCategory: '성장', badgeRarity: 'Rare', acquired: false, progressCurrent: 78, progressTotal: 80, featured: false },
+    { id: 'b6', badgeId: 'best_friend', badgeName: '단짝친구', badgeDescription: '한 AI와 10회 이상 대화', badgeIcon: '❤️', badgeCategory: '특별', badgeRarity: 'Rare', acquired: false, progressCurrent: 3, progressTotal: 10, featured: false },
+    { id: 'b7', badgeId: 'night_conversation', badgeName: '밤의 대화가', badgeDescription: '자정 넘어 대화 시작', badgeIcon: '🦉', badgeCategory: '특별', badgeRarity: 'Common', acquired: true, progressCurrent: 1, progressTotal: 1, featured: false },
+    { id: 'b8', badgeId: 'explorer', badgeName: '탐험가', badgeDescription: '5명 이상의 다른 AI와 대화', badgeIcon: '🧐', badgeCategory: '대화', badgeRarity: 'Common', acquired: false, progressCurrent: 4, progressTotal: 5, featured: false },
 ];
 
 // 성취 시스템 데이터
@@ -339,85 +339,115 @@ export const ACHIEVEMENTS: Achievement[] = [
   // 대화 관련 성취
   {
     id: 'first_conversation',
-    name: '첫 대화',
-    description: '첫 번째 대화를 완료했습니다!',
-    icon: '💬',
-    category: '대화',
-    acquired: false
+    achievementId: 'first_conversation',
+    achievementName: '첫 대화',
+    achievementDescription: '첫 번째 대화를 완료했습니다!',
+    achievementIcon: '💬',
+    achievementCategory: '대화',
+    acquired: false,
+    progressCurrent: 0,
+    progressTotal: 1
   },
   {
     id: 'conversation_master',
-    name: '대화 지속왕',
-    description: '10분 이상 자연스러운 대화를 이어갔습니다!',
-    icon: '⏰',
-    category: '대화',
-    acquired: false
+    achievementId: 'conversation_master',
+    achievementName: '대화 지속왕',
+    achievementDescription: '10분 이상 자연스러운 대화를 이어갔습니다!',
+    achievementIcon: '⏰',
+    achievementCategory: '대화',
+    acquired: false,
+    progressCurrent: 0,
+    progressTotal: 1
   },
   {
     id: 'empathy_master',
-    name: '공감 마스터',
-    description: '공감 능력 점수 90점 이상을 달성했습니다!',
-    icon: '❤️',
-    category: '성장',
-    acquired: false
+    achievementId: 'empathy_master',
+    achievementName: '공감 마스터',
+    achievementDescription: '공감 능력 점수 90점 이상을 달성했습니다!',
+    achievementIcon: '❤️',
+    achievementCategory: '성장',
+    acquired: false,
+    progressCurrent: 0,
+    progressTotal: 1
   },
   {
     id: 'curiosity_expert',
-    name: '호기심 전문가',
-    description: '호기심 점수 90점 이상을 달성했습니다!',
-    icon: '🤔',
-    category: '성장',
-    acquired: false
+    achievementId: 'curiosity_expert',
+    achievementName: '호기심 전문가',
+    achievementDescription: '호기심 점수 90점 이상을 달성했습니다!',
+    achievementIcon: '🤔',
+    achievementCategory: '성장',
+    acquired: false,
+    progressCurrent: 0,
+    progressTotal: 1
   },
   {
     id: 'friendliness_champion',
-    name: '친근함 챔피언',
-    description: '친근함 점수 90점 이상을 달성했습니다!',
-    icon: '😊',
-    category: '성장',
-    acquired: false
+    achievementId: 'friendliness_champion',
+    achievementName: '친근함 챔피언',
+    achievementDescription: '친근함 점수 90점 이상을 달성했습니다!',
+    achievementIcon: '😊',
+    achievementCategory: '성장',
+    acquired: false,
+    progressCurrent: 0,
+    progressTotal: 1
   },
   // 연속 사용 성취
   {
     id: 'streak_3',
-    name: '열정의 시작',
-    description: '3일 연속으로 앱을 사용했습니다!',
-    icon: '🔥',
-    category: '연속',
-    acquired: false
+    achievementId: 'streak_3',
+    achievementName: '열정의 시작',
+    achievementDescription: '3일 연속으로 앱을 사용했습니다!',
+    achievementIcon: '🔥',
+    achievementCategory: '연속',
+    acquired: false,
+    progressCurrent: 0,
+    progressTotal: 3
   },
   {
     id: 'streak_7',
-    name: '일주일의 기적',
-    description: '7일 연속으로 앱을 사용했습니다!',
-    icon: '🔥🔥',
-    category: '연속',
-    acquired: false
+    achievementId: 'streak_7',
+    achievementName: '일주일의 기적',
+    achievementDescription: '7일 연속으로 앱을 사용했습니다!',
+    achievementIcon: '🔥🔥',
+    achievementCategory: '연속',
+    acquired: false,
+    progressCurrent: 0,
+    progressTotal: 7
   },
   {
     id: 'streak_30',
-    name: '한 달의 열정',
-    description: '30일 연속으로 앱을 사용했습니다!',
-    icon: '🔥🔥🔥',
-    category: '연속',
-    acquired: false
+    achievementId: 'streak_30',
+    achievementName: '한 달의 열정',
+    achievementDescription: '30일 연속으로 앱을 사용했습니다!',
+    achievementIcon: '🔥🔥🔥',
+    achievementCategory: '연속',
+    acquired: false,
+    progressCurrent: 0,
+    progressTotal: 30
   },
   // 특별 성취
   {
     id: 'custom_persona',
-    name: '나만의 페르소나',
-    description: '맞춤형 AI 페르소나를 만들었습니다!',
-    icon: '✨',
-    category: '특별',
-    acquired: false
+    achievementId: 'custom_persona',
+    achievementName: '나만의 페르소나',
+    achievementDescription: '맞춤형 AI 페르소나를 만들었습니다!',
+    achievementIcon: '✨',
+    achievementCategory: '특별',
+    acquired: false,
+    progressCurrent: 0,
+    progressTotal: 1
   },
   {
     id: 'perfect_score',
-    name: '완벽한 대화',
-    description: '대화 분석에서 100점을 달성했습니다!',
-    icon: '🏆',
-    category: '특별',
-    acquired: false
+    achievementId: 'perfect_score',
+    achievementName: '완벽한 대화',
+    achievementDescription: '대화 분석에서 100점을 달성했습니다!',
+    achievementIcon: '🏆',
+    achievementCategory: '특별',
+    acquired: false,
+    progressCurrent: 0,
+    progressTotal: 1
   }
 ];
 
@@ -425,35 +455,72 @@ export const ACHIEVEMENTS: Achievement[] = [
 export const WEEKLY_GOALS: WeeklyGoal[] = [
   {
     id: 'conversations_5',
-    title: '대화 연습',
-    description: '이번 주 5회 대화 완료하기',
-    target: 5,
-    current: 0,
+    goalId: 'conversations_5',
+    goalTitle: '대화 연습',
+    goalDescription: '이번 주 5회 대화 완료하기',
+    targetValue: 5,
+    currentValue: 0,
     unit: '회',
     category: '대화',
     completed: false,
-    reward: '새로운 페르소나 해금'
+    reward: '새로운 페르소나 해금',
+    weekStartDate: '',
+    weekEndDate: ''
   },
   {
     id: 'score_80',
-    title: '고득점 도전',
-    description: '평균 점수 80점 이상 달성하기',
-    target: 80,
-    current: 0,
+    goalId: 'score_80',
+    goalTitle: '고득점 도전',
+    goalDescription: '평균 점수 80점 이상 달성하기',
+    targetValue: 80,
+    currentValue: 0,
     unit: '점',
     category: '점수',
     completed: false,
-    reward: '특별 배지 획득'
+    reward: '특별 배지 획득',
+    weekStartDate: '',
+    weekEndDate: ''
   },
   {
     id: 'time_120',
-    title: '집중 연습',
-    description: '총 연습 시간 120분 달성하기',
-    target: 120,
-    current: 0,
+    goalId: 'time_120',
+    goalTitle: '집중 연습',
+    goalDescription: '총 연습 시간 120분 달성하기',
+    targetValue: 120,
+    currentValue: 0,
     unit: '분',
     category: '시간',
     completed: false,
-    reward: '경험치 2배 보너스'
+    reward: '경험치 2배 보너스',
+    weekStartDate: '',
+    weekEndDate: ''
   }
 ];
+
+// 어드민 계정 정보
+export const ADMIN_ACCOUNT = {
+  email: 'admin@qupid.com',
+  password: 'admin123!',
+  name: '어드민',
+  user_gender: 'male' as const,
+  level: 10,
+  experiencePoints: 9999,
+  totalConversations: 100,
+  averageScore: 95,
+  streakDays: 30,
+  isAdmin: true
+};
+
+// 테스트용 일반 계정
+export const TEST_ACCOUNT = {
+  email: 'test@qupid.com',
+  password: 'test123!',
+  name: '테스트유저',
+  user_gender: 'female' as const,
+  level: 1,
+  experiencePoints: 0,
+  totalConversations: 0,
+  averageScore: 0,
+  streakDays: 0,
+  isAdmin: false
+};

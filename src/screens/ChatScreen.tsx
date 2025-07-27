@@ -153,7 +153,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ persona, isTutorial, onComplete
   const hintTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const systemInstruction = persona.systemInstruction || persona.intro;
+    const systemInstruction = persona.systemInstruction || persona.intro || `당신은 ${persona.name}입니다. ${persona.intro}`;
     chatSessionRef.current = createChatSession(systemInstruction);
     setIsTutorialMode(isTutorial);
     setTutorialStep(TUTORIAL_STEPS[0]);

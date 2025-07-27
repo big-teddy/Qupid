@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { userDataService } from '../services/userDataService';
+import AdminPanel from './AdminPanel';
 
 const DebugPanel: React.FC = () => {
   const { user } = useAuth();
   const [isVisible, setIsVisible] = useState(false);
   const [debugInfo, setDebugInfo] = useState<any>(null);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
 
   const showDebugInfo = async () => {
     if (!user) return;
@@ -113,6 +115,13 @@ const DebugPanel: React.FC = () => {
             >
               기존 이름 업데이트
             </button>
+
+            <button
+              onClick={() => setShowAdminPanel(true)}
+              className="w-full bg-purple-500 text-white p-2 rounded text-sm"
+            >
+              🔧 어드민 패널
+            </button>
           </div>
 
           {debugInfo && (
@@ -124,6 +133,11 @@ const DebugPanel: React.FC = () => {
             </div>
           )}
         </div>
+      )}
+
+      {/* 어드민 패널 */}
+      {showAdminPanel && (
+        <AdminPanel onClose={() => setShowAdminPanel(false)} />
       )}
     </div>
   );

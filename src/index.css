@@ -63,12 +63,15 @@ body {
 /* Mobile-first responsive design */
 .mobile-container {
   height: 100vh;
+  height: 100dvh; /* Dynamic viewport height for mobile */
   width: 100vw;
+  width: 100dvw; /* Dynamic viewport width for mobile */
   max-width: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
+  background-color: var(--background-primary);
 }
 
 .mobile-content {
@@ -255,8 +258,19 @@ body {
 
 /* Touch optimization */
 @media (hover: none) and (pointer: coarse) {
-  button, [role="button"] {
+  button, [role="button"], .touch-target {
     min-height: 44px;
     min-width: 44px;
+  }
+  
+  /* Mobile-specific improvements */
+  input, textarea, select {
+    font-size: 16px !important; /* Prevent zoom on iOS */
+  }
+  
+  /* Better touch feedback */
+  button:active, [role="button"]:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
   }
 } 

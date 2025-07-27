@@ -7,8 +7,8 @@ export * from './personaService';
 // 대화 서비스
 export * from './conversationService';
 
-// 즐겨찾기 서비스
-export * from './favoritesService';
+// 즐겨찾기 서비스 - 동적 import로 변경
+// export * from './favoritesService';
 
 // 배지 서비스
 export * from './badgesService';

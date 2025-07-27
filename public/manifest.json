@@ -1,0 +1,27 @@
+{
+  "name": "연애 박사 - AI 대화 연습",
+  "short_name": "연애 박사",
+  "description": "AI와 함께하는 대화 연습 앱",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#F093B0",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "lifestyle", "social"],
+  "lang": "ko",
+  "dir": "ltr"
+} 

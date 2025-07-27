@@ -7,7 +7,13 @@ if (!apiKey) {
   console.warn("VITE_GEMINI_API_KEY environment variable not set. AI features will not work.");
 }
 
-const ai = new GoogleGenAI({ apiKey: apiKey || 'dummy-key' });
+let ai: GoogleGenAI;
+try {
+  ai = new GoogleGenAI({ apiKey: apiKey || 'dummy-key' });
+} catch (error) {
+  console.error('Failed to initialize Google GenAI:', error);
+  ai = new GoogleGenAI({ apiKey: 'dummy-key' });
+}
 const chatModel = 'gemini-2.5-flash';
 const imageModel = 'imagen-3.0-generate-002';
 
@@ -102,11 +108,11 @@ export const analyzeConversation = async (conversation: Message[]): Promise<Conv
     if (!apiKey) {
         // API 키가 없을 때 기본 분석 결과 반환
         return {
-            totalScore: 75,
+            overallScore: 75,
             feedback: "AI 서비스가 설정되지 않아 기본 분석 결과를 제공합니다.",
-            friendliness: { score: 75, feedback: "친근한 대화를 시도하고 있습니다." },
-            curiosity: { score: 75, feedback: "적절한 질문을 하고 있습니다." },
-            empathy: { score: 75, feedback: "상대방의 이야기에 관심을 보이고 있습니다." },
+            friendliness: 75,
+            curiosity: 75,
+            empathy: 75,
             positivePoints: ["대화를 시도하고 있음", "적절한 응답을 하고 있음"],
             pointsToImprove: [
                 { topic: "AI 서비스 설정", suggestion: "VITE_GEMINI_API_KEY 환경 변수를 설정하여 더 정확한 분석을 받아보세요." }
@@ -136,16 +142,26 @@ export const analyzeConversation = async (conversation: Message[]): Promise<Conv
         const jsonText = response.text?.trim() ?? "";
         if (!jsonText) return null;
         const analysisResult = JSON.parse(jsonText);
-        return analysisResult as ConversationAnalysis;
+        
+        // AI 응답을 ConversationAnalysis 타입에 맞게 변환
+        return {
+            overallScore: analysisResult.totalScore,
+            friendliness: typeof analysisResult.friendliness === 'object' ? analysisResult.friendliness.score : analysisResult.friendliness,
+            curiosity: typeof analysisResult.curiosity === 'object' ? analysisResult.curiosity.score : analysisResult.curiosity,
+            empathy: typeof analysisResult.empathy === 'object' ? analysisResult.empathy.score : analysisResult.empathy,
+            feedback: analysisResult.feedback,
+            positivePoints: analysisResult.positivePoints,
+            pointsToImprove: analysisResult.pointsToImprove,
+        } as ConversationAnalysis;
 
     } catch (error) {
         console.error("Error analyzing conversation:", error);
         return {
-            totalScore: 70,
+            overallScore: 70,
             feedback: "대화 분석 중 오류가 발생했습니다. 기본 분석 결과를 제공합니다.",
-            friendliness: { score: 70, feedback: "친근한 대화를 시도하고 있습니다." },
-            curiosity: { score: 70, feedback: "적절한 질문을 하고 있습니다." },
-            empathy: { score: 70, feedback: "상대방의 이야기에 관심을 보이고 있습니다." },
+            friendliness: 70,
+            curiosity: 70,
+            empathy: 70,
             positivePoints: ["대화를 시도하고 있음", "적절한 응답을 하고 있음"],
             pointsToImprove: [
                 { topic: "대화 분석", suggestion: "AI 서비스 설정을 확인하여 더 정확한 분석을 받아보세요." }

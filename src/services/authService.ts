@@ -5,6 +5,10 @@ export const authService = {
   // 로그인
   async signIn(credentials: LoginCredentials) {
     try {
+      if (!supabase) {
+        throw new Error('Supabase client not initialized');
+      }
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email: credentials.email,
         password: credentials.password,
@@ -21,6 +25,10 @@ export const authService = {
   // 회원가입
   async signUp(credentials: SignUpCredentials) {
     try {
+      if (!supabase) {
+        throw new Error('Supabase client not initialized');
+      }
+      
       const { data, error } = await supabase.auth.signUp({
         email: credentials.email,
         password: credentials.password,
@@ -43,6 +51,10 @@ export const authService = {
   // 로그아웃
   async signOut() {
     try {
+      if (!supabase) {
+        throw new Error('Supabase client not initialized');
+      }
+      
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       return { error: null };
@@ -55,6 +67,10 @@ export const authService = {
   // 현재 세션 가져오기
   async getCurrentSession() {
     try {
+      if (!supabase) {
+        throw new Error('Supabase client not initialized');
+      }
+      
       const { data: { session }, error } = await supabase.auth.getSession();
       if (error) throw error;
       return { session, error: null };
@@ -67,6 +83,10 @@ export const authService = {
   // 현재 사용자 가져오기
   async getCurrentUser() {
     try {
+      if (!supabase) {
+        throw new Error('Supabase client not initialized');
+      }
+      
       const { data: { user }, error } = await supabase.auth.getUser();
       if (error) throw error;
       return { user, error: null };

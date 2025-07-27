@@ -72,6 +72,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Supabase 인증 상태 변경 감지
   useEffect(() => {
+    if (!supabase) {
+      console.warn('Supabase client not initialized');
+      return;
+    }
+    
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event: string, session: any) => {
         console.log('Auth state changed:', event, session);

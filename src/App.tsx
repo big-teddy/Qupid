@@ -4,31 +4,20 @@ import { useState, useCallback, useEffect } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ChatScreen from './screens/ChatScreen';
 import PersonaSelection from './screens/PersonaSelection';
-import PersonaDetailScreen from './screens/PersonaDetailScreen';
 import ConversationPrepScreen from './screens/ConversationPrepScreen';
 import ConversationAnalysisScreen from './screens/ConversationAnalysisScreen';
-import HomeScreen from './screens/HomeScreen';
 import SimplifiedHomeScreen from './screens/SimplifiedHomeScreen';
 import ChatTabScreen from './screens/ChatTabScreen';
 import AICoachingScreen from './screens/AICoachingScreen';
-import PerformanceDetailScreen from './screens/PerformanceDetailScreen';
-import FavoritesScreen from './screens/FavoritesScreen';
-import BadgesScreen from './screens/BadgesScreen';
 import SettingsScreen from './screens/SettingsScreen';
-import ProfileEditScreen from './screens/ProfileEditScreen';
-import LearningGoalsScreen from './screens/LearningGoalsScreen';
-import NotificationSettingsScreen from './screens/NotificationSettingsScreen';
-import DataExportScreen from './screens/DataExportScreen';
-import DeleteAccountScreen from './screens/DeleteAccountScreen';
 import { OnboardingFlow } from './screens/OnboardingFlow';
 import CustomPersonaForm from './components/CustomPersonaForm';
 import DatabaseTest from './components/DatabaseTest';
 import BottomTabBar from './components/BottomTabBar';
 import AuthScreen from './screens/AuthScreen';
 import { Persona, Screen, UserProfile, ConversationAnalysis } from './types/index';
-import { PREDEFINED_PERSONAS, PERFORMANCE_DATA, BADGES_DATA } from './constants/index';
+import { PREDEFINED_PERSONAS } from './constants/index';
 import useLocalStorage from './hooks/useLocalStorage';
-import { addPersona, getPersonas } from './services/personaService';
 import { userDataService } from './services/userDataService';
 import DebugPanel from './components/DebugPanel';
 
@@ -53,14 +42,10 @@ const AppContent: React.FC = () => {
   const [selectedPersona, setSelectedPersona] = useState<Persona | null>(null);
   const [userProfile, setUserProfile] = useLocalStorage<UserProfile | null>('userProfile', null);
   const [isTutorialCompleted, setIsTutorialCompleted] = useLocalStorage<boolean>('tutorialCompleted', false);
-  const [onboardingComplete, setOnboardingComplete] = useLocalStorage<boolean>('onboardingComplete', false);
   const [analysisResult, setAnalysisResult] = useState<ConversationAnalysis | null>(null);
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [isChatInTutorialMode, setIsChatInTutorialMode] = useState(false);
   const [customPersonas, setCustomPersonas] = useState<Persona[]>([]);
-  const [personaLoading, setPersonaLoading] = useState(false);
-  const [personaError, setPersonaError] = useState<string | null>(null);
-  const [dataLoading, setDataLoading] = useState(false);
 
   // Tab state
   const [activeTab, setActiveTab] = useState('home');
@@ -137,21 +122,16 @@ const AppContent: React.FC = () => {
   // Fetch personas from Supabase on userProfile load
   useEffect(() => {
     if (userProfile && userProfile.id) {
-      setPersonaLoading(true);
-      getPersonas(userProfile.id)
-        .then(data => setCustomPersonas(data || []))
-        .catch(err => setPersonaError('페르소나 불러오기 실패'))
-        .finally(() => setPersonaLoading(false));
+      // Custom personas are already loaded in loadUserData
     }
   }, [userProfile]);
 
   const handleOnboardingComplete = useCallback((profile: UserProfile) => {
-    setOnboardingComplete(true);
     localStorage.setItem('userProfile', JSON.stringify(profile));
     setUserProfile(profile);
     setAppState('main');
     setCurrentScreen(Screen.Home);
-  }, [setOnboardingComplete, setUserProfile]);
+  }, [setUserProfile]);
   
   const navigateTo = useCallback((screen: Screen) => {
     setCurrentScreen(screen);
@@ -250,9 +230,7 @@ const AppContent: React.FC = () => {
         custom: true,
         description: data.intro,
       };
-      const created = await addPersona(newPersona);
-      setCustomPersonas(prev => [...prev, created]);
-      setSelectedPersona(created);
+      // Custom persona creation will be handled by the form component
       setCurrentScreen(Screen.ConversationPrep);
     } catch (err) {
       setPersonaError('페르소나 생성 실패');

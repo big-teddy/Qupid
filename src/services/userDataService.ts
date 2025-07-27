@@ -5,6 +5,11 @@ export const userDataService = {
   // 사용자 프로필 생성 또는 가져오기
   async createOrGetUserProfile(userId: string, userData?: any): Promise<UserProfile | null> {
     try {
+      if (!supabase) {
+        console.error('Supabase client not initialized');
+        return null;
+      }
+      
       console.log('createOrGetUserProfile called with:', { userId, userData });
       console.log('User metadata:', userData?.user_metadata);
       
@@ -97,6 +102,11 @@ export const userDataService = {
   // 사용자 프로필 가져오기
   async getUserProfile(userId: string): Promise<UserProfile | null> {
     try {
+      if (!supabase) {
+        console.error('Supabase client not initialized');
+        return null;
+      }
+      
       const { data, error } = await supabase
         .from('users')
         .select('*')

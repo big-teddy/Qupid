@@ -8,7 +8,36 @@ interface MockSupabaseResponse<T> {
 
 class MockSupabaseClient {
   private mockData: any = {
-    users: [],
+    users: [
+      {
+        id: 'mock-admin-id',
+        email: 'admin@qupid.com',
+        name: '어드민',
+        user_gender: 'male',
+        level: 10,
+        experience_points: 9999,
+        total_conversations: 100,
+        average_score: 95,
+        streak_days: 30,
+        last_active_date: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      {
+        id: 'mock-test-id',
+        email: 'test@qupid.com',
+        name: '테스트유저',
+        user_gender: 'female',
+        level: 1,
+        experience_points: 0,
+        total_conversations: 0,
+        average_score: 0,
+        streak_days: 0,
+        last_active_date: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
+    ],
     personas: [],
     conversations: [],
     messages: [],
@@ -204,37 +233,67 @@ class MockSupabaseClient {
     signUp: (credentials: any) => Promise.resolve({
       data: { 
         user: { 
-          id: 'mock-user-id',
+          id: credentials.email === 'admin@qupid.com' ? 'mock-admin-id' : 
+               credentials.email === 'test@qupid.com' ? 'mock-test-id' : 'mock-user-id',
           email: credentials.email,
+          user_metadata: {
+            name: credentials.email === 'admin@qupid.com' ? '어드민' :
+                  credentials.email === 'test@qupid.com' ? '테스트유저' : 'Mock User',
+            avatar_url: null
+          },
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         }, 
         session: { 
           user: { 
-            id: 'mock-user-id',
-            email: credentials.email
+            id: credentials.email === 'admin@qupid.com' ? 'mock-admin-id' : 
+                 credentials.email === 'test@qupid.com' ? 'mock-test-id' : 'mock-user-id',
+            email: credentials.email,
+            user_metadata: {
+              name: credentials.email === 'admin@qupid.com' ? '어드민' :
+                    credentials.email === 'test@qupid.com' ? '테스트유저' : 'Mock User',
+              avatar_url: null
+            }
           }
         }
       },
       error: null
     }),
-    signInWithPassword: (credentials: any) => Promise.resolve({
-      data: { 
-        user: { 
-          id: 'mock-user-id',
-          email: credentials.email,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }, 
-        session: { 
+    signInWithPassword: (credentials: any) => {
+      console.log('Mock signInWithPassword called with:', credentials);
+      
+      // 모든 로그인을 성공으로 처리 (테스트용)
+      const userId = credentials.email === 'admin@qupid.com' ? 'mock-admin-id' : 'mock-test-id';
+      const userName = credentials.email === 'admin@qupid.com' ? '어드민' : '테스트유저';
+      
+      console.log('Mock login successful for:', userName);
+      
+      return Promise.resolve({
+        data: { 
           user: { 
-            id: 'mock-user-id',
-            email: credentials.email
+            id: userId,
+            email: credentials.email,
+            user_metadata: {
+              name: userName,
+              avatar_url: null
+            },
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }, 
+          session: { 
+            user: { 
+              id: userId,
+              email: credentials.email,
+              user_metadata: {
+                name: userName,
+                avatar_url: null
+              }
+            }
           }
-        }
-      },
-      error: null
-    }),
+        },
+        error: null
+      });
+    },
     signOut: () => Promise.resolve({ error: null }),
     onAuthStateChange: (callback: any) => ({
       data: { subscription: { unsubscribe: () => {} } }

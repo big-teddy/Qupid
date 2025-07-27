@@ -1,7 +1,6 @@
 import React from 'react';
-import { UserProfile, Persona } from '../types';
 import { SimplifiedHomeScreenProps } from '../types/props';
-import { SparklesIcon, ChevronRightIcon, UserIcon } from '../components/Icons';
+import { ChevronRightIcon } from '../components/Icons';
 
 const SimplifiedHomeScreen: React.FC<SimplifiedHomeScreenProps> = ({
   userProfile,
@@ -12,237 +11,107 @@ const SimplifiedHomeScreen: React.FC<SimplifiedHomeScreenProps> = ({
   onStartTutorial,
   showTutorialCompletion
 }) => {
-  // 실제 userProfile 데이터 사용 (하드코딩 제거)
-  const stats = {
-    level: userProfile?.level || 1,
-    experiencePoints: userProfile?.experiencePoints || 0,
-    totalConversations: userProfile?.totalConversations || 0,
-    averageScore: userProfile?.averageScore || 0,
-    streakDays: userProfile?.streakDays || 0
+  // 예시 데이터 (실제 데이터로 대체)
+  const todayGoal = {
+    total: 3,
+    done: 2
   };
-
-  const getLevelProgress = () => {
-    const currentLevel = stats.level;
-    const baseExp = (currentLevel - 1) * 100;
-    const currentExp = stats.experiencePoints - baseExp;
-    const nextLevelExp = currentLevel * 100;
-    return Math.min((currentExp / nextLevelExp) * 100, 100);
-  };
-
-  const getLevelColor = (level: number) => {
-    if (level >= 8) return 'text-purple-600';
-    if (level >= 5) return 'text-blue-600';
-    if (level >= 3) return 'text-green-600';
-    return 'text-gray-600';
+  const weeklyGrowth = {
+    diff: 12,
+    percent: 15,
+    friendliness: 85,
+    curiosity: 92,
+    empathy: 78
   };
 
   return (
-    <div className="flex flex-col h-full bg-white">
-      {/* Header */}
-      <header className="flex items-center justify-between px-4 py-4 border-b border-gray-200 safe-area-top">
+    <div className="flex flex-col h-full bg-[#F8F9FB]">
+      {/* 상단 인사말/프로필/알림/설정 */}
+      <header className="flex items-center justify-between px-4 pt-6 pb-2 bg-white">
         <div className="flex items-center">
-          <div className="w-10 h-10 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
-            {userProfile?.name?.charAt(0) || 'U'}
-          </div>
+          <img
+            src={userProfile?.profile_image_url || '/profile-default.png'}
+            alt="프로필"
+            className="w-10 h-10 rounded-full object-cover border border-gray-200"
+          />
           <div className="ml-3">
-            <h1 className="text-lg font-bold text-gray-800">
-              안녕하세요, {userProfile?.name || '사용자'}님!
-            </h1>
-            <p className="text-sm text-gray-600">오늘도 대화 실력을 키워보세요</p>
+            <h1 className="text-lg font-bold text-gray-900">안녕하세요, {userProfile?.name || '사용자'}님!</h1>
+            <p className="text-xs text-gray-400 mt-0.5">오늘도 대화 실력을 키워볼까요?</p>
           </div>
         </div>
-        <button 
-          onClick={() => onNavigate('profile')}
-          className="p-2 text-gray-600 hover:text-gray-800"
-        >
-          <UserIcon className="w-6 h-6" />
-        </button>
+        <div className="flex items-center space-x-2">
+          <button className="p-2 text-gray-400 hover:text-pink-400">
+            <span className="material-symbols-outlined text-xl">notifications_none</span>
+          </button>
+          <button className="p-2 text-gray-400 hover:text-pink-400" onClick={() => onNavigate('profile')}>
+            <span className="material-symbols-outlined text-xl">settings</span>
+          </button>
+        </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 px-4 py-6 scrollable-content">
-        {/* Tutorial Completion Banner */}
-        {showTutorialCompletion && (
-          <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-2xl p-6 text-white mb-6">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-4">
-                <span className="text-white text-xl">🎉</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="font-bold text-lg">튜토리얼 완료!</h3>
-                <p className="text-sm opacity-90">첫 대화를 성공적으로 완료했습니다</p>
-              </div>
-              <button className="bg-white bg-opacity-20 px-4 py-2 rounded-lg text-sm font-medium">
-                확인
-              </button>
+      <main className="flex-1 px-4 py-2 scrollable-content">
+        {/* 튜토리얼 시작 카드 */}
+        {!isTutorialCompleted && (
+          <div className="bg-white rounded-2xl shadow-sm flex items-center px-5 py-4 mb-4">
+            <span className="text-yellow-400 text-2xl mr-3">💡</span>
+            <div className="flex-1">
+              <div className="font-semibold text-gray-800 mb-0.5">첫 대화 튜토리얼 시작하기</div>
+              <div className="text-xs text-gray-400">가이드와 함께 대화의 기초를 익혀보세요.</div>
             </div>
-          </div>
-        )}
-
-        {/* Level and Progress */}
-        <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-2xl p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center">
-              <div className={`w-12 h-12 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg ${getLevelColor(stats.level)}`}>
-                {stats.level}
-              </div>
-              <div className="ml-3">
-                <h2 className="text-lg font-bold text-gray-800">레벨 {stats.level}</h2>
-                <p className="text-sm text-gray-600">{stats.experiencePoints} XP</p>
-              </div>
-            </div>
-            <SparklesIcon className="w-6 h-6 text-yellow-500" />
-          </div>
-          
-          {/* Progress Bar */}
-          <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-            <div 
-              className="bg-gradient-to-r from-pink-400 to-purple-500 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${getLevelProgress()}%` }}
-            ></div>
-          </div>
-          <p className="text-xs text-gray-600 text-center">
-            다음 레벨까지 {Math.max(0, (stats.level * 100) - stats.experiencePoints)} XP 필요
-          </p>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="bg-white border border-gray-200 rounded-xl p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">총 대화</p>
-                <p className="text-2xl font-bold text-gray-800">{stats.totalConversations}</p>
-              </div>
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <span className="text-blue-600 text-lg">💬</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white border border-gray-200 rounded-xl p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">평균 점수</p>
-                <p className="text-2xl font-bold text-gray-800">{stats.averageScore}</p>
-              </div>
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-green-600 text-lg">📊</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white border border-gray-200 rounded-xl p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">연속 사용</p>
-                <p className="text-2xl font-bold text-gray-800">{stats.streakDays}일</p>
-              </div>
-              <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                <span className="text-orange-600 text-lg">🔥</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white border border-gray-200 rounded-xl p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">경험치</p>
-                <p className="text-2xl font-bold text-gray-800">{stats.experiencePoints}</p>
-              </div>
-              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                <span className="text-purple-600 text-lg">⭐</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="mb-6">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">빠른 시작</h3>
-          <div className="space-y-3">
-            <button
-              onClick={() => onNavigate('chat')}
-              className="w-full bg-gradient-to-r from-pink-400 to-purple-500 text-white p-4 rounded-xl flex items-center justify-between hover:shadow-lg transition-all duration-200"
-            >
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-white text-lg">💬</span>
-                </div>
-                <div className="text-left">
-                  <p className="font-semibold">대화 연습하기</p>
-                  <p className="text-sm opacity-90">AI와 함께 대화 실력을 키워보세요</p>
-                </div>
-              </div>
-              <ChevronRightIcon className="w-5 h-5" />
-            </button>
-
-            {!isTutorialCompleted && (
-              <button
-                onClick={onStartTutorial}
-                className="w-full bg-gradient-to-r from-blue-400 to-cyan-500 text-white p-4 rounded-xl flex items-center justify-between hover:shadow-lg transition-all duration-200"
-              >
-                <div className="flex items-center">
-                  <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3">
-                    <span className="text-white text-lg">🎯</span>
-                  </div>
-                  <div className="text-left">
-                    <p className="font-semibold">튜토리얼 시작</p>
-                    <p className="text-sm opacity-90">첫 대화를 시작해보세요</p>
-                  </div>
-                </div>
-                <ChevronRightIcon className="w-5 h-5" />
-              </button>
-            )}
-
-            <button
-              onClick={() => onNavigate('coaching')}
-              className="w-full bg-gradient-to-r from-green-400 to-teal-500 text-white p-4 rounded-xl flex items-center justify-between hover:shadow-lg transition-all duration-200"
-            >
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-white text-lg">🎓</span>
-                </div>
-                <div className="text-left">
-                  <p className="font-semibold">AI 코칭</p>
-                  <p className="text-sm opacity-90">개인 맞춤 대화 팁을 받아보세요</p>
-                </div>
-              </div>
+            <button onClick={onStartTutorial} className="ml-2 text-gray-400 hover:text-pink-400">
               <ChevronRightIcon className="w-5 h-5" />
             </button>
           </div>
+        )}
+
+        {/* 오늘의 목표 */}
+        <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-2xl px-5 py-4 mb-4 flex flex-col relative overflow-hidden">
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center">
+              <span className="material-symbols-outlined text-lg text-pink-400 mr-1">calendar_today</span>
+              <span className="font-semibold text-gray-700 text-base">오늘의 목표</span>
+            </div>
+            <span className="text-xs text-pink-500 font-medium">1번 더 대화하면 목표 달성!</span>
+          </div>
+          <div className="text-2xl font-bold text-pink-400 mb-1">{todayGoal.done}/{todayGoal.total} 대화 완료</div>
+          <div className="w-full h-2 bg-white bg-opacity-60 rounded-full mb-2">
+            <div className="h-2 bg-pink-300 rounded-full transition-all duration-300" style={{ width: `${(todayGoal.done/todayGoal.total)*100}%` }}></div>
+          </div>
+          <button onClick={() => onNavigate('chat')} className="absolute right-5 top-4 bg-pink-400 text-white text-sm px-4 py-1.5 rounded-full font-semibold shadow hover:bg-pink-500 transition-all">바로 대화하기</button>
         </div>
 
-        {/* Recommended Personas */}
-        {recommendedPersonas.length > 0 && (
-          <div>
-            <h3 className="text-lg font-bold text-gray-800 mb-4">추천 페르소나</h3>
-            <div className="space-y-3">
-              {recommendedPersonas.map((persona) => (
-                <div key={persona.id} className="bg-white border border-gray-200 rounded-xl p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-12 h-12 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg mr-3">
-                        {persona.name.charAt(0)}
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-gray-800">{persona.name}</h4>
-                        <p className="text-sm text-gray-600">{persona.age}세 • {persona.job}</p>
-                        <p className="text-xs text-gray-500">매칭률 {persona.matchRate}%</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => onSelectPersona(persona)}
-                      className="bg-pink-500 text-white px-3 py-1 rounded-lg text-sm font-medium hover:bg-pink-600 transition-colors"
-                    >
-                      대화하기
-                    </button>
-                  </div>
-                </div>
-              ))}
+        {/* 이번 주 성장 */}
+        <div className="bg-white rounded-2xl px-5 py-4 mb-4 flex flex-col">
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center">
+              <span className="material-symbols-outlined text-lg text-green-500 mr-1">insert_chart</span>
+              <span className="font-semibold text-gray-700 text-base">이번 주 성장</span>
             </div>
+            <button className="text-xs text-blue-500 font-medium">자세히 보기</button>
           </div>
-        )}
+          <div className="text-2xl font-bold text-green-500 mb-1">+{weeklyGrowth.diff}점 향상 <span className="text-xs text-gray-400 font-normal ml-1">지난주 대비 +{weeklyGrowth.percent}%</span></div>
+          <div className="flex items-center text-xs text-gray-500 space-x-2 mt-1">
+            <span>😊 친근함 {weeklyGrowth.friendliness}%</span>
+            <span>🤔 호기심 {weeklyGrowth.curiosity}%</span>
+            <span>💬 공감력 {weeklyGrowth.empathy}%</span>
+          </div>
+        </div>
+
+        {/* 오늘의 추천 AI */}
+        <div className="bg-white rounded-2xl px-5 py-4 mb-2">
+          <div className="font-bold text-base text-gray-800 mb-1 flex items-center">💕 오늘의 추천 AI</div>
+          <div className="text-xs text-gray-400 mb-3">지금 대화하기 좋은 친구들이에요</div>
+          <div className="flex space-x-3 overflow-x-auto pb-1">
+            {recommendedPersonas.map((persona) => (
+              <div key={persona.id} className="min-w-[110px] max-w-[120px] bg-[#F8F9FB] rounded-xl flex flex-col items-center p-3 border border-gray-100 shadow-sm">
+                <img src={persona.avatar || '/profile-default.png'} alt={persona.name} className="w-10 h-10 rounded-full object-cover mb-1" />
+                <div className="font-semibold text-sm text-gray-800 mb-0.5">{persona.name}</div>
+                <div className="text-xs text-green-500 flex items-center mb-1"><span className="w-2 h-2 bg-green-400 rounded-full mr-1 inline-block"></span>온라인</div>
+                <button onClick={() => onSelectPersona(persona)} className="w-full bg-pink-100 text-pink-500 text-xs rounded-full py-1 font-semibold mt-1 hover:bg-pink-200 transition-all">대화하기</button>
+              </div>
+            ))}
+          </div>
+        </div>
       </main>
     </div>
   );

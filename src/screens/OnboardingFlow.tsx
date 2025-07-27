@@ -3,6 +3,7 @@ import { ArrowLeftIcon, CheckIcon } from "../components/Icons";
 import { UserProfile } from '../types/index';
 import Button from '../components/Button';
 import { OnboardingFlowProps } from '../types/props';
+import { initialProfile } from '../constants/index';
 
 const TOTAL_ONBOARDING_STEPS = 7;
 
@@ -250,7 +251,7 @@ const CompletionScreen: React.FC<{ profile: UserProfile, onComplete: () => void 
 
                 <div className="mt-6 w-full p-6 bg-[#F9FAFB] rounded-2xl space-y-3 animate-fade-in-up delay-200">
                     {[
-                        { label: '성별', value: profile.userGender === 'male' ? '남성 (여성 AI와 연습)' : '여성 (남성 AI와 연습)'},
+                        { label: '성별', value: profile.user_gender === 'male' ? '남성 (여성 AI와 연습)' : '여성 (남성 AI와 연습)'},
                         { label: '경험', value: profile.experience },
                         { label: '목표', value: profile.difficulty ? `${profile.difficulty} 연습` : '대화 연습'},
                         { label: '관심사', value: profile.interests.join(', ').replace(/🎮|🎬|💪|✈️|🍕|📚|🎵|🎨|📱|🐕|☕|📷|🏖️|🎪|💼\s/g, '') },
@@ -269,28 +270,7 @@ const CompletionScreen: React.FC<{ profile: UserProfile, onComplete: () => void 
     );
 }
 
-  const initialProfile: UserProfile = { 
-    id: '',
-    name: '사용자', 
-    email: '',
-    user_gender: null, 
-    experience: null, 
-    confidence: null, 
-    difficulty: null, 
-    interests: [],
-    profile_image_url: null,
-    created_at: '',
-    updated_at: '',
-    last_login_at: '',
-    is_active: true,
-    subscription_tier: 'free',
-    level: 1,
-    experiencePoints: 0,
-    totalConversations: 0,
-    averageScore: 0,
-    streakDays: 0,
-    lastActiveDate: ''
-  };
+// initialProfile은 constants에서 import
 
 const surveyQuestions = [
     { key: 'experience', main: <>이성과의 연애 경험이<br/>어느 정도인가요?</>, sub: "경험에 맞는 적절한 난이도로 시작해드려요", options: [
@@ -333,7 +313,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = (props) => {
   const handleFinalComplete = useCallback(() => props.onComplete(profile), [props.onComplete, profile]);
 
   const handleGenderSelect = (gender: 'male' | 'female') => {
-    setProfile(p => ({ ...p, userGender: gender }));
+    setProfile(p => ({ ...p, user_gender: gender }));
     nextStep();
   };
 
