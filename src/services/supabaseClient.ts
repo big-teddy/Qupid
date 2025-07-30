@@ -12,24 +12,27 @@ const hasValidCredentials = supabaseUrl &&
   supabaseAnonKey && 
   supabaseAnonKey !== 'your_supabase_anon_key_here';
 
-// Use real Supabase client if credentials are valid, otherwise use mock
+// Initialize supabase client
 let supabase: any;
 
-if (hasValidCredentials) {
-  try {
-    supabase = createClient(supabaseUrl, supabaseAnonKey);
-    console.log('✅ Using real Supabase client');
-  } catch (error) {
-    console.warn('⚠️ Failed to create Supabase client, using mock:', error);
-    // Fallback to mock client
+// Use immediately invoked async function to handle dynamic imports
+(async () => {
+  if (hasValidCredentials) {
+    try {
+      supabase = createClient(supabaseUrl, supabaseAnonKey);
+      console.log('✅ Using real Supabase client');
+    } catch (error) {
+      console.warn('⚠️ Failed to create Supabase client, using mock:', error);
+      // Fallback to mock client
+      const { supabase: mockSupabase } = await import('./mockSupabaseClient');
+      supabase = mockSupabase;
+    }
+  } else {
+    console.log('🧪 Using Mock Supabase client (no valid credentials)');
+    // Use mock client for testing
     const { supabase: mockSupabase } = await import('./mockSupabaseClient');
     supabase = mockSupabase;
   }
-} else {
-  console.log('🧪 Using Mock Supabase client (no valid credentials)');
-  // Use mock client for testing
-  const { supabase: mockSupabase } = await import('./mockSupabaseClient');
-  supabase = mockSupabase;
-}
+})();
 
 export { supabase }; 
