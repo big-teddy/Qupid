@@ -21,8 +21,8 @@ RUN pnpm install --frozen-lockfile --prefer-offline
 # 패키지 빌드 먼저 실행
 RUN pnpm build:packages
 
-# 전체 빌드 (올바른 순서로 자동 빌드)
-RUN pnpm build
+# API 서버만 빌드 (Web 앱 빌드 제외)
+RUN pnpm --filter @qupid/api build
 
 # Production stage
 FROM node:20-alpine
