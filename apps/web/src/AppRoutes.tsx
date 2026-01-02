@@ -30,8 +30,13 @@ export const AppRoutes: React.FC<AppRoutesProps> = ({ isGuest }) => {
 
     // 🚀 게스트 모드이거나 인증된 사용자만 접근 가능
     useEffect(() => {
-        requireAuth();
-    }, [isGuest, requireAuth]);
+        const publicPaths = ["/login", "/signup", "/onboarding", "/auth/callback", "/tutorial"];
+        const isPublicPath = publicPaths.some(path => location.pathname.startsWith(path));
+
+        if (!isPublicPath) {
+            requireAuth();
+        }
+    }, [location.pathname, isGuest, requireAuth]);
 
     const handleLoginSuccess = (userData: { profile?: UserProfile }) => {
         if (userData.profile) {
