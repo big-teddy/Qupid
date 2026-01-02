@@ -495,7 +495,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({
 
           {/* 🚀 동적 최근 대화 기록 - 실제 AI 페르소나 기반 */}
           <div className="space-y-3">
-            {dynamicPersonas.slice(0, 3).map((persona, index) => {
+            {(dynamicPersonas.length > 0 ? dynamicPersonas : apiPersonas).slice(0, 3).map((persona, index) => {
               const timeAgo =
                 index === 0 ? "2시간 전" : index === 1 ? "어제" : "3일 전";
               const duration =
