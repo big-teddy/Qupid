@@ -392,7 +392,8 @@ export const AppRoutes: React.FC<AppRoutesProps> = ({ isGuest }) => {
                     element={<Pages.DesignGuideScreen onBack={() => navigate("/my")} />}
                 />
 
-                <Route path="*" element={<Navigate to="/" replace />} />
+                <Route path="/" element={<Navigate to="/onboarding" replace />} />
+                <Route path="*" element={<Navigate to="/onboarding" replace />} />
             </Routes>
         </Suspense>
     );
