@@ -90,22 +90,12 @@ export const OnboardingFlow: React.FC<{
     }
   };
 
-  // Completion Screen fallback for step 4 (same as case 4, but structure kept for consistency with previous logic)
-  if (step === 4) {
-    return (
-      <div className="h-full w-full flex items-center justify-center relative bg-white">
-        <CompletionScreen
-          onComplete={handleFinalComplete}
-          profile={profile}
-          progress={4}
-        />
-      </div>
-    );
-  }
 
   return (
-    <div className="h-full w-full flex items-center justify-center relative bg-white">
-      {renderStep()}
+    <div className="min-h-screen w-full bg-gray-50 flex items-center justify-center">
+      <div className="h-full w-full max-w-md bg-white relative flex flex-col shadow-xl overflow-hidden min-h-[800px]">
+        {renderStep()}
+      </div>
     </div>
   );
 };

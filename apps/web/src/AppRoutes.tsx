@@ -141,7 +141,7 @@ export const AppRoutes: React.FC<AppRoutesProps> = ({ isGuest }) => {
                     element={
                         <OnboardingFlow
                             onComplete={handleOnboardingComplete}
-                            onLogin={() => navigate("/signup")}
+                            onLogin={() => navigate("/login")}
                             skipIntro={!!localStorage.getItem("authToken")}
                         />
                     }

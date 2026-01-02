@@ -50,14 +50,22 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({
                 style={{ boxShadow: "0 -10px 30px -10px rgba(0,0,0,0.05)" }}
             >
                 <button
-                    onClick={onLogin}
+                    onClick={onNext}
                     className="w-full h-14 text-white text-lg font-bold rounded-xl transition-colors duration-300 bg-[var(--primary-pink-main)]"
                 >
                     무료로 시작하기
                 </button>
-                <p className="text-center text-xs text-gray-400">
-                    계정을 만들면 모든 기능을 이용할 수 있어요
-                </p>
+                <div className="flex justify-center items-center gap-2 mt-2">
+                    <p className="text-center text-xs text-gray-400">
+                        이미 계정이 있으신가요?
+                    </p>
+                    <button
+                        onClick={onLogin}
+                        className="text-xs font-bold text-[var(--secondary-blue-main)]"
+                    >
+                        로그인
+                    </button>
+                </div>
             </div>
         </div>
     );
