@@ -1,6 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '../lib/api-client';
-import { UserProfile } from '@qupid/core';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiClient } from "../lib/api-client";
+import { UserProfile } from "@qupid/core";
 
 interface UserResponse {
   success: boolean;
@@ -14,7 +14,7 @@ interface FavoritesResponse {
 
 export function useUserProfile(userId?: string) {
   return useQuery<UserProfile | null>({
-    queryKey: ['userProfile', userId],
+    queryKey: ["userProfile", userId],
     queryFn: async () => {
       if (!userId) return null;
       const response = await apiClient.get<UserResponse>(`/users/${userId}`);
@@ -26,24 +26,34 @@ export function useUserProfile(userId?: string) {
 
 export function useUpdateProfile() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async ({ userId, updates }: { userId: string; updates: Partial<UserProfile> }) => {
+    mutationFn: async ({
+      userId,
+      updates,
+    }: {
+      userId: string;
+      updates: Partial<UserProfile>;
+    }) => {
       const response = await apiClient.put(`/users/${userId}`, updates);
       return response.data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['userProfile', variables.userId] });
-    }
+      queryClient.invalidateQueries({
+        queryKey: ["userProfile", variables.userId],
+      });
+    },
   });
 }
 
 export function useFavorites(userId?: string) {
   return useQuery<string[]>({
-    queryKey: ['favorites', userId],
+    queryKey: ["favorites", userId],
     queryFn: async () => {
       if (!userId) return [];
-      const response = await apiClient.get<FavoritesResponse>(`/users/${userId}/favorites`);
+      const response = await apiClient.get<FavoritesResponse>(
+        `/users/${userId}/favorites`,
+      );
       return response.data.data;
     },
     enabled: !!userId,
@@ -52,14 +62,24 @@ export function useFavorites(userId?: string) {
 
 export function useToggleFavorite() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async ({ userId, personaId }: { userId: string; personaId: string }) => {
-      const response = await apiClient.post(`/users/${userId}/favorites/${personaId}`);
+    mutationFn: async ({
+      userId,
+      personaId,
+    }: {
+      userId: string;
+      personaId: string;
+    }) => {
+      const response = await apiClient.post(
+        `/users/${userId}/favorites/${personaId}`,
+      );
       return response.data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['favorites', variables.userId] });
-    }
+      queryClient.invalidateQueries({
+        queryKey: ["favorites", variables.userId],
+      });
+    },
   });
 }

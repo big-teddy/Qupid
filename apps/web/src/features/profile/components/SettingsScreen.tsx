@@ -1,28 +1,31 @@
+import React, { useState, useEffect } from "react";
+import { UserProfile, ConversationMode } from "@qupid/core";
+import { ArrowLeftIcon, ChevronRightIcon } from "@qupid/ui";
+import { useUserStore } from "../../../shared/stores/userStore";
+import NotificationSettingsScreen from "./NotificationSettingsScreen";
 
-import React, { useState, useEffect } from 'react';
-import { UserProfile, Screen, ConversationMode } from '@qupid/core';
-import { ArrowLeftIcon, ChevronRightIcon } from '@qupid/ui';
-import NotificationSettingsScreen from './NotificationSettingsScreen';
+import { useNavigate } from "react-router-dom";
 
 interface SettingsScreenProps {
-  onNavigate: (screen: Screen | string) => void;
   onBack: () => void;
   onLogout?: () => void;
 }
 
-const TossToggle: React.FC<{ value: boolean; onToggle: () => void; }> = ({ value, onToggle }) => (
-    <button
-        onClick={onToggle}
-        className={`relative inline-flex items-center h-[30px] w-[50px] rounded-full transition-colors duration-300 ease-in-out focus:outline-none`}
-        style={{ backgroundColor: value ? '#F093B0' : '#E5E8EB' }}
-    >
-        <span
-            className={`inline-block w-[26px] h-[26px] transform bg-white rounded-full transition-transform duration-300 ease-in-out shadow-sm`}
-            style={{ transform: value ? 'translateX(22px)' : 'translateX(2px)' }}
-        />
-    </button>
+const TossToggle: React.FC<{ value: boolean; onToggle: () => void }> = ({
+  value,
+  onToggle,
+}) => (
+  <button
+    onClick={onToggle}
+    className={`relative inline-flex items-center h-[30px] w-[50px] rounded-full transition-colors duration-300 ease-in-out focus:outline-none`}
+    style={{ backgroundColor: value ? "#F093B0" : "#E5E8EB" }}
+  >
+    <span
+      className={`inline-block w-[26px] h-[26px] transform bg-white rounded-full transition-transform duration-300 ease-in-out shadow-sm`}
+      style={{ transform: value ? "translateX(22px)" : "translateX(2px)" }}
+    />
+  </button>
 );
-
 
 const SettingItem: React.FC<{
   icon: string;
@@ -32,221 +35,469 @@ const SettingItem: React.FC<{
   onClick: () => void;
   dangerous?: boolean;
   isLast?: boolean;
-}> = ({ icon, title, subtitle, rightComponent, onClick, dangerous = false, isLast = false }) => (
-    <button onClick={onClick} className={`flex items-center w-full h-[56px] px-5 ${isLast ? '' : 'border-b border-[#F2F4F6]'}`}>
-        <div className="flex items-center flex-1">
-            <span className="text-2xl w-6 text-center">{icon}</span>
-            <div className="ml-4 text-left">
-                <p className={`text-base font-medium ${dangerous ? 'text-[var(--error-red)]' : 'text-[#191F28]'}`}>{title}</p>
-                {subtitle && <p className="text-sm text-[#8B95A1]">{subtitle}</p>}
-            </div>
+}> = ({
+  icon,
+  title,
+  subtitle,
+  rightComponent,
+  onClick,
+  dangerous = false,
+  isLast = false,
+}) => (
+    <button
+      onClick={onClick}
+      className={`flex items-center w-full h-[56px] px-5 ${isLast ? "" : "border-b border-[#F2F4F6]"}`}
+    >
+      <div className="flex items-center flex-1">
+        <span className="text-2xl w-6 text-center">{icon}</span>
+        <div className="ml-4 text-left">
+          <p
+            className={`text-base font-medium ${dangerous ? "text-[var(--error-red)]" : "text-[#191F28]"}`}
+          >
+            {title}
+          </p>
+          {subtitle && <p className="text-sm text-[#8B95A1]">{subtitle}</p>}
         </div>
-        <div className="flex items-center space-x-2 text-[#8B95A1]">
-            {rightComponent}
-        </div>
+      </div>
+      <div className="flex items-center space-x-2 text-[#8B95A1]">
+        {rightComponent}
+      </div>
     </button>
-);
+  );
 
-const SectionContainer: React.FC<{ title?: string, children: React.ReactNode, className?: string }> = ({ title, children, className }) => (
-    <div className={`mt-4 ${className}`}>
-        {title && <h3 className="px-5 pb-1 text-lg font-bold text-[#191F28]">{title}</h3>}
-        <div className="bg-white rounded-2xl border border-[#F2F4F6] overflow-hidden">
-            {children}
-        </div>
+const SectionContainer: React.FC<{
+  title?: string;
+  children: React.ReactNode;
+  className?: string;
+}> = ({ title, children, className }) => (
+  <div className={`mt-4 ${className}`}>
+    {title && (
+      <h3 className="px-5 pb-1 text-lg font-bold text-[#191F28]">{title}</h3>
+    )}
+    <div className="bg-white rounded-2xl border border-[#F2F4F6] overflow-hidden">
+      {children}
     </div>
+  </div>
 );
 
-const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate, onBack, onLogout }) => {
-    // localStorage에서 사용자 정보 가져오기
-    const storedProfile = localStorage.getItem('userProfile');
-    const userProfile = storedProfile ? JSON.parse(storedProfile) : { name: '사용자', user_gender: 'female' } as UserProfile;
-    const [practiceNotification, setPracticeNotification] = useState(true);
-    const [analysisDisplay, setAnalysisDisplay] = useState(true);
-    const [darkMode, setDarkMode] = useState(false);
-    const [soundEffects, setSoundEffects] = useState(true);
-    const [hapticFeedback, setHapticFeedback] = useState(true);
-    
-    // 🚀 알림 시간 설정 상태 추가
-    const [notificationTime, setNotificationTime] = useState(() => {
-        const saved = localStorage.getItem('notificationTime');
-        return saved || '19:00';
-    });
-    const [doNotDisturbStart, setDoNotDisturbStart] = useState(() => {
-        const saved = localStorage.getItem('doNotDisturbStart');
-        return saved || '22:00';
-    });
-    const [doNotDisturbEnd, setDoNotDisturbEnd] = useState(() => {
-        const saved = localStorage.getItem('doNotDisturbEnd');
-        return saved || '08:00';
-    });
-    
-    // 🚀 알림 설정 화면 표시 상태
-    const [showNotificationSettings, setShowNotificationSettings] = useState(false);
-    
-    // 기본 대화 모드 설정
-    const [defaultConversationMode, setDefaultConversationMode] = useState<ConversationMode>(() => {
-        const saved = localStorage.getItem('defaultConversationMode');
-        return (saved as ConversationMode) || 'normal';
-    });
-    
-    useEffect(() => {
-        localStorage.setItem('defaultConversationMode', defaultConversationMode);
-    }, [defaultConversationMode]);
-    
-    // 🚀 알림 시간 설정을 localStorage에 저장
-    useEffect(() => {
-        localStorage.setItem('notificationTime', notificationTime);
-    }, [notificationTime]);
-    
-    useEffect(() => {
-        localStorage.setItem('doNotDisturbStart', doNotDisturbStart);
-        localStorage.setItem('doNotDisturbEnd', doNotDisturbEnd);
-    }, [doNotDisturbStart, doNotDisturbEnd]);
-    
-    // 🚀 알림 시간 설정 저장 함수
-    const handleNotificationTimeSave = (newNotificationTime: string, newDoNotDisturbStart: string, newDoNotDisturbEnd: string) => {
-        setNotificationTime(newNotificationTime);
-        setDoNotDisturbStart(newDoNotDisturbStart);
-        setDoNotDisturbEnd(newDoNotDisturbEnd);
-    };
+const SettingsScreen: React.FC<SettingsScreenProps> = ({
+  onBack,
+  onLogout,
+}) => {
+  const navigate = useNavigate();
+  // useUserStore에서 사용자 정보 가져오기
+  const { user, logout } = useUserStore();
 
-    const initial = userProfile.name.charAt(0).toUpperCase();
+  // userProfile이 없으면 기본값 사용 (타입 안전성 확보)
+  const defaultProfile: UserProfile = {
+    name: "사용자",
+    user_gender: "female",
+    interests: [],
+    experience: "없음",
+    confidence: 3,
+    difficulty: 2,
+    id: "",
+    isTutorialCompleted: false,
+    created_at: new Date().toISOString()
+  };
 
-    // 🚀 알림 설정 화면 표시
-    if (showNotificationSettings) {
-        return (
-            <NotificationSettingsScreen
-                onBack={() => setShowNotificationSettings(false)}
-                notificationTime={notificationTime}
-                doNotDisturbStart={doNotDisturbStart}
-                doNotDisturbEnd={doNotDisturbEnd}
-                onSave={handleNotificationTimeSave}
-            />
-        );
-    }
+  const userProfile = user || defaultProfile;
 
+  const [practiceNotification, setPracticeNotification] = useState(true);
+  const [analysisDisplay, setAnalysisDisplay] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
+  const [soundEffects, setSoundEffects] = useState(true);
+  const [hapticFeedback, setHapticFeedback] = useState(true);
+
+  // 🚀 알림 시간 설정 상태 추가
+  const [notificationTime, setNotificationTime] = useState(() => {
+    const saved = localStorage.getItem("notificationTime");
+    return saved || "19:00";
+  });
+  const [doNotDisturbStart, setDoNotDisturbStart] = useState(() => {
+    const saved = localStorage.getItem("doNotDisturbStart");
+    return saved || "22:00";
+  });
+  const [doNotDisturbEnd, setDoNotDisturbEnd] = useState(() => {
+    const saved = localStorage.getItem("doNotDisturbEnd");
+    return saved || "08:00";
+  });
+
+  // 🚀 알림 설정 화면 표시 상태
+  const [showNotificationSettings, setShowNotificationSettings] =
+    useState(false);
+
+  // 기본 대화 모드 설정
+  const [defaultConversationMode, setDefaultConversationMode] =
+    useState<ConversationMode>(() => {
+      const saved = localStorage.getItem("defaultConversationMode");
+      return (saved as ConversationMode) || "normal";
+    });
+
+  useEffect(() => {
+    localStorage.setItem("defaultConversationMode", defaultConversationMode);
+  }, [defaultConversationMode]);
+
+  // 🚀 알림 시간 설정을 localStorage에 저장
+  useEffect(() => {
+    localStorage.setItem("notificationTime", notificationTime);
+  }, [notificationTime]);
+
+  useEffect(() => {
+    localStorage.setItem("doNotDisturbStart", doNotDisturbStart);
+    localStorage.setItem("doNotDisturbEnd", doNotDisturbEnd);
+  }, [doNotDisturbStart, doNotDisturbEnd]);
+
+  // 🚀 알림 시간 설정 저장 함수
+  const handleNotificationTimeSave = (
+    newNotificationTime: string,
+    newDoNotDisturbStart: string,
+    newDoNotDisturbEnd: string,
+  ) => {
+    setNotificationTime(newNotificationTime);
+    setDoNotDisturbStart(newDoNotDisturbStart);
+    setDoNotDisturbEnd(newDoNotDisturbEnd);
+  };
+
+  const initial = userProfile.name.charAt(0).toUpperCase();
+
+  // 🚀 알림 설정 화면 표시
+  if (showNotificationSettings) {
     return (
-        <div className="flex flex-col h-full w-full bg-[#F9FAFB]">
-            <header className="flex-shrink-0 flex items-center justify-between p-3 bg-white">
-                <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100">
-                    <ArrowLeftIcon className="w-6 h-6 text-[#191F28]" />
-                </button>
-                <h1 className="text-xl font-bold text-[#191F28]">설정</h1>
-                <div className="w-10"></div>
-            </header>
-
-            <main className="flex-1 overflow-y-auto p-4">
-                {/* Profile Card */}
-                <div 
-                    className="h-[120px] rounded-2xl p-5 flex items-center text-white" 
-                    style={{ background: 'linear-gradient(135deg, #FDF2F8, #EBF2FF)' }}
-                >
-                    <div className="w-16 h-16 rounded-full bg-[#F093B0] flex items-center justify-center text-white text-3xl font-bold">
-                        {initial}
-                    </div>
-                    <div className="ml-4 flex-1">
-                        <p className="font-bold text-xl text-[#191F28]">{userProfile.name}</p>
-                        <p className="font-medium text-sm text-[#8B95A1]">Level 3 · 대화 중급자</p>
-                        <div className="mt-1.5 h-1 w-full bg-white/30 rounded-full">
-                            <div className="h-1 rounded-full bg-[#F093B0]" style={{ width: '75%' }}></div>
-                        </div>
-                    </div>
-                    <button onClick={() => onNavigate(Screen.ProfileEdit)} className="h-8 px-4 rounded-lg bg-white/20 border border-white/30 text-[#4F7ABA] text-sm font-bold">
-                        편집
-                    </button>
-                </div>
-
-                {/* Learning Settings */}
-                <SectionContainer>
-                    <SettingItem icon="📚" title="학습 목표 설정" onClick={() => onNavigate(Screen.LearningGoals)} rightComponent={<><span className="text-base font-medium">일 3회 대화</span><ChevronRightIcon className="w-4 h-4" /></>} />
-                    <SettingItem icon="🎯" title="관심 분야 수정" onClick={() => onNavigate(Screen.ProfileEdit)} rightComponent={<><span className="text-base font-medium">게임, 영화 외 3개</span><ChevronRightIcon className="w-4 h-4" /></>} />
-                    <SettingItem 
-                        icon="⏰" 
-                        title="연습 시간 알림" 
-                        subtitle={`${notificationTime} · 방해금지 ${doNotDisturbStart}~${doNotDisturbEnd}`}
-                        onClick={() => setShowNotificationSettings(true)} 
-                        rightComponent={<ChevronRightIcon className="w-4 h-4" />} 
-                    />
-                    <SettingItem icon="📊" title="실시간 분석 표시" onClick={() => {}} rightComponent={<TossToggle value={analysisDisplay} onToggle={() => setAnalysisDisplay(v => !v)} />} />
-                    <SettingItem 
-                        icon="💬" 
-                        title="기본 대화 모드" 
-                        subtitle={defaultConversationMode === 'normal' ? '친구처럼 편안한 대화' : '연인처럼 애정 어린 대화'}
-                        onClick={() => setDefaultConversationMode(defaultConversationMode === 'normal' ? 'romantic' : 'normal')} 
-                        rightComponent={
-                            <div className="flex items-center gap-2">
-                                <span className={`text-base font-medium ${
-                                    defaultConversationMode === 'normal' ? 'text-[#0AC5A8]' : 'text-[#F093B0]'
-                                }`}>
-                                    {defaultConversationMode === 'normal' ? '👋 일반 모드' : '💕 연인 모드'}
-                                </span>
-                                <ChevronRightIcon className="w-4 h-4" />
-                            </div>
-                        } 
-                        isLast 
-                    />
-                </SectionContainer>
-                
-                {/* Personal Info */}
-                <SectionContainer title="개인 정보">
-                    <SettingItem icon="👤" title="프로필 수정" onClick={() => onNavigate(Screen.ProfileEdit)} rightComponent={<ChevronRightIcon className="w-4 h-4" />} />
-                    <SettingItem icon="🚻" title="성별 변경" onClick={() => {}} rightComponent={<><span className="text-base font-medium">{userProfile.user_gender === 'male' ? '남성' : '여성'}</span><ChevronRightIcon className="w-4 h-4" /></>} />
-                    <SettingItem icon="📝" title="초기 설문 다시하기" onClick={() => {}} rightComponent={<ChevronRightIcon className="w-4 h-4" />} />
-                    <SettingItem icon="🔐" title="개인정보 처리방침" onClick={() => {}} rightComponent={<ChevronRightIcon className="w-4 h-4" />} isLast />
-                </SectionContainer>
-                
-                {/* App Settings */}
-                <SectionContainer title="앱 설정">
-                    <SettingItem icon="🔔" title="알림 설정" onClick={() => onNavigate(Screen.NotificationSettings)} rightComponent={<><span className="text-base font-medium">모두 허용</span><ChevronRightIcon className="w-4 h-4" /></>} />
-                    <SettingItem icon="🌙" title="다크 모드" onClick={() => {}} rightComponent={<TossToggle value={darkMode} onToggle={() => setDarkMode(v => !v)} />} />
-                    <SettingItem icon="🔊" title="사운드 효과" onClick={() => {}} rightComponent={<TossToggle value={soundEffects} onToggle={() => setSoundEffects(v => !v)} />} />
-                    <SettingItem icon="📱" title="햅틱 피드백" onClick={() => {}} rightComponent={<TossToggle value={hapticFeedback} onToggle={() => setHapticFeedback(v => !v)} />} />
-                    <SettingItem icon="🌐" title="언어 설정" onClick={() => {}} rightComponent={<><span className="text-base font-medium">한국어</span><ChevronRightIcon className="w-4 h-4" /></>} isLast />
-                </SectionContainer>
-                
-                {/* Data Management */}
-                <SectionContainer title="데이터 관리">
-                    <SettingItem icon="📈" title="내 데이터 보기" subtitle="대화 기록, 분석 결과 등" onClick={() => {}} rightComponent={<ChevronRightIcon className="w-4 h-4" />} />
-                    <SettingItem icon="📤" title="데이터 내보내기" subtitle="Excel, PDF로 다운로드" onClick={() => onNavigate(Screen.DataExport)} rightComponent={<ChevronRightIcon className="w-4 h-4" />} />
-                    <SettingItem icon="🗑️" title="대화 기록 삭제" subtitle="선택적 또는 전체 삭제" onClick={() => {}} rightComponent={<ChevronRightIcon className="w-4 h-4" />} />
-                    <SettingItem icon="☁️" title="백업 설정" onClick={() => {}} rightComponent={<><span className="text-base font-medium">자동 백업 ON</span><ChevronRightIcon className="w-4 h-4" /></>} isLast />
-                </SectionContainer>
-                
-                {/* Customer Support */}
-                <SectionContainer title="고객 지원">
-                    <SettingItem icon="❓" title="도움말" onClick={() => {}} rightComponent={<ChevronRightIcon className="w-4 h-4" />} />
-                    <SettingItem icon="📞" title="고객센터 문의" onClick={() => {}} rightComponent={<ChevronRightIcon className="w-4 h-4" />} />
-                    <SettingItem icon="⭐" title="앱 평가하기" onClick={() => {}} rightComponent={<ChevronRightIcon className="w-4 h-4" />} />
-                    <SettingItem icon="📄" title="버전 정보" onClick={() => {}} rightComponent={<span className="text-base font-medium">v1.2.3</span>} isLast />
-                </SectionContainer>
-                
-                {/* Danger Zone */}
-                <div className="mt-8">
-                     <SectionContainer>
-                        <SettingItem 
-                            icon="🚪" 
-                            title="로그아웃" 
-                            onClick={() => {
-                                if (onLogout) {
-                                    onLogout();
-                                } else {
-                                    // 기본 로그아웃 처리
-                                    localStorage.removeItem('authToken');
-                                    localStorage.removeItem('refreshToken');
-                                    localStorage.removeItem('userId');
-                                    localStorage.removeItem('userProfile');
-                                    window.location.href = '/';
-                                }
-                            }} 
-                            dangerous 
-                            rightComponent={<ChevronRightIcon className="w-4 h-4" />} 
-                        />
-                        <SettingItem icon="❌" title="회원 탈퇴" subtitle="모든 데이터가 삭제됩니다" onClick={() => onNavigate(Screen.DeleteAccount)} dangerous rightComponent={<ChevronRightIcon className="w-4 h-4" />} isLast />
-                    </SectionContainer>
-                </div>
-            </main>
-        </div>
+      <NotificationSettingsScreen
+        onBack={() => setShowNotificationSettings(false)}
+        notificationTime={notificationTime}
+        doNotDisturbStart={doNotDisturbStart}
+        doNotDisturbEnd={doNotDisturbEnd}
+        onSave={(nt, start, end) => handleNotificationTimeSave(nt, start, end)}
+      />
     );
+  }
+
+  // Helper for logout
+  const handleLogout = () => {
+    logout(); // Store cleanup
+    // Auth token cleanup (should ideally be in store or auth service)
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userProfile"); // Clean up old keys
+    window.location.href = "/";
+  };
+
+  return (
+    <div className="flex flex-col h-full w-full bg-[#F9FAFB]">
+      <header className="flex-shrink-0 flex items-center justify-between p-3 bg-white">
+        <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100">
+          <ArrowLeftIcon className="w-6 h-6 text-[#191F28]" />
+        </button>
+        <h1 className="text-xl font-bold text-[#191F28]">설정</h1>
+        <div className="w-10"></div>
+      </header>
+
+      <main className="flex-1 overflow-y-auto p-4">
+        {/* Profile Card */}
+        <div
+          className="h-[120px] rounded-2xl p-5 flex items-center text-white"
+          style={{ background: "linear-gradient(135deg, #FDF2F8, #EBF2FF)" }}
+        >
+          <div className="w-16 h-16 rounded-full bg-[#F093B0] flex items-center justify-center text-white text-3xl font-bold">
+            {initial}
+          </div>
+          <div className="ml-4 flex-1">
+            <p className="font-bold text-xl text-[#191F28]">
+              {userProfile.name}
+            </p>
+            <p className="font-medium text-sm text-[#8B95A1]">
+              Level {userProfile.confidence || 1} · {userProfile.experience || "초급"}
+            </p>
+            <div className="mt-1.5 h-1 w-full bg-white/30 rounded-full">
+              <div
+                className="h-1 rounded-full bg-[#F093B0]"
+                style={{ width: "75%" }}
+              ></div>
+            </div>
+          </div>
+          <button
+            onClick={() => navigate("/my/profile")}
+            className="h-8 px-4 rounded-lg bg-white/20 border border-white/30 text-[#4F7ABA] text-sm font-bold"
+          >
+            편집
+          </button>
+        </div>
+
+        {/* Learning Settings */}
+        <SectionContainer>
+          <SettingItem
+            icon="📚"
+            title="학습 목표 설정"
+            onClick={() => navigate("/coaching/goals")}
+            rightComponent={
+              <>
+                <span className="text-base font-medium">일 3회 대화</span>
+                <ChevronRightIcon className="w-4 h-4" />
+              </>
+            }
+          />
+          <SettingItem
+            icon="🎯"
+            title="관심 분야 수정"
+            onClick={() => navigate("/my/profile")}
+            rightComponent={
+              <>
+                <span className="text-base font-medium">
+                  {userProfile.interests && userProfile.interests.length > 0
+                    ? `${userProfile.interests[0]} 외 ${userProfile.interests.length - 1}개`
+                    : "설정 필요"}
+                </span>
+                <ChevronRightIcon className="w-4 h-4" />
+              </>
+            }
+          />
+          <SettingItem
+            icon="⏰"
+            title="연습 시간 알림"
+            subtitle={`${notificationTime} · 방해금지 ${doNotDisturbStart}~${doNotDisturbEnd}`}
+            onClick={() => setShowNotificationSettings(true)}
+            rightComponent={<ChevronRightIcon className="w-4 h-4" />}
+          />
+          <SettingItem
+            icon="📊"
+            title="실시간 분석 표시"
+            onClick={() => { }}
+            rightComponent={
+              <TossToggle
+                value={analysisDisplay}
+                onToggle={() => setAnalysisDisplay((v) => !v)}
+              />
+            }
+          />
+          <SettingItem
+            icon="💬"
+            title="기본 대화 모드"
+            subtitle={
+              defaultConversationMode === "normal"
+                ? "친구처럼 편안한 대화"
+                : "연인처럼 애정 어린 대화"
+            }
+            onClick={() =>
+              setDefaultConversationMode(
+                defaultConversationMode === "normal" ? "romantic" : "normal",
+              )
+            }
+            rightComponent={
+              <div className="flex items-center gap-2">
+                <span
+                  className={`text-base font-medium ${defaultConversationMode === "normal"
+                    ? "text-[#0AC5A8]"
+                    : "text-[#F093B0]"
+                    }`}
+                >
+                  {defaultConversationMode === "normal"
+                    ? "👋 일반 모드"
+                    : "💕 연인 모드"}
+                </span>
+                <ChevronRightIcon className="w-4 h-4" />
+              </div>
+            }
+            isLast
+          />
+        </SectionContainer>
+
+        {/* Personal Info */}
+        <SectionContainer title="개인 정보">
+          <SettingItem
+            icon="👤"
+            title="프로필 수정"
+            onClick={() => navigate("/my/profile")}
+            rightComponent={<ChevronRightIcon className="w-4 h-4" />}
+          />
+          <SettingItem
+            icon="🚻"
+            title="성별 변경"
+            onClick={() => { }}
+            rightComponent={
+              <>
+                <span className="text-base font-medium">
+                  {userProfile.user_gender === "male" ? "남성" : "여성"}
+                </span>
+                <ChevronRightIcon className="w-4 h-4" />
+              </>
+            }
+          />
+          <SettingItem
+            icon="📝"
+            title="초기 설문 다시하기"
+            onClick={() => { }}
+            rightComponent={<ChevronRightIcon className="w-4 h-4" />}
+          />
+          <SettingItem
+            icon="🔐"
+            title="개인정보 처리방침"
+            onClick={() => { }}
+            rightComponent={<ChevronRightIcon className="w-4 h-4" />}
+            isLast
+          />
+        </SectionContainer>
+
+        {/* App Settings */}
+        <SectionContainer title="앱 설정">
+          <SettingItem
+            icon="🔔"
+            title="알림 설정"
+            onClick={() => navigate("/settings/notification")}
+            rightComponent={
+              <>
+                <span className="text-base font-medium">모두 허용</span>
+                <ChevronRightIcon className="w-4 h-4" />
+              </>
+            }
+          />
+          <SettingItem
+            icon="🌙"
+            title="다크 모드"
+            onClick={() => { }}
+            rightComponent={
+              <TossToggle
+                value={darkMode}
+                onToggle={() => setDarkMode((v) => !v)}
+              />
+            }
+          />
+          <SettingItem
+            icon="🔊"
+            title="사운드 효과"
+            onClick={() => { }}
+            rightComponent={
+              <TossToggle
+                value={soundEffects}
+                onToggle={() => setSoundEffects((v) => !v)}
+              />
+            }
+          />
+          <SettingItem
+            icon="📱"
+            title="햅틱 피드백"
+            onClick={() => { }}
+            rightComponent={
+              <TossToggle
+                value={hapticFeedback}
+                onToggle={() => setHapticFeedback((v) => !v)}
+              />
+            }
+          />
+          <SettingItem
+            icon="🌐"
+            title="언어 설정"
+            onClick={() => { }}
+            rightComponent={
+              <>
+                <span className="text-base font-medium">한국어</span>
+                <ChevronRightIcon className="w-4 h-4" />
+              </>
+            }
+            isLast
+          />
+        </SectionContainer>
+
+        {/* Data Management */}
+        <SectionContainer title="데이터 관리">
+          <SettingItem
+            icon="📈"
+            title="내 데이터 보기"
+            subtitle="대화 기록, 분석 결과 등"
+            onClick={() => { }}
+            rightComponent={<ChevronRightIcon className="w-4 h-4" />}
+          />
+          <SettingItem
+            icon="📤"
+            title="데이터 내보내기"
+            subtitle="Excel, PDF로 다운로드"
+            onClick={() => navigate("/analytics/export")}
+            rightComponent={<ChevronRightIcon className="w-4 h-4" />}
+          />
+          <SettingItem
+            icon="🗑️"
+            title="대화 기록 삭제"
+            subtitle="선택적 또는 전체 삭제"
+            onClick={() => { }}
+            rightComponent={<ChevronRightIcon className="w-4 h-4" />}
+          />
+          <SettingItem
+            icon="☁️"
+            title="백업 설정"
+            onClick={() => { }}
+            rightComponent={
+              <>
+                <span className="text-base font-medium">자동 백업 ON</span>
+                <ChevronRightIcon className="w-4 h-4" />
+              </>
+            }
+            isLast
+          />
+        </SectionContainer>
+
+        {/* Customer Support */}
+        <SectionContainer title="고객 지원">
+          <SettingItem
+            icon="❓"
+            title="도움말"
+            onClick={() => { }}
+            rightComponent={<ChevronRightIcon className="w-4 h-4" />}
+          />
+          <SettingItem
+            icon="📞"
+            title="고객센터 문의"
+            onClick={() => { }}
+            rightComponent={<ChevronRightIcon className="w-4 h-4" />}
+          />
+          <SettingItem
+            icon="⭐"
+            title="앱 평가하기"
+            onClick={() => { }}
+            rightComponent={<ChevronRightIcon className="w-4 h-4" />}
+          />
+          <SettingItem
+            icon="📄"
+            title="버전 정보"
+            onClick={() => { }}
+            rightComponent={
+              <span className="text-base font-medium">v1.2.3</span>
+            }
+            isLast
+          />
+        </SectionContainer>
+
+        {/* Danger Zone */}
+        <div className="mt-8">
+          <SectionContainer>
+            <SettingItem
+              icon="🚪"
+              title="로그아웃"
+              onClick={() => {
+                if (onLogout) {
+                  onLogout();
+                } else {
+                  handleLogout();
+                }
+              }}
+              dangerous
+              rightComponent={<ChevronRightIcon className="w-4 h-4" />}
+            />
+            <SettingItem
+              icon="❌"
+              title="회원 탈퇴"
+              subtitle="모든 데이터가 삭제됩니다"
+              onClick={() => navigate("/settings/delete")}
+              dangerous
+              rightComponent={<ChevronRightIcon className="w-4 h-4" />}
+              isLast
+            />
+          </SectionContainer>
+        </div>
+      </main>
+    </div>
+  );
 };
 
 export { SettingsScreen };

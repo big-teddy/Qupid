@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowLeftIcon } from '@qupid/ui';
+import React, { useState, useEffect } from "react";
+import { ArrowLeftIcon } from "@qupid/ui";
 
 interface SocialLoginUrls {
   kakao: string;
@@ -13,7 +13,11 @@ interface SocialLoginScreenProps {
   progress: number;
 }
 
-const SocialLoginScreen: React.FC<SocialLoginScreenProps> = ({ onBack, onSuccess, progress }) => {
+const SocialLoginScreen: React.FC<SocialLoginScreenProps> = ({
+  onBack,
+  onSuccess,
+  progress,
+}) => {
   const [socialUrls, setSocialUrls] = useState<SocialLoginUrls | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -23,22 +27,23 @@ const SocialLoginScreen: React.FC<SocialLoginScreenProps> = ({ onBack, onSuccess
 
   const fetchSocialLoginUrls = async () => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api/v1';
+      const API_URL =
+        import.meta.env.VITE_API_URL || "http://localhost:4000/api/v1";
       const response = await fetch(`${API_URL}/auth/social/urls`);
       const data = await response.json();
-      
+
       if (data.success) {
         setSocialUrls(data.data);
       }
     } catch (error) {
-      console.error('Failed to fetch social login URLs:', error);
+      console.error("Failed to fetch social login URLs:", error);
     }
   };
 
   const handleSocialLogin = (provider: string, url: string) => {
     setLoading(true);
     // 온보딩 플로우임을 표시
-    localStorage.setItem('isOnboardingFlow', 'true');
+    localStorage.setItem("isOnboardingFlow", "true");
     window.location.href = url;
   };
 
@@ -54,7 +59,9 @@ const SocialLoginScreen: React.FC<SocialLoginScreenProps> = ({ onBack, onSuccess
             <div
               key={i}
               className={`rounded-full transition-all duration-300 ${
-                i < progress ? 'w-2.5 h-2.5 bg-[#F093B0]' : 'w-2 h-2 bg-[#E5E8EB]'
+                i < progress
+                  ? "w-2.5 h-2.5 bg-[#F093B0]"
+                  : "w-2 h-2 bg-[#E5E8EB]"
               }`}
             />
           ))}
@@ -66,11 +73,13 @@ const SocialLoginScreen: React.FC<SocialLoginScreenProps> = ({ onBack, onSuccess
       <main className="flex-1 flex flex-col justify-center -mt-14">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold leading-tight text-[#191F28] mb-4">
-            간편하게<br/>
+            간편하게
+            <br />
             <span className="text-[#F093B0]">시작하기</span>
           </h1>
           <p className="text-lg text-[#8B95A1]">
-            소셜 계정으로 빠르게 가입하고<br/>
+            소셜 계정으로 빠르게 가입하고
+            <br />
             연애 코칭을 시작해보세요
           </p>
         </div>
@@ -88,7 +97,7 @@ const SocialLoginScreen: React.FC<SocialLoginScreenProps> = ({ onBack, onSuccess
             <>
               {/* 카카오 로그인 */}
               <button
-                onClick={() => handleSocialLogin('kakao', socialUrls.kakao)}
+                onClick={() => handleSocialLogin("kakao", socialUrls.kakao)}
                 disabled={loading}
                 className="w-full h-16 bg-[#FEE500] hover:bg-[#FDD835] disabled:bg-[#F5F5F5] rounded-xl flex items-center justify-center space-x-4 transition-all shadow-sm"
               >
@@ -96,13 +105,13 @@ const SocialLoginScreen: React.FC<SocialLoginScreenProps> = ({ onBack, onSuccess
                   <span className="text-white text-lg font-bold">K</span>
                 </div>
                 <span className="text-black font-bold text-lg">
-                  {loading ? '연결 중...' : '카카오로 계속하기'}
+                  {loading ? "연결 중..." : "카카오로 계속하기"}
                 </span>
               </button>
 
               {/* 네이버 로그인 */}
               <button
-                onClick={() => handleSocialLogin('naver', socialUrls.naver)}
+                onClick={() => handleSocialLogin("naver", socialUrls.naver)}
                 disabled={loading}
                 className="w-full h-16 bg-[#03C75A] hover:bg-[#02B351] disabled:bg-[#F5F5F5] rounded-xl flex items-center justify-center space-x-4 transition-all shadow-sm"
               >
@@ -110,13 +119,13 @@ const SocialLoginScreen: React.FC<SocialLoginScreenProps> = ({ onBack, onSuccess
                   <span className="text-[#03C75A] text-lg font-bold">N</span>
                 </div>
                 <span className="text-white font-bold text-lg">
-                  {loading ? '연결 중...' : '네이버로 계속하기'}
+                  {loading ? "연결 중..." : "네이버로 계속하기"}
                 </span>
               </button>
 
               {/* 구글 로그인 */}
               <button
-                onClick={() => handleSocialLogin('google', socialUrls.google)}
+                onClick={() => handleSocialLogin("google", socialUrls.google)}
                 disabled={loading}
                 className="w-full h-16 bg-white hover:bg-gray-50 disabled:bg-[#F5F5F5] border-2 border-[#E5E8EB] rounded-xl flex items-center justify-center space-x-4 transition-all shadow-sm"
               >
@@ -141,7 +150,7 @@ const SocialLoginScreen: React.FC<SocialLoginScreenProps> = ({ onBack, onSuccess
                   </svg>
                 </div>
                 <span className="text-[#191F28] font-bold text-lg">
-                  {loading ? '연결 중...' : '구글로 계속하기'}
+                  {loading ? "연결 중..." : "구글로 계속하기"}
                 </span>
               </button>
             </>
@@ -151,7 +160,9 @@ const SocialLoginScreen: React.FC<SocialLoginScreenProps> = ({ onBack, onSuccess
         {/* 하단 텍스트 */}
         <div className="mt-8 text-center">
           <p className="text-sm text-[#8B95A1]">
-            로그인 시 <span className="underline">이용약관</span> 및 <span className="underline">개인정보처리방침</span>에 동의하게 됩니다.
+            로그인 시 <span className="underline">이용약관</span> 및{" "}
+            <span className="underline">개인정보처리방침</span>에 동의하게
+            됩니다.
           </p>
         </div>
       </main>
@@ -160,4 +171,3 @@ const SocialLoginScreen: React.FC<SocialLoginScreenProps> = ({ onBack, onSuccess
 };
 
 export default SocialLoginScreen;
-

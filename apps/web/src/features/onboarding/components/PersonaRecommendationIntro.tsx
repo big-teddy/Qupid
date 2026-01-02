@@ -1,10 +1,12 @@
-import React from 'react';
+import React from "react";
 
 interface PersonaRecommendationIntroProps {
   onContinue: () => void;
 }
 
-const PersonaRecommendationIntro: React.FC<PersonaRecommendationIntroProps> = ({ onContinue }) => {
+const PersonaRecommendationIntro: React.FC<PersonaRecommendationIntroProps> = ({
+  onContinue,
+}) => {
   return (
     <div className="flex flex-col items-center justify-center h-full p-6 bg-white">
       <div className="text-center mb-8">
@@ -17,9 +19,9 @@ const PersonaRecommendationIntro: React.FC<PersonaRecommendationIntroProps> = ({
           완벽한 대화 상대를 찾아드릴게요.
         </p>
       </div>
-      
+
       <div className="w-full max-w-xs">
-        <button 
+        <button
           onClick={onContinue}
           className="w-full bg-pink-500 text-white py-3 px-6 rounded-lg font-medium hover:bg-pink-600 transition-colors"
         >

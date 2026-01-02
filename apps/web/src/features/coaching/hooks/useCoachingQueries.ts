@@ -1,6 +1,13 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Message } from "@qupid/core";
+import { api } from "../../../shared/lib/api-client";
+import { queryKeys } from "../../../shared/keys/queryKeys";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api/v1';
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
 
 interface CreateCoachingSessionParams {
   coachId: string;
@@ -14,28 +21,42 @@ interface SendCoachingMessageParams {
 
 interface AnalyzeCoachingSessionParams {
   sessionId: string;
-  messages: any[];
+  messages: Message[];
+}
+
+interface UpdateGoalParams {
+  goalId: string;
+  status: string;
+  userId: string;
+}
+
+interface CreateGoalParams {
+  title: string;
+  userId: string;
 }
 
 /**
  * 코칭 세션 생성
  */
 export const useCreateCoachingSession = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async ({ coachId, userId }: CreateCoachingSessionParams) => {
-      const response = await fetch(`${API_URL}/coaches/sessions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ coachId, userId })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create coaching session');
+      const response = await api.post<ApiResponse<{ sessionId: string }>>(
+        "/coaches/sessions",
+        { coachId, userId }
+      );
+      return response.data.sessionId;
+    },
+    onSuccess: (_, variables) => {
+      // 세션 생성 성공 시 대시보드 갱신
+      if (variables.userId) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.coaching.dashboard(variables.userId),
+        });
       }
-
-      const data = await response.json();
-      return data.data.sessionId;
-    }
+    },
   });
 };
 
@@ -45,73 +66,12 @@ export const useCreateCoachingSession = () => {
 export const useSendCoachingMessage = () => {
   return useMutation({
     mutationFn: async ({ sessionId, message }: SendCoachingMessageParams) => {
-      const response = await fetch(`${API_URL}/coaches/sessions/${sessionId}/messages`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to send coaching message');
-      }
-
-      const data = await response.json();
-      return data.data;
-    }
-  });
-};
-
-/**
- * 코칭 메시지 스트리밍
- */
-export const useStreamCoachingMessage = () => {
-  return useMutation({
-    mutationFn: async ({ sessionId, message, onChunk }: SendCoachingMessageParams & { onChunk: (text: string) => void }) => {
-      const response = await fetch(`${API_URL}/coaches/sessions/${sessionId}/stream?message=${encodeURIComponent(message)}`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'text/event-stream',
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to stream coaching message');
-      }
-
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-      let fullText = '';
-
-      if (reader) {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          
-          const chunk = decoder.decode(value);
-          const lines = chunk.split('\n');
-          
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const data = line.slice(6);
-              if (data === '[DONE]') {
-                break;
-              }
-              try {
-                const parsed = JSON.parse(data);
-                if (parsed.text) {
-                  fullText += parsed.text;
-                  onChunk(parsed.text);
-                }
-              } catch (e) {
-                // Ignore parse errors
-              }
-            }
-          }
-        }
-      }
-
-      return fullText;
-    }
+      const response = await api.post<ApiResponse<any>>(
+        `/coaches/sessions/${sessionId}/messages`,
+        { message }
+      );
+      return response.data;
+    },
   });
 };
 
@@ -119,20 +79,108 @@ export const useStreamCoachingMessage = () => {
  * 코칭 세션 분석
  */
 export const useAnalyzeCoachingSession = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: async ({ sessionId, messages }: AnalyzeCoachingSessionParams) => {
-      const response = await fetch(`${API_URL}/coaches/sessions/${sessionId}/end`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages })
+    mutationFn: async ({
+      sessionId,
+      messages,
+    }: AnalyzeCoachingSessionParams) => {
+      const response = await api.post<ApiResponse<any>>(
+        `/coaches/sessions/${sessionId}/end`,
+        { messages }
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      // 분석 완료 시 모든 대시보드 갱신 (userId를 모르므로 전체 혹은 상위 키 무효화)
+      // 여기서는 queryKeys.coaching.all 같은게 있다면 좋겠지만, 일단 user-specific 키 패턴을 고려
+      queryClient.invalidateQueries({
+        queryKey: ["coaches", "dashboard"], // Broad invalidation approach
       });
+    },
+  });
+};
 
-      if (!response.ok) {
-        throw new Error('Failed to analyze coaching session');
-      }
+/**
+ * 코칭 대시보드 조회
+ */
+export const useCoachingDashboard = (userId: string = "test-user") => {
+  return useQuery({
+    queryKey: queryKeys.coaching.dashboard(userId),
+    queryFn: async () => {
+      const response = await api.get<ApiResponse<any>>(
+        `/coaches/dashboard?userId=${userId}`
+      );
+      return response.data;
+    },
+  });
+};
 
-      const data = await response.json();
-      return data.data;
-    }
+/**
+ * 목표 상태 업데이트
+ */
+export const useUpdateGoal = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ goalId, status, userId }: UpdateGoalParams) => {
+      const response = await api.patch<ApiResponse<any>>(
+        `/coaches/goals/${goalId}?userId=${userId}`,
+        { status }
+      );
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.coaching.dashboard(variables.userId),
+      });
+    },
+  });
+};
+
+/**
+ * 목표 생성
+ */
+export const useCreateGoal = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ title, userId }: CreateGoalParams) => {
+      const response = await api.post<ApiResponse<any>>(
+        `/coaches/goals?userId=${userId}`,
+        { title }
+      );
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.coaching.dashboard(variables.userId),
+      });
+    },
+  });
+};
+
+interface StylingAdviceParams {
+  prompt: string;
+}
+
+interface StylingAdviceResponse {
+  text: string;
+  imageUrl: string | null;
+}
+
+/**
+ * 스타일링 조언 받기
+ */
+export const useStylingAdvice = () => {
+  return useMutation({
+    mutationFn: async ({ prompt }: StylingAdviceParams) => {
+      const response = await api.post<ApiResponse<StylingAdviceResponse>>(
+        "/styling/advice",
+        { prompt }
+      );
+      return response.data;
+    },
   });
 };

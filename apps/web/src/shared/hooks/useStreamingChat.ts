@@ -1,124 +1,140 @@
-import { useState, useCallback, useRef } from 'react';
-import { Message } from '@qupid/core';
-import { getApiUrl } from '../../config/api';
+import { useState, useCallback, useRef } from "react";
+import { Message } from "@qupid/core";
+import { getApiUrl } from "../../config/api";
+import Logger from "../utils/logger";
 
-interface UseStreamingChatOptions {
+export interface UseStreamingChatOptions {
   onMessageComplete?: (message: Message) => void;
   onError?: (error: Error) => void;
+  apiEndpoint?: string; // Optional custom endpoint
 }
 
 export const useStreamingChat = (options: UseStreamingChatOptions = {}) => {
   const [isStreaming, setIsStreaming] = useState(false);
-  const [streamingMessage, setStreamingMessage] = useState<string>('');
+  const [streamingMessage, setStreamingMessage] = useState<string>("");
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const startStreaming = useCallback(async (
-    sessionId: string,
-    message: string,
-    isCoaching: boolean = false
-  ) => {
-    if (isStreaming) return;
+  const startStreaming = useCallback(
+    async (
+      sessionId: string,
+      message: string,
+      additionalParams: Record<string, any> = {},
+    ) => {
+      if (isStreaming) return;
 
-    setIsStreaming(true);
-    setStreamingMessage('');
-    
-    // 이전 요청 취소
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    
-    abortControllerRef.current = new AbortController();
+      setIsStreaming(true);
+      setStreamingMessage("");
 
-    try {
-      const apiUrl = getApiUrl();
-      const response = await fetch(`${apiUrl}/chat/stream`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          sessionId,
-          message,
-          isCoaching
-        }),
-        signal: abortControllerRef.current.signal
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      // 이전 요청 취소
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
       }
 
-      const reader = response.body?.getReader();
-      if (!reader) {
-        throw new Error('No response body');
-      }
+      abortControllerRef.current = new AbortController();
 
-      const decoder = new TextDecoder();
-      let fullMessage = '';
+      try {
+        const apiUrl = getApiUrl();
+        const endpoint = options.apiEndpoint || `${apiUrl}/chat/stream`;
+        const authToken = localStorage.getItem("authToken");
 
-      while (true) {
-        const { done, value } = await reader.read();
-        
-        if (done) break;
-        
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split('\n');
-        
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6);
-            if (data === '[DONE]') {
-              // 스트리밍 완료
+        const headers: HeadersInit = {
+          "Content-Type": "application/json",
+        };
+
+        if (authToken) {
+          headers["Authorization"] = `Bearer ${authToken}`;
+        }
+
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            sessionId,
+            message,
+            ...additionalParams,
+          }),
+          signal: abortControllerRef.current.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const reader = response.body?.getReader();
+        if (!reader) {
+          throw new Error("No response body");
+        }
+
+        const decoder = new TextDecoder();
+        let fullMessage = "";
+        let buffer = ""; // 버퍼 추가: 잘린 JSON 청크 처리용
+
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+          const { done, value } = await reader.read();
+
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = (buffer + chunk).split("\n");
+          buffer = lines.pop() || ""; // 마지막 조각은 버퍼에 저장 (완전하지 않을 수 있음)
+
+          for (const line of lines) {
+            const trimmedLine = line.trim();
+            if (!trimmedLine || !trimmedLine.startsWith("data: ")) continue;
+
+            const data = trimmedLine.slice(6);
+            if (data === "[DONE]") {
+              // 스트리밍 완료 처리
               const finalMessage: Message = {
-                sender: 'ai',
+                sender: "ai",
                 text: fullMessage,
-                timestamp: Date.now()
+                timestamp: Date.now(),
               };
               options.onMessageComplete?.(finalMessage);
               break;
             }
-            
+
             try {
               const parsed = JSON.parse(data);
+              // content 필드가 있는 경우
               if (parsed.content) {
                 fullMessage += parsed.content;
                 setStreamingMessage(fullMessage);
-                
-                // 타이핑 효과를 위한 약간의 지연
-                await new Promise(resolve => setTimeout(resolve, 20));
               }
             } catch (e) {
-              // JSON 파싱 실패 시 무시
+              // 파싱 에러 시 로깅 후 무시 (다음 청크에서 해결될 수도 있음)
+              Logger.warn("JSON parse error in stream:", e, "Data:", data);
             }
           }
         }
+      } catch (error) {
+        if (error instanceof Error && error.name === "AbortError") {
+          return;
+        }
+        Logger.error("Streaming error:", error);
+        options.onError?.(error as Error);
+      } finally {
+        setIsStreaming(false);
+        setStreamingMessage("");
+        abortControllerRef.current = null;
       }
-    } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
-        // 요청이 취소된 경우
-        return;
-      }
-      console.error('Streaming error:', error);
-      options.onError?.(error as Error);
-    } finally {
-      setIsStreaming(false);
-      setStreamingMessage('');
-      abortControllerRef.current = null;
-    }
-  }, [isStreaming, options]);
+    },
+    [isStreaming, options],
+  );
 
   const stopStreaming = useCallback(() => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
     setIsStreaming(false);
-    setStreamingMessage('');
+    setStreamingMessage("");
   }, []);
 
   return {
     isStreaming,
     streamingMessage,
     startStreaming,
-    stopStreaming
+    stopStreaming,
   };
 };

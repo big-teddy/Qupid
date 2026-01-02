@@ -1,63 +1,59 @@
-import { UserProfile } from '@qupid/core';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api/v1';
+import { UserProfile } from "@qupid/core";
+import { api } from "../lib/api-client";
 
 class UserApi {
-  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const response = await fetch(`${API_URL}${endpoint}`, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ message: 'Request failed' }));
-      throw new Error(error.message || `HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data.data || data;
-  }
-
   async getUserProfile(userId: string): Promise<UserProfile> {
-    return this.request<UserProfile>(`/users/${userId}`);
+    const response = await api.get<{ data: UserProfile }>(`/users/${userId}`);
+    return response.data;
   }
 
   async createUserProfile(profile: Partial<UserProfile>): Promise<UserProfile> {
-    return this.request<UserProfile>('/users', {
-      method: 'POST',
-      body: JSON.stringify(profile),
-    });
+    const response = await api.post<{ data: UserProfile }>("/users", profile);
+    return response.data;
   }
 
-  async updateUserProfile(userId: string, updates: Partial<UserProfile>): Promise<UserProfile> {
-    return this.request<UserProfile>(`/users/${userId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(updates),
-    });
+  async updateUserProfile(
+    userId: string,
+    updates: Partial<UserProfile>,
+  ): Promise<UserProfile> {
+    const response = await api.patch<{ data: UserProfile }>(
+      `/users/${userId}`,
+      updates,
+    );
+    return response.data;
   }
 
   async completeTutorial(userId: string): Promise<void> {
-    await this.request<void>(`/users/${userId}/tutorial/complete`, {
-      method: 'POST',
-    });
+    await api.post(`/users/${userId}/tutorial/complete`);
   }
 
   async getFavorites(userId: string): Promise<string[]> {
-    return this.request<string[]>(`/users/${userId}/favorites`);
+    const response = await api.get<{ data: string[] }>(
+      `/users/${userId}/favorites`,
+    );
+    return response.data;
   }
 
   async toggleFavorite(userId: string, personaId: string): Promise<boolean> {
-    return this.request<boolean>(`/users/${userId}/favorites/${personaId}`, {
-      method: 'POST',
-    });
+    const response = await api.post<{ data: boolean }>(
+      `/users/${userId}/favorites/${personaId}`,
+    );
+    return response.data;
   }
 
   async getUserBadges(userId: string): Promise<any[]> {
-    return this.request<any[]>(`/users/${userId}/badges`);
+    const response = await api.get<{ data: any[] }>(`/users/${userId}/badges`);
+    return response.data;
+  }
+
+  async uploadAvatar(userId: string, imageFile: File): Promise<string> {
+    const formData = new FormData();
+    formData.append("image", imageFile);
+    const response = await api.post<{ data: { avatarUrl: string } }>(
+      `/users/${userId}/avatar`,
+      formData,
+    );
+    return response.data.avatarUrl;
   }
 }
 

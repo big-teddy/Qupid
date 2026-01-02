@@ -1,29 +1,34 @@
-import React, { useState } from 'react';
-import { Screen } from '@qupid/core';
-import SocialLoginButtons from './SocialLoginButtons';
+import React, { useState } from "react";
+import { UserProfile } from "@qupid/core";
+import SocialLoginButtons from "./SocialLoginButtons";
+
+import { useNavigate } from "react-router-dom";
 
 interface LoginScreenProps {
-  onNavigate: (screen: Screen | string) => void;
-  onLoginSuccess: (userData: any) => void;
+  onLoginSuccess: (userData: { profile?: UserProfile }) => void;
 }
 
-const LoginScreen: React.FC<LoginScreenProps> = ({ onNavigate, onLoginSuccess }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const LoginScreen: React.FC<LoginScreenProps> = ({
+  onLoginSuccess,
+}) => {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsLoading(true);
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api/v1';
+      const API_URL =
+        import.meta.env.VITE_API_URL || "http://localhost:4000/api/v1";
       const response = await fetch(`${API_URL}/auth/login`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
       });
@@ -31,32 +36,32 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onNavigate, onLoginSuccess })
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || '로그인에 실패했습니다.');
+        throw new Error(data.message || "로그인에 실패했습니다.");
       }
 
       // 로그인 성공
-      localStorage.setItem('authToken', data.data.session.access_token);
-      localStorage.setItem('refreshToken', data.data.session.refresh_token);
-      localStorage.setItem('userId', data.data.user.id);
-      
+      localStorage.setItem("authToken", data.data.session.access_token);
+      localStorage.setItem("refreshToken", data.data.session.refresh_token);
+      localStorage.setItem("userId", data.data.user.id);
+
       // 프로필 저장
       if (data.data.profile) {
-        localStorage.setItem('userProfile', JSON.stringify(data.data.profile));
-        
+        localStorage.setItem("userProfile", JSON.stringify(data.data.profile));
+
         // 튜토리얼 완료 여부 확인
         if (!data.data.profile.is_tutorial_completed) {
           onLoginSuccess(data.data);
-          onNavigate(Screen.TutorialIntro); // 튜토리얼로 이동
+          navigate("/tutorial"); // 튜토리얼로 이동
         } else {
           onLoginSuccess(data.data);
-          onNavigate('HOME');
+          navigate("/home");
         }
       } else {
         onLoginSuccess(data.data);
-        onNavigate('HOME');
+        navigate("/home");
       }
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "로그인에 실패했습니다");
     } finally {
       setIsLoading(false);
     }
@@ -115,13 +120,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onNavigate, onLoginSuccess })
           <button
             type="submit"
             disabled={!isFormValid || isLoading}
-            className={`w-full h-14 rounded-full font-bold text-lg transition-all ${
-              isFormValid && !isLoading
-                ? 'bg-[#F093B0] text-white'
-                : 'bg-[#E5E8EB] text-[#8B95A1]'
-            }`}
+            className={`w-full h-14 rounded-full font-bold text-lg transition-all ${isFormValid && !isLoading
+              ? "bg-[#F093B0] text-white"
+              : "bg-[#E5E8EB] text-[#8B95A1]"
+              }`}
           >
-            {isLoading ? '로그인 중...' : '로그인'}
+            {isLoading ? "로그인 중..." : "로그인"}
           </button>
         </form>
 
@@ -139,7 +143,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onNavigate, onLoginSuccess })
         <div className="text-center">
           <p className="text-sm text-[#8B95A1] mb-3">아직 계정이 없으신가요?</p>
           <button
-            onClick={() => onNavigate('SIGNUP')}
+            onClick={() => navigate("/signup")}
             className="text-[#4F7ABA] font-bold"
             disabled={isLoading}
           >
@@ -150,7 +154,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onNavigate, onLoginSuccess })
         {/* 비밀번호 찾기 */}
         <div className="mt-6 text-center">
           <button
-            onClick={() => onNavigate('RESET_PASSWORD')}
+            onClick={() => alert("준비 중입니다.")}
             className="text-sm text-[#8B95A1] underline"
             disabled={isLoading}
           >

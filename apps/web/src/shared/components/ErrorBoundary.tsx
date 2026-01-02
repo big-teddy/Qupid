@@ -1,4 +1,6 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import React, { Component, ErrorInfo, ReactNode } from "react";
+
+import Logger from "../utils/logger";
 
 interface Props {
   children: ReactNode;
@@ -22,7 +24,7 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    Logger.error("ErrorBoundary caught an error:", error, errorInfo);
 
     // 사용자 정의 에러 핸들러 호출
     if (this.props.onError) {
@@ -76,7 +78,7 @@ class ErrorBoundary extends Component<Props, State> {
               </p>
 
               {/* 에러 상세 정보 (개발 모드에서만) */}
-              {process.env.NODE_ENV === 'development' && this.state.error && (
+              {process.env.NODE_ENV === "development" && this.state.error && (
                 <div className="mb-6 p-4 bg-gray-100 rounded-lg text-left">
                   <p className="text-sm font-mono text-gray-700 break-words">
                     {this.state.error.message}

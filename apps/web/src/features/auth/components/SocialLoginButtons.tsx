@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 interface SocialLoginUrls {
   kakao: string;
@@ -10,7 +10,9 @@ interface SocialLoginButtonsProps {
   onLoadingChange?: (loading: boolean) => void;
 }
 
-const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({ onLoadingChange }) => {
+const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
+  onLoadingChange,
+}) => {
   const [socialUrls, setSocialUrls] = useState<SocialLoginUrls | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -24,15 +26,16 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({ onLoadingChange
 
   const fetchSocialLoginUrls = async () => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api/v1';
+      const API_URL =
+        import.meta.env.VITE_API_URL || "http://localhost:4000/api/v1";
       const response = await fetch(`${API_URL}/auth/social/urls`);
       const data = await response.json();
-      
+
       if (data.success) {
         setSocialUrls(data.data);
       }
     } catch (error) {
-      console.error('Failed to fetch social login URLs:', error);
+      console.error("Failed to fetch social login URLs:", error);
     }
   };
 
@@ -55,7 +58,7 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({ onLoadingChange
     <div className="space-y-3">
       {/* 카카오 로그인 */}
       <button
-        onClick={() => handleSocialLogin('kakao', socialUrls.kakao)}
+        onClick={() => handleSocialLogin("kakao", socialUrls.kakao)}
         disabled={loading}
         className="w-full h-14 bg-[#FEE500] hover:bg-[#FDD835] disabled:bg-[#F5F5F5] rounded-xl flex items-center justify-center space-x-3 transition-all"
       >
@@ -63,13 +66,13 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({ onLoadingChange
           <span className="text-white text-sm font-bold">K</span>
         </div>
         <span className="text-black font-bold text-base">
-          {loading ? '연결 중...' : '카카오로 계속하기'}
+          {loading ? "연결 중..." : "카카오로 계속하기"}
         </span>
       </button>
 
       {/* 네이버 로그인 */}
       <button
-        onClick={() => handleSocialLogin('naver', socialUrls.naver)}
+        onClick={() => handleSocialLogin("naver", socialUrls.naver)}
         disabled={loading}
         className="w-full h-14 bg-[#03C75A] hover:bg-[#02B351] disabled:bg-[#F5F5F5] rounded-xl flex items-center justify-center space-x-3 transition-all"
       >
@@ -77,13 +80,13 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({ onLoadingChange
           <span className="text-[#03C75A] text-sm font-bold">N</span>
         </div>
         <span className="text-white font-bold text-base">
-          {loading ? '연결 중...' : '네이버로 계속하기'}
+          {loading ? "연결 중..." : "네이버로 계속하기"}
         </span>
       </button>
 
       {/* 구글 로그인 */}
       <button
-        onClick={() => handleSocialLogin('google', socialUrls.google)}
+        onClick={() => handleSocialLogin("google", socialUrls.google)}
         disabled={loading}
         className="w-full h-14 bg-white hover:bg-gray-50 disabled:bg-[#F5F5F5] border border-[#E5E8EB] rounded-xl flex items-center justify-center space-x-3 transition-all"
       >
@@ -108,7 +111,7 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({ onLoadingChange
           </svg>
         </div>
         <span className="text-[#191F28] font-bold text-base">
-          {loading ? '연결 중...' : '구글로 계속하기'}
+          {loading ? "연결 중..." : "구글로 계속하기"}
         </span>
       </button>
     </div>
@@ -116,4 +119,3 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({ onLoadingChange
 };
 
 export default SocialLoginButtons;
-

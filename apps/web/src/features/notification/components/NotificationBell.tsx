@@ -1,20 +1,39 @@
-import React, { useState } from 'react';
-import { useUnreadCount, useNotifications, useMarkAsRead, useMarkAllAsRead } from '../hooks/useNotifications';
-import { formatDistanceToNow } from 'date-fns';
-import { ko } from 'date-fns/locale';
+import React, { useState } from "react";
+import {
+  useUnreadCount,
+  useNotifications,
+  useMarkAsRead,
+  useMarkAllAsRead,
+} from "../hooks/useNotifications";
+import { formatDistanceToNow } from "date-fns";
+import { ko } from "date-fns/locale";
+
+interface Notification {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
+}
 
 interface NotificationBellProps {
   userId: string;
 }
 
-export const NotificationBell: React.FC<NotificationBellProps> = ({ userId }) => {
+export const NotificationBell: React.FC<NotificationBellProps> = ({
+  userId,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const { data: unreadCount = 0 } = useUnreadCount(userId);
   const { data: notifications = [] } = useNotifications(userId);
   const markAsRead = useMarkAsRead();
   const markAllAsRead = useMarkAllAsRead();
 
-  const handleNotificationClick = async (notificationId: string, isRead: boolean) => {
+  const handleNotificationClick = async (
+    notificationId: string,
+    isRead: boolean,
+  ) => {
     if (!isRead) {
       await markAsRead.mutateAsync(notificationId);
     }
@@ -26,14 +45,14 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ userId }) =>
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case 'practice_reminder':
-        return '💪';
-      case 'achievement':
-        return '🎉';
-      case 'coaching':
-        return '💡';
+      case "practice_reminder":
+        return "💪";
+      case "achievement":
+        return "🎉";
+      case "coaching":
+        return "💡";
       default:
-        return '📢';
+        return "📢";
     }
   };
 
@@ -47,7 +66,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ userId }) =>
         <span className="text-xl">🔔</span>
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#F093B0] text-white text-xs rounded-full flex items-center justify-center">
-            {unreadCount > 9 ? '9+' : unreadCount}
+            {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
       </button>
@@ -56,11 +75,11 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ userId }) =>
       {isOpen && (
         <>
           {/* Backdrop */}
-          <div 
-            className="fixed inset-0 z-40" 
+          <div
+            className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          
+
           {/* Notification Panel */}
           <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl z-50 max-h-96 overflow-hidden">
             {/* Header */}
@@ -79,13 +98,17 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ userId }) =>
             {/* Notifications List */}
             <div className="overflow-y-auto max-h-80">
               {notifications.length > 0 ? (
-                notifications.map((notification: any) => (
+                notifications.map((notification: Notification) => (
                   <div
                     key={notification.id}
-                    onClick={() => handleNotificationClick(notification.id, notification.isRead)}
-                    className={`p-4 border-b hover:bg-gray-50 cursor-pointer transition-colors ${
-                      !notification.isRead ? 'bg-pink-50' : ''
-                    }`}
+                    onClick={() =>
+                      handleNotificationClick(
+                        notification.id,
+                        notification.isRead,
+                      )
+                    }
+                    className={`p-4 border-b hover:bg-gray-50 cursor-pointer transition-colors ${!notification.isRead ? "bg-pink-50" : ""
+                      }`}
                   >
                     <div className="flex items-start gap-3">
                       <span className="text-2xl">
@@ -99,10 +122,13 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ userId }) =>
                           {notification.message}
                         </p>
                         <p className="text-xs text-gray-400 mt-2">
-                          {formatDistanceToNow(new Date(notification.createdAt), {
-                            addSuffix: true,
-                            locale: ko
-                          })}
+                          {formatDistanceToNow(
+                            new Date(notification.createdAt),
+                            {
+                              addSuffix: true,
+                              locale: ko,
+                            },
+                          )}
                         </p>
                       </div>
                       {!notification.isRead && (

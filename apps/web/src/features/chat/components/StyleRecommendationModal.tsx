@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface StyleAnalysis {
   currentStyle: {
@@ -21,12 +21,9 @@ interface StyleRecommendationModalProps {
   isLoading?: boolean;
 }
 
-export const StyleRecommendationModal: React.FC<StyleRecommendationModalProps> = ({
-  isOpen,
-  onClose,
-  analysis,
-  isLoading
-}) => {
+export const StyleRecommendationModal: React.FC<
+  StyleRecommendationModalProps
+> = ({ isOpen, onClose, analysis, isLoading }) => {
   if (!isOpen) return null;
 
   return (
@@ -58,37 +55,52 @@ export const StyleRecommendationModal: React.FC<StyleRecommendationModalProps> =
                 <h3 className="font-bold text-lg mb-2">
                   당신의 대화 스타일: {analysis.currentStyle.type}
                 </h3>
-                
+
                 <div className="space-y-2">
                   <div>
-                    <p className="text-sm font-medium text-gray-700 mb-1">특징</p>
+                    <p className="text-sm font-medium text-gray-700 mb-1">
+                      특징
+                    </p>
                     <div className="flex flex-wrap gap-1">
-                      {analysis.currentStyle.characteristics.map((char, idx) => (
-                        <span key={idx} className="text-xs px-2 py-1 bg-white/70 rounded-full">
-                          {char}
-                        </span>
-                      ))}
+                      {analysis.currentStyle.characteristics.map(
+                        (char, idx) => (
+                          <span
+                            key={idx}
+                            className="text-xs px-2 py-1 bg-white/70 rounded-full"
+                          >
+                            {char}
+                          </span>
+                        ),
+                      )}
                     </div>
                   </div>
 
                   {analysis.currentStyle.strengths.length > 0 && (
                     <div>
-                      <p className="text-sm font-medium text-green-700 mb-1">✅ 강점</p>
+                      <p className="text-sm font-medium text-green-700 mb-1">
+                        ✅ 강점
+                      </p>
                       <ul className="text-xs space-y-0.5">
-                        {analysis.currentStyle.strengths.map((strength, idx) => (
-                          <li key={idx}>• {strength}</li>
-                        ))}
+                        {analysis.currentStyle.strengths.map(
+                          (strength, idx) => (
+                            <li key={idx}>• {strength}</li>
+                          ),
+                        )}
                       </ul>
                     </div>
                   )}
 
                   {analysis.currentStyle.weaknesses.length > 0 && (
                     <div>
-                      <p className="text-sm font-medium text-orange-700 mb-1">💭 개선점</p>
+                      <p className="text-sm font-medium text-orange-700 mb-1">
+                        💭 개선점
+                      </p>
                       <ul className="text-xs space-y-0.5">
-                        {analysis.currentStyle.weaknesses.map((weakness, idx) => (
-                          <li key={idx}>• {weakness}</li>
-                        ))}
+                        {analysis.currentStyle.weaknesses.map(
+                          (weakness, idx) => (
+                            <li key={idx}>• {weakness}</li>
+                          ),
+                        )}
                       </ul>
                     </div>
                   )}
@@ -104,13 +116,17 @@ export const StyleRecommendationModal: React.FC<StyleRecommendationModalProps> =
                       <h4 className="font-medium text-sm mb-2 text-[#F093B0]">
                         📌 {rec.category}
                       </h4>
-                      
+
                       {rec.tips.length > 0 && (
                         <div className="mb-2">
-                          <p className="text-xs font-medium text-gray-600 mb-1">Tips</p>
+                          <p className="text-xs font-medium text-gray-600 mb-1">
+                            Tips
+                          </p>
                           <ul className="text-xs space-y-0.5">
                             {rec.tips.map((tip, tipIdx) => (
-                              <li key={tipIdx} className="text-gray-700">• {tip}</li>
+                              <li key={tipIdx} className="text-gray-700">
+                                • {tip}
+                              </li>
                             ))}
                           </ul>
                         </div>
@@ -118,10 +134,15 @@ export const StyleRecommendationModal: React.FC<StyleRecommendationModalProps> =
 
                       {rec.examples.length > 0 && (
                         <div>
-                          <p className="text-xs font-medium text-gray-600 mb-1">예시</p>
+                          <p className="text-xs font-medium text-gray-600 mb-1">
+                            예시
+                          </p>
                           <div className="space-y-1">
                             {rec.examples.map((example, exIdx) => (
-                              <div key={exIdx} className="text-xs bg-white p-2 rounded-lg italic text-gray-600">
+                              <div
+                                key={exIdx}
+                                className="text-xs bg-white p-2 rounded-lg italic text-gray-600"
+                              >
                                 "{example}"
                               </div>
                             ))}

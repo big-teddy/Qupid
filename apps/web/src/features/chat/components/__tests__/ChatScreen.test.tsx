@@ -1,115 +1,115 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import ChatScreen from '../ChatScreen';
-import { Persona } from '@qupid/core';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import ChatScreen from "../ChatScreen";
+import { Persona } from "@qupid/core";
 
 // Mock the hooks
-vi.mock('../../hooks/useChatQueries', () => ({
+vi.mock("../../hooks/useChatQueries", () => ({
   useChatSession: () => ({
     mutate: vi.fn(),
-    mutateAsync: vi.fn().mockResolvedValue('session-123')
+    mutateAsync: vi.fn().mockResolvedValue("session-123"),
   }),
   useSendMessage: () => ({
     mutate: vi.fn(),
-    mutateAsync: vi.fn().mockResolvedValue('Hi there!')
+    mutateAsync: vi.fn().mockResolvedValue("Hi there!"),
   }),
   useAnalyzeConversation: () => ({
     mutateAsync: vi.fn().mockResolvedValue({
       totalScore: 85,
-      feedback: 'Great conversation!',
-      friendliness: { score: 90, feedback: 'Very friendly!' },
-      curiosity: { score: 85, feedback: 'Good questions!' },
-      empathy: { score: 80, feedback: 'Shows empathy!' },
-      positivePoints: ['Friendly', 'Curious'],
-      pointsToImprove: [{ topic: 'depth', suggestion: 'Ask deeper questions' }]
-    })
+      feedback: "Great conversation!",
+      friendliness: { score: 90, feedback: "Very friendly!" },
+      curiosity: { score: 85, feedback: "Good questions!" },
+      empathy: { score: 80, feedback: "Shows empathy!" },
+      positivePoints: ["Friendly", "Curious"],
+      pointsToImprove: [{ topic: "depth", suggestion: "Ask deeper questions" }],
+    }),
   }),
   useRealtimeFeedback: () => ({
     mutate: vi.fn((data, options) => {
       if (options?.onSuccess) {
         options.onSuccess({
           isGood: true,
-          message: 'Great question!',
-          category: 'question'
+          message: "Great question!",
+          category: "question",
         });
       }
     }),
     mutateAsync: vi.fn().mockResolvedValue({
       isGood: true,
-      message: 'Great question!',
-      category: 'question'
-    })
+      message: "Great question!",
+      category: "question",
+    }),
   }),
   useCoachSuggestion: () => ({
     mutate: vi.fn(),
     mutateAsync: vi.fn().mockResolvedValue({
-      reason: 'You could be more engaging',
-      suggestion: 'Try asking about their interests'
-    })
-  })
+      reason: "You could be more engaging",
+      suggestion: "Try asking about their interests",
+    }),
+  }),
 }));
 
-vi.mock('../../hooks/useCoachingSession', () => ({
+vi.mock("../../hooks/useCoachingSession", () => ({
   useCreateCoachingSession: () => ({
     mutate: vi.fn(),
-    mutateAsync: vi.fn().mockResolvedValue('coaching-session-123')
-  })
+    mutateAsync: vi.fn().mockResolvedValue("coaching-session-123"),
+  }),
 }));
 
-vi.mock('../../hooks/useStyleAnalysis', () => ({
+vi.mock("../../hooks/useStyleAnalysis", () => ({
   useStyleAnalysis: () => ({
     mutate: vi.fn(),
     mutateAsync: vi.fn().mockResolvedValue({
       currentStyle: {
-        type: 'Friendly',
-        characteristics: ['warm', 'curious'],
-        strengths: ['good questions'],
-        weaknesses: []
+        type: "Friendly",
+        characteristics: ["warm", "curious"],
+        strengths: ["good questions"],
+        weaknesses: [],
       },
-      recommendations: []
+      recommendations: [],
     }),
-    isPending: false
-  })
+    isPending: false,
+  }),
 }));
 
-vi.mock('../../../coaching/hooks/useCoachingQueries', () => ({
+vi.mock("../../../coaching/hooks/useCoachingQueries", () => ({
   useCreateCoachingSession: () => ({
-    mutateAsync: vi.fn().mockResolvedValue('coaching-session-123')
+    mutateAsync: vi.fn().mockResolvedValue("coaching-session-123"),
   }),
   useSendCoachingMessage: () => ({
-    mutateAsync: vi.fn().mockResolvedValue('Hi! I am your coach.')
+    mutateAsync: vi.fn().mockResolvedValue("Hi! I am your coach."),
   }),
   useAnalyzeCoachingSession: () => ({
     mutateAsync: vi.fn().mockResolvedValue({
       totalScore: 90,
-      feedback: 'Excellent coaching session!'
-    })
-  })
+      feedback: "Excellent coaching session!",
+    }),
+  }),
 }));
 
 const mockPartner: Persona = {
-  id: 'persona-1',
-  name: 'Alex',
+  id: "persona-1",
+  name: "Alex",
   age: 28,
-  gender: 'male',
-  avatar: '/avatar.jpg',
-  job: 'Designer',
-  intro: 'Hi! I love design.',
+  gender: "male",
+  avatar: "/avatar.jpg",
+  job: "Designer",
+  intro: "Hi! I love design.",
   interests: [
-    { emoji: '🎨', topic: 'design', description: 'Design enthusiast' },
-    { emoji: '🖼️', topic: 'art', description: 'Art lover' }
+    { emoji: "🎨", topic: "design", description: "Design enthusiast" },
+    { emoji: "🖼️", topic: "art", description: "Art lover" },
   ],
-  conversation_preview: [{ sender: 'ai', text: 'Nice to meet you!' }],
-  system_instruction: 'Be friendly',
-  tags: ['creative', 'friendly'],
+  conversation_preview: [{ sender: "ai", text: "Nice to meet you!" }],
+  system_instruction: "Be friendly",
+  tags: ["creative", "friendly"],
   match_rate: 85,
-  mbti: 'ENFJ',
-  personality_traits: ['creative', 'friendly']
+  mbti: "ENFJ",
+  personality_traits: ["creative", "friendly"],
 };
 
-describe('ChatScreen', () => {
+describe("ChatScreen", () => {
   let queryClient: QueryClient;
   const mockOnComplete = vi.fn();
 
@@ -117,8 +117,8 @@ describe('ChatScreen', () => {
     queryClient = new QueryClient({
       defaultOptions: {
         queries: { retry: false },
-        mutations: { retry: false }
-      }
+        mutations: { retry: false },
+      },
     });
     vi.clearAllMocks();
   });
@@ -132,75 +132,75 @@ describe('ChatScreen', () => {
           isTutorial={false}
           {...props}
         />
-      </QueryClientProvider>
+      </QueryClientProvider>,
     );
   };
 
-  it('should render chat screen with partner info', () => {
+  it("should render chat screen with partner info", () => {
     renderChatScreen();
-    
-    expect(screen.getByText('Alex')).toBeInTheDocument();
-    expect(screen.getByText('Nice to meet you!')).toBeInTheDocument();
+
+    expect(screen.getByText("Alex")).toBeInTheDocument();
+    expect(screen.getByText("Nice to meet you!")).toBeInTheDocument();
   });
 
-  it('should send message when user types and clicks send', async () => {
+  it("should send message when user types and clicks send", async () => {
     const user = userEvent.setup();
     renderChatScreen();
 
     const input = screen.getByPlaceholderText(/메시지를 입력하세요/i);
     // Find send button - it's the last button in the chat input area
-    const buttons = screen.getAllByRole('button');
+    const buttons = screen.getAllByRole("button");
     const sendButton = buttons[buttons.length - 1];
 
-    await user.type(input, 'Hello');
+    await user.type(input, "Hello");
     await user.click(sendButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Hello')).toBeInTheDocument();
+      expect(screen.getByText("Hello")).toBeInTheDocument();
     });
   });
 
-  it('should show typing indicator when AI is responding', async () => {
+  it("should show typing indicator when AI is responding", async () => {
     const user = userEvent.setup();
     renderChatScreen();
 
     const input = screen.getByPlaceholderText(/메시지를 입력하세요/i);
-    await user.type(input, 'Hello');
-    await user.type(input, '{enter}');
+    await user.type(input, "Hello");
+    await user.type(input, "{enter}");
 
     // AI response should appear
     await waitFor(() => {
-      expect(screen.getByText('Hi there!')).toBeInTheDocument();
+      expect(screen.getByText("Hi there!")).toBeInTheDocument();
     });
   });
 
-  it('should disable input while AI is typing', async () => {
+  it("should disable input while AI is typing", async () => {
     const user = userEvent.setup();
     renderChatScreen();
 
     const input = screen.getByPlaceholderText(/메시지를 입력하세요/i);
-    
+
     // Initially enabled
     expect(input).not.toBeDisabled();
 
     // Type and send message
-    await user.type(input, 'Test message');
-    await user.type(input, '{enter}');
+    await user.type(input, "Test message");
+    await user.type(input, "{enter}");
 
     // Input should be disabled immediately after sending
     expect(input).toBeDisabled();
   });
 
-  it('should show style analysis button after 3 messages', async () => {
+  it("should show style analysis button after 3 messages", async () => {
     const user = userEvent.setup();
     renderChatScreen();
 
     const input = screen.getByPlaceholderText(/메시지를 입력하세요/i);
-    
+
     // Send 3 messages
     for (let i = 0; i < 3; i++) {
       await user.type(input, `Message ${i + 1}`);
-      await user.type(input, '{enter}');
+      await user.type(input, "{enter}");
       await waitFor(() => {
         expect(screen.getByText(`Message ${i + 1}`)).toBeInTheDocument();
       });
@@ -213,31 +213,33 @@ describe('ChatScreen', () => {
     }
   });
 
-  it('should show coach hint when button is clicked', async () => {
+  it("should show coach hint when button is clicked", async () => {
     const user = userEvent.setup();
     renderChatScreen();
 
     // Send a message first
     const input = screen.getByPlaceholderText(/메시지를 입력하세요/i);
-    await user.type(input, 'Hello');
-    await user.type(input, '{enter}');
+    await user.type(input, "Hello");
+    await user.type(input, "{enter}");
 
     // Wait for AI response
     await waitFor(() => {
-      expect(screen.getByText('Hi there!')).toBeInTheDocument();
+      expect(screen.getByText("Hi there!")).toBeInTheDocument();
     });
 
     // Find coach hint button
-    const coachButton = screen.queryByLabelText?.(/코치 힌트/i) || 
-                       screen.queryByText('💡')?.closest('button');
+    const coachButton =
+      screen.queryByLabelText?.(/코치 힌트/i) ||
+      screen.queryByText("💡")?.closest("button");
 
     if (coachButton) {
       await user.click(coachButton);
-      
+
       // Check if suggestion appears (from our mock)
       await waitFor(() => {
-        const suggestion = screen.queryByText(/Try asking about their interests/i) ||
-                          screen.queryByText(/You could be more engaging/i);
+        const suggestion =
+          screen.queryByText(/Try asking about their interests/i) ||
+          screen.queryByText(/You could be more engaging/i);
         expect(suggestion).toBeInTheDocument();
       });
     } else {
@@ -246,30 +248,31 @@ describe('ChatScreen', () => {
     }
   });
 
-  it('should complete conversation when back button is clicked', async () => {
+  it("should complete conversation when back button is clicked", async () => {
     const user = userEvent.setup();
     renderChatScreen();
 
     // First button is the back button
-    const backButton = screen.getAllByRole('button')[0];
+    const backButton = screen.getAllByRole("button")[0];
     await user.click(backButton);
 
     expect(mockOnComplete).toHaveBeenCalled();
   });
 
-  describe('Tutorial Mode', () => {
-    it('should show tutorial steps when in tutorial mode', () => {
+  describe("Tutorial Mode", () => {
+    it("should show tutorial steps when in tutorial mode", () => {
       renderChatScreen({ isTutorialMode: true });
 
       // Tutorial UI elements should be present
-      const tutorialText = screen.queryByText(/튜토리얼/i) || 
-                          screen.queryByText(/연습/i) ||
-                          screen.queryByText(/단계/i);
-      
+      const tutorialText =
+        screen.queryByText(/튜토리얼/i) ||
+        screen.queryByText(/연습/i) ||
+        screen.queryByText(/단계/i);
+
       expect(tutorialText).toBeInTheDocument();
     });
 
-    it('should show tutorial hints', () => {
+    it("should show tutorial hints", () => {
       renderChatScreen({ isTutorialMode: true });
 
       // Tutorial hint text should be visible
@@ -280,52 +283,52 @@ describe('ChatScreen', () => {
     });
   });
 
-  describe('Coaching Mode', () => {
+  describe("Coaching Mode", () => {
     const mockCoach = {
-      id: 'coach-1',
-      name: 'Coach Kim',
-      avatar: '/coach.jpg',
-      specialty: '첫 대화',
-      intro: 'Let me help you!',
-      systemPrompt: 'Be helpful'
+      id: "coach-1",
+      name: "Coach Kim",
+      avatar: "/coach.jpg",
+      specialty: "첫 대화",
+      intro: "Let me help you!",
+      systemPrompt: "Be helpful",
     };
 
-    it('should initialize coaching session when coach is provided', async () => {
+    it("should initialize coaching session when coach is provided", async () => {
       renderChatScreen({ partner: mockCoach });
 
       // Coach intro message should be visible
-      expect(screen.getByText('Let me help you!')).toBeInTheDocument();
+      expect(screen.getByText("Let me help you!")).toBeInTheDocument();
     });
   });
 
-  describe('Message Display', () => {
-    it('should display messages in correct order', async () => {
+  describe("Message Display", () => {
+    it("should display messages in correct order", async () => {
       const user = userEvent.setup();
       renderChatScreen();
 
       const input = screen.getByPlaceholderText(/메시지를 입력하세요/i);
 
-      await user.type(input, 'First message');
-      await user.type(input, '{enter}');
+      await user.type(input, "First message");
+      await user.type(input, "{enter}");
 
-      await user.type(input, 'Second message');
-      await user.type(input, '{enter}');
+      await user.type(input, "Second message");
+      await user.type(input, "{enter}");
 
       const messages = screen.getAllByText(/message/i);
       expect(messages.length).toBeGreaterThanOrEqual(2);
     });
 
-    it('should scroll to bottom when new message arrives', async () => {
+    it("should scroll to bottom when new message arrives", async () => {
       const user = userEvent.setup();
       renderChatScreen();
 
       const input = screen.getByPlaceholderText(/메시지를 입력하세요/i);
-      await user.type(input, 'Test message');
-      await user.type(input, '{enter}');
+      await user.type(input, "Test message");
+      await user.type(input, "{enter}");
 
       // Wait for message to appear
       await waitFor(() => {
-        expect(screen.getByText('Test message')).toBeInTheDocument();
+        expect(screen.getByText("Test message")).toBeInTheDocument();
       });
 
       // scrollIntoView mock is set up in test/setup.ts and should have been called

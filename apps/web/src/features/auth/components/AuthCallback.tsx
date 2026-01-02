@@ -1,14 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import { useUserStore } from '../../../shared/stores/userStore';
+import React, { useEffect, useState } from "react";
+import { UserProfile } from "@qupid/core";
+import { useUserStore } from "../../../shared/stores/userStore";
+import { useNavigate } from "react-router-dom";
+import { api } from "../../../shared/lib/api-client";
+import Logger from "../../../shared/utils/logger";
 
-interface AuthCallbackProps {
-  onNavigate?: (screen: string) => void;
+interface AuthUser {
+  id: string;
+  email: string;
 }
 
-const AuthCallback: React.FC<AuthCallbackProps> = ({ onNavigate }) => {
+interface AuthSessionResponse {
+  success: boolean;
+  data: {
+    user: AuthUser;
+    profile?: UserProfile;
+  };
+}
+
+const AuthCallback: React.FC = () => {
+  const navigate = useNavigate();
   const { setUser } = useUserStore();
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-  const [error, setError] = useState<string>('');
+  const [status, setStatus] = useState<"loading" | "success" | "error">(
+    "loading",
+  );
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     handleCallback();
@@ -17,69 +33,63 @@ const AuthCallback: React.FC<AuthCallbackProps> = ({ onNavigate }) => {
   const handleCallback = async () => {
     try {
       const urlParams = new URLSearchParams(window.location.search);
-      const token = urlParams.get('token');
-      const refreshToken = urlParams.get('refresh_token');
-      const error = urlParams.get('error');
+      const token = urlParams.get("token");
+      const refreshToken = urlParams.get("refresh_token");
+      const urlError = urlParams.get("error");
 
-      if (error) {
-        setError('로그인 중 오류가 발생했습니다.');
-        setStatus('error');
+      if (urlError) {
+        setError("로그인 중 오류가 발생했습니다.");
+        setStatus("error");
         return;
       }
 
       if (!token || !refreshToken) {
-        setError('인증 정보를 받아오지 못했습니다.');
-        setStatus('error');
+        setError("인증 정보를 받아오지 못했습니다.");
+        setStatus("error");
         return;
       }
 
       // 토큰을 localStorage에 저장
-      localStorage.setItem('authToken', token);
-      localStorage.setItem('refreshToken', refreshToken);
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("refreshToken", refreshToken);
 
       // 사용자 정보 가져오기
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api/v1';
-      const response = await fetch(`${API_URL}/auth/session`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const data = await api.get<AuthSessionResponse>("/auth/session");
 
-      if (!response.ok) {
-        throw new Error('사용자 정보를 가져오는데 실패했습니다.');
-      }
-
-      const data = await response.json();
-      
       if (data.success && data.data.user) {
-        // 사용자 정보를 스토어에 저장
-        setUser(data.data.user);
-        
-        // 사용자 ID 저장
-        localStorage.setItem('userId', data.data.user.id);
-        
-        // 프로필 정보가 있으면 저장
+        // 프로필이 있으면 스토어에 저장
         if (data.data.profile) {
-          localStorage.setItem('userProfile', JSON.stringify(data.data.profile));
+          setUser(data.data.profile);
         }
 
-        setStatus('success');
-        
+        // 사용자 ID 저장
+        localStorage.setItem("userId", data.data.user.id);
+
+        // 프로필 정보가 있으면 저장
+        if (data.data.profile) {
+          localStorage.setItem(
+            "userProfile",
+            JSON.stringify(data.data.profile),
+          );
+        }
+
+        setStatus("success");
+
         // 홈으로 리다이렉트
         setTimeout(() => {
-          onNavigate?.('HOME');
+          navigate("/home");
         }, 1500);
       } else {
-        throw new Error('사용자 정보가 올바르지 않습니다.');
+        throw new Error("사용자 정보가 올바르지 않습니다.");
       }
-    } catch (err: any) {
-      console.error('Auth callback error:', err);
-      setError(err.message || '로그인 처리 중 오류가 발생했습니다.');
-      setStatus('error');
+    } catch (err) {
+      Logger.error("Auth callback error:", err);
+      setError(err instanceof Error ? err.message : "로그인 처리 중 오류가 발생했습니다.");
+      setStatus("error");
     }
   };
 
-  if (status === 'loading') {
+  if (status === "loading") {
     return (
       <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center">
         <div className="text-center">
@@ -90,7 +100,7 @@ const AuthCallback: React.FC<AuthCallbackProps> = ({ onNavigate }) => {
     );
   }
 
-  if (status === 'error') {
+  if (status === "error") {
     return (
       <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center">
         <div className="text-center max-w-md mx-auto px-6">
@@ -100,7 +110,7 @@ const AuthCallback: React.FC<AuthCallbackProps> = ({ onNavigate }) => {
           <h2 className="text-xl font-bold text-[#191F28] mb-2">로그인 실패</h2>
           <p className="text-[#8B95A1] mb-6">{error}</p>
           <button
-            onClick={() => onNavigate?.('LOGIN')}
+            onClick={() => navigate("/login")}
             className="w-full h-14 bg-[#F093B0] text-white font-bold rounded-xl hover:bg-[#E881A5] transition-all"
           >
             다시 로그인하기

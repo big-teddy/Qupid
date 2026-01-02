@@ -1,12 +1,12 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { UserProfile } from '@qupid/core';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { UserProfile } from "@qupid/core";
 
 interface UserState {
   user: UserProfile | null;
   isAuthenticated: boolean;
   isOnboardingComplete: boolean;
-  
+
   // Actions
   setUser: (user: UserProfile | null) => void;
   updateUser: (updates: Partial<UserProfile>) => void;
@@ -21,11 +21,11 @@ export const useUserStore = create<UserState>()(
       isAuthenticated: false,
       isOnboardingComplete: false,
 
-      setUser: (user) => 
-        set({ 
-          user, 
+      setUser: (user) =>
+        set({
+          user,
           isAuthenticated: !!user,
-          isOnboardingComplete: !!user?.isTutorialCompleted 
+          isOnboardingComplete: !!user?.isTutorialCompleted,
         }),
 
       updateUser: (updates) =>
@@ -36,7 +36,7 @@ export const useUserStore = create<UserState>()(
       completeOnboarding: () =>
         set((state) => ({
           isOnboardingComplete: true,
-          user: state.user 
+          user: state.user
             ? { ...state.user, onboarding_completed: true }
             : null,
         })),
@@ -49,11 +49,11 @@ export const useUserStore = create<UserState>()(
         }),
     }),
     {
-      name: 'user-storage',
+      name: "user-storage",
       partialize: (state) => ({
         user: state.user,
         isOnboardingComplete: state.isOnboardingComplete,
       }),
-    }
-  )
+    },
+  ),
 );

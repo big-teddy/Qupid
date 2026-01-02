@@ -1,34 +1,65 @@
-
-import React from 'react';
-import { Persona } from '@qupid/core';
-import { ArrowLeftIcon } from '@qupid/ui';
+import React from "react";
+import { Persona, AICoach } from "@qupid/core";
+import { ArrowLeftIcon } from "@qupid/ui";
 
 interface PersonaDetailScreenProps {
-  persona?: Persona;
+  persona?: Persona | AICoach;
   onStartChat: (persona: Persona) => void;
   onBack: () => void;
 }
 
-const InfoCard: React.FC<{title: string; children: React.ReactNode}> = ({title, children}) => (
-    <div className="mt-6">
-        <h3 className="text-lg font-bold text-[#191F28]">{title}</h3>
-        <div className="mt-3 p-5 bg-[#F9FAFB] rounded-xl">
-            {children}
-        </div>
-    </div>
+// Type guard to check if partner is a Persona
+const isPersona = (partner: Persona | AICoach | undefined): partner is Persona => {
+  return partner !== undefined && 'age' in partner && 'gender' in partner;
+};
+
+const InfoCard: React.FC<{ title: string; children: React.ReactNode }> = ({
+  title,
+  children,
+}) => (
+  <div className="mt-6">
+    <h3 className="text-lg font-bold text-[#191F28]">{title}</h3>
+    <div className="mt-3 p-5 bg-[#F9FAFB] rounded-xl">{children}</div>
+  </div>
 );
 
-const PersonaDetailScreen: React.FC<PersonaDetailScreenProps> = ({ persona, onStartChat, onBack }) => {
-  if (!persona) {
+const PersonaDetailScreen: React.FC<PersonaDetailScreenProps> = ({
+  persona: rawPersona,
+  onStartChat,
+  onBack,
+}) => {
+  // Only render full detail if it's a Persona, show simplified view for AICoach
+  const persona = isPersona(rawPersona) ? rawPersona : undefined;
+
+  if (!rawPersona) {
     return (
       <div className="flex flex-col h-full w-full bg-white items-center justify-center">
         <p className="text-[#8B95A1]">페르소나 정보가 없습니다.</p>
-        <button onClick={onBack} className="mt-4 px-6 py-3 bg-[#0AC5A8] text-white rounded-full">
+        <button
+          onClick={onBack}
+          className="mt-4 px-6 py-3 bg-[#0AC5A8] text-white rounded-full"
+        >
           돌아가기
         </button>
       </div>
     );
   }
+
+  // If it's an AICoach, show simplified view
+  if (!persona) {
+    return (
+      <div className="flex flex-col h-full w-full bg-white items-center justify-center">
+        <p className="text-[#8B95A1]">AI 코치는 상세 프로필을 지원하지 않습니다.</p>
+        <button
+          onClick={onBack}
+          className="mt-4 px-6 py-3 bg-[#0AC5A8] text-white rounded-full"
+        >
+          돌아가기
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full w-full bg-white relative">
       {/* Header */}
@@ -37,7 +68,8 @@ const PersonaDetailScreen: React.FC<PersonaDetailScreenProps> = ({ persona, onSt
           <ArrowLeftIcon className="w-6 h-6 text-[#8B95A1]" />
         </button>
         <h2 className="text-lg font-bold text-[#191F28]">{persona.name}</h2>
-        <div className="w-10 h-10" />{/* placeholder for alignment */}
+        <div className="w-10 h-10" />
+        {/* placeholder for alignment */}
       </header>
 
       {/* Main Content */}
@@ -45,60 +77,78 @@ const PersonaDetailScreen: React.FC<PersonaDetailScreenProps> = ({ persona, onSt
         {/* Profile Section */}
         <section className="pt-8 pb-6 flex flex-col items-center justify-center bg-gradient-to-b from-[#FDF2F8] to-white">
           <div className="relative">
-            <img src={persona.avatar} alt={persona.name} className="w-32 h-32 rounded-full object-cover shadow-lg" />
+            <img
+              src={persona.avatar}
+              alt={persona.name}
+              className="w-32 h-32 rounded-full object-cover shadow-lg"
+            />
             <div className="absolute -bottom-2 -right-2 bg-[#0AC5A8] text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                {persona.match_rate}% 맞음
+              {persona.match_rate}% 맞음
             </div>
           </div>
-          <h1 className="mt-4 text-2xl font-bold text-[#191F28]">{persona.name}, {persona.age}</h1>
-          <p className="mt-1 text-base text-[#8B95A1]">{persona.job} · {persona.mbti}</p>
+          <h1 className="mt-4 text-2xl font-bold text-[#191F28]">
+            {persona.name}, {persona.age}
+          </h1>
+          <p className="mt-1 text-base text-[#8B95A1]">
+            {persona.job} · {persona.mbti}
+          </p>
           <p className="mt-2 text-sm font-semibold text-[#0AC5A8]">🟢 온라인</p>
         </section>
-        
+
         <section className="px-5">
-            <InfoCard title="자기소개">
-                <p className="text-base text-[#191F28] leading-relaxed">{persona.intro}</p>
-            </InfoCard>
+          <InfoCard title="자기소개">
+            <p className="text-base text-[#191F28] leading-relaxed">
+              {persona.intro}
+            </p>
+          </InfoCard>
 
-            <InfoCard title="성격 특성">
-                <div className="flex flex-wrap gap-2">
-                    {persona.personality_traits.map(trait => (
-                        <span key={trait} className="px-3 py-1.5 bg-[#EBF2FF] text-[#4F7ABA] text-sm font-medium rounded-full">
-                            #{trait}
-                        </span>
-                    ))}
-                </div>
-            </InfoCard>
-            
-            <InfoCard title="관심 있는 것들">
-                <ul className="space-y-4">
-                    {persona.interests.map(interest => (
-                        <li key={interest.topic} className="flex items-center">
-                            <span className="text-2xl mr-3">{interest.emoji}</span>
-                            <div>
-                                <p className="font-bold text-base text-[#191F28]">{interest.topic}</p>
-                                <p className="text-sm text-[#8B95A1]">{interest.description}</p>
-                            </div>
-                        </li>
-                    ))}
-                </ul>
-            </InfoCard>
+          <InfoCard title="성격 특성">
+            <div className="flex flex-wrap gap-2">
+              {persona.personality_traits.map((trait: string) => (
+                <span
+                  key={trait}
+                  className="px-3 py-1.5 bg-[#EBF2FF] text-[#4F7ABA] text-sm font-medium rounded-full"
+                >
+                  #{trait}
+                </span>
+              ))}
+            </div>
+          </InfoCard>
 
-            <InfoCard title="대화 미리보기">
-                <div className="space-y-2">
-                    {persona.conversation_preview && persona.conversation_preview.length > 0 ? (
-                        persona.conversation_preview.map((msg, index) => (
-                            <div key={index} className="flex">
-                                 <div className="px-4 py-2 bg-white rounded-t-lg rounded-r-lg text-[#191F28] border border-[#E5E8EB]">
-                                    <p>{msg.text}</p>
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        <div className="text-[#8B95A1]">대화 미리보기가 없습니다.</div>
-                    )}
-                </div>
-            </InfoCard>
+          <InfoCard title="관심 있는 것들">
+            <ul className="space-y-4">
+              {persona.interests.map((interest: { emoji: string; topic: string; description: string }) => (
+                <li key={interest.topic} className="flex items-center">
+                  <span className="text-2xl mr-3">{interest.emoji}</span>
+                  <div>
+                    <p className="font-bold text-base text-[#191F28]">
+                      {interest.topic}
+                    </p>
+                    <p className="text-sm text-[#8B95A1]">
+                      {interest.description}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </InfoCard>
+
+          <InfoCard title="대화 미리보기">
+            <div className="space-y-2">
+              {persona.conversation_preview &&
+                persona.conversation_preview.length > 0 ? (
+                persona.conversation_preview.map((msg: { text: string }, index: number) => (
+                  <div key={index} className="flex">
+                    <div className="px-4 py-2 bg-white rounded-t-lg rounded-r-lg text-[#191F28] border border-[#E5E8EB]">
+                      <p>{msg.text}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-[#8B95A1]">대화 미리보기가 없습니다.</div>
+              )}
+            </div>
+          </InfoCard>
         </section>
       </main>
 

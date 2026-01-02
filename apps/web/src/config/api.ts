@@ -7,7 +7,7 @@
 // Capacitor가 설치되어 있는지 확인
 const isCapacitorApp = () => {
   return (
-    typeof window !== 'undefined' &&
+    typeof window !== "undefined" &&
     window.Capacitor !== undefined &&
     window.Capacitor.isNativePlatform &&
     window.Capacitor.isNativePlatform()
@@ -21,25 +21,29 @@ export const getApiUrl = (): string => {
   // Capacitor 네이티브 앱에서 실행 중
   if (isCapacitorApp()) {
     // Railway 프로덕션 URL
-    return 'https://qupid-production.up.railway.app/api/v1';
+    return "https://qupid-production.up.railway.app/api/v1";
   }
 
   // 웹 브라우저에서 실행 중
-  return import.meta.env.VITE_API_URL || 'http://localhost:4000/api/v1';
+  return import.meta.env.VITE_API_URL || "http://localhost:4000/api/v1";
 };
 
 /**
  * Supabase URL 반환
  */
 export const getSupabaseUrl = (): string => {
-  return import.meta.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '';
+  return import.meta.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || "";
 };
 
 /**
  * Supabase Anon Key 반환
  */
 export const getSupabaseAnonKey = (): string => {
-  return import.meta.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '';
+  return (
+    import.meta.env.VITE_SUPABASE_ANON_KEY ||
+    process.env.SUPABASE_ANON_KEY ||
+    ""
+  );
 };
 
 // window에 Capacitor 타입 추가
@@ -47,7 +51,7 @@ declare global {
   interface Window {
     Capacitor?: {
       isNativePlatform: () => boolean;
-      getPlatform: () => 'ios' | 'android' | 'web';
+      getPlatform: () => "ios" | "android" | "web";
     };
   }
 }

@@ -1,5 +1,5 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { apiClient } from '../../services/apiClient';
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { api } from "../lib/api-client";
 
 // API 응답 타입 정의
 interface ApiResponse<T> {
@@ -12,7 +12,7 @@ export interface PersonaProfile {
   id: string;
   name: string;
   age: number;
-  gender: 'male' | 'female';
+  gender: "male" | "female";
   avatar: string;
   personality: string;
   occupation: string;
@@ -40,13 +40,13 @@ export interface PersonaProfile {
 }
 
 export interface GeneratePersonaRequest {
-  userGender: 'male' | 'female';
+  userGender: "male" | "female";
   userInterests: string[];
   isTutorial?: boolean;
 }
 
 export interface GenerateDailyPersonasRequest {
-  userGender: 'male' | 'female';
+  userGender: "male" | "female";
   count?: number;
 }
 
@@ -56,12 +56,15 @@ export interface GenerateDailyPersonasRequest {
 export const useGeneratePersona = () => {
   return useMutation<PersonaProfile, Error, GeneratePersonaRequest>({
     mutationFn: async (data) => {
-      const response = await apiClient.post<ApiResponse<PersonaProfile>>('/personas/generate', data);
+      const response = await api.post<ApiResponse<PersonaProfile>>(
+        "/personas/generate",
+        data,
+      );
       return response.data;
     },
     onError: (error) => {
-      console.error('페르소나 생성 오류:', error);
-    }
+      console.error("페르소나 생성 오류:", error);
+    },
   });
 };
 
@@ -71,23 +74,31 @@ export const useGeneratePersona = () => {
 export const useGenerateDailyPersonas = () => {
   return useMutation<PersonaProfile[], Error, GenerateDailyPersonasRequest>({
     mutationFn: async (data) => {
-      const response = await apiClient.post<ApiResponse<PersonaProfile[]>>('/personas/generate-daily', data);
+      const response = await api.post<ApiResponse<PersonaProfile[]>>(
+        "/personas/generate-daily",
+        data,
+      );
       return response.data;
     },
     onError: (error) => {
-      console.error('일일 페르소나 생성 오류:', error);
-    }
+      console.error("일일 페르소나 생성 오류:", error);
+    },
   });
 };
 
 /**
  * 추천 페르소나 목록 조회
  */
-export const useRecommendedPersonas = (userGender: 'male' | 'female', limit: number = 10) => {
+export const useRecommendedPersonas = (
+  userGender: "male" | "female",
+  limit: number = 10,
+) => {
   return useQuery<PersonaProfile[]>({
-    queryKey: ['personas', 'recommended', userGender, limit],
+    queryKey: ["personas", "recommended", userGender, limit],
     queryFn: async () => {
-      const response = await apiClient.get<ApiResponse<PersonaProfile[]>>(`/personas/recommended?userGender=${userGender}&limit=${limit}`);
+      const response = await api.get<ApiResponse<PersonaProfile[]>>(
+        `/personas/recommended?userGender=${userGender}&limit=${limit}`,
+      );
       return response.data;
     },
     enabled: !!userGender,
@@ -101,9 +112,11 @@ export const useRecommendedPersonas = (userGender: 'male' | 'female', limit: num
  */
 export const usePersonaById = (id: string) => {
   return useQuery<PersonaProfile>({
-    queryKey: ['personas', id],
+    queryKey: ["personas", id],
     queryFn: async () => {
-      const response = await apiClient.get<ApiResponse<PersonaProfile>>(`/personas/${id}`);
+      const response = await api.get<ApiResponse<PersonaProfile>>(
+        `/personas/${id}`,
+      );
       return response.data;
     },
     enabled: !!id,

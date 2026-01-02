@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '../lib/api-client';
-import { Persona } from '@qupid/core';
+import { useQuery } from "@tanstack/react-query";
+import { api } from "../lib/api-client";
+import { Persona } from "@qupid/core";
 
 interface PersonasResponse {
   success: boolean;
@@ -9,10 +9,10 @@ interface PersonasResponse {
 
 export function usePersonas() {
   return useQuery<Persona[]>({
-    queryKey: ['personas'],
+    queryKey: ["personas"],
     queryFn: async () => {
-      const response = await apiClient.get<PersonasResponse>('/personas');
-      return response.data.data;
+      const response = await api.get<PersonasResponse>("/personas");
+      return response.data;
     },
     staleTime: 5 * 60 * 1000, // 5분
     gcTime: 10 * 60 * 1000, // 10분
@@ -21,10 +21,12 @@ export function usePersonas() {
 
 export function usePersona(id: string) {
   return useQuery<Persona>({
-    queryKey: ['personas', id],
+    queryKey: ["personas", id],
     queryFn: async () => {
-      const response = await apiClient.get<{ success: boolean; data: Persona }>(`/personas/${id}`);
-      return response.data.data;
+      const response = await api.get<{ success: boolean; data: Persona }>(
+        `/personas/${id}`,
+      );
+      return response.data;
     },
     enabled: !!id,
   });

@@ -1,10 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { userApi } from '../../api/user.api';
-import { UserProfile } from '@qupid/core';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { userApi } from "../../api/user.api";
+import { UserProfile } from "@qupid/core";
 
 export const useUserProfile = (userId: string) => {
   return useQuery<UserProfile, Error>({
-    queryKey: ['user', userId],
+    queryKey: ["user", userId],
     queryFn: () => userApi.getUserProfile(userId),
     enabled: !!userId,
   });
@@ -12,43 +12,49 @@ export const useUserProfile = (userId: string) => {
 
 export const useCreateUserProfile = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: (profile: Partial<UserProfile>) => userApi.createUserProfile(profile),
+    mutationFn: (profile: Partial<UserProfile>) =>
+      userApi.createUserProfile(profile),
     onSuccess: (data) => {
-      queryClient.setQueryData(['user', data.id], data);
+      queryClient.setQueryData(["user", data.id], data);
       // 사용자 ID를 로컬스토리지에 저장
-      localStorage.setItem('userId', data.id || '');
+      localStorage.setItem("userId", data.id || "");
     },
   });
 };
 
 export const useUpdateUserProfile = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: ({ userId, updates }: { userId: string; updates: Partial<UserProfile> }) =>
-      userApi.updateUserProfile(userId, updates),
+    mutationFn: ({
+      userId,
+      updates,
+    }: {
+      userId: string;
+      updates: Partial<UserProfile>;
+    }) => userApi.updateUserProfile(userId, updates),
     onSuccess: (data) => {
-      queryClient.setQueryData(['user', data.id], data);
+      queryClient.setQueryData(["user", data.id], data);
     },
   });
 };
 
 export const useCompleteTutorial = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (userId: string) => userApi.completeTutorial(userId),
     onSuccess: (_, userId) => {
-      queryClient.invalidateQueries({ queryKey: ['user', userId] });
+      queryClient.invalidateQueries({ queryKey: ["user", userId] });
     },
   });
 };
 
 export const useFavorites = (userId: string) => {
   return useQuery<string[], Error>({
-    queryKey: ['user', userId, 'favorites'],
+    queryKey: ["user", userId, "favorites"],
     queryFn: () => userApi.getFavorites(userId),
     enabled: !!userId,
   });
@@ -56,12 +62,37 @@ export const useFavorites = (userId: string) => {
 
 export const useToggleFavorite = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: ({ userId, personaId }: { userId: string; personaId: string }) =>
-      userApi.toggleFavorite(userId, personaId),
+    mutationFn: ({
+      userId,
+      personaId,
+    }: {
+      userId: string;
+      personaId: string;
+    }) => userApi.toggleFavorite(userId, personaId),
     onSuccess: (_, { userId }) => {
-      queryClient.invalidateQueries({ queryKey: ['user', userId, 'favorites'] });
+      queryClient.invalidateQueries({
+        queryKey: ["user", userId, "favorites"],
+      });
+    },
+  });
+};
+
+export const useUploadAvatar = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ userId, imageFile }: { userId: string; imageFile: File }) =>
+      userApi.uploadAvatar(userId, imageFile),
+    onSuccess: (avatarUrl, { userId }) => {
+      queryClient.setQueryData(
+        ["user", userId],
+        (old: UserProfile | undefined) => {
+          if (!old) return old;
+          return { ...old, avatar: avatarUrl };
+        },
+      );
     },
   });
 };

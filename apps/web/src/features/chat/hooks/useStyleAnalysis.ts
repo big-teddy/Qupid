@@ -1,6 +1,6 @@
-import { useMutation } from '@tanstack/react-query';
-import { Message } from '@qupid/core';
-import { apiClient } from '../../../shared/api/apiClient';
+import { useMutation } from "@tanstack/react-query";
+import { Message } from "@qupid/core";
+import { api } from "../../../shared/lib/api-client";
 
 interface StyleAnalysis {
   currentStyle: {
@@ -16,14 +16,19 @@ interface StyleAnalysis {
   }[];
 }
 
+interface StyleAnalysisResponse {
+  ok: boolean;
+  data: StyleAnalysis;
+}
+
 export const useStyleAnalysis = () => {
   return useMutation<StyleAnalysis, Error, Message[]>({
     mutationFn: async (messages) => {
-      const response = await apiClient.post<{ ok: boolean; data: StyleAnalysis }>(
-        '/api/v1/chat/style-analysis',
-        { messages }
+      const response = await api.post<StyleAnalysisResponse>(
+        "/chat/style-analysis",
+        { messages },
       );
-      return response.data.data;
-    }
+      return response.data;
+    },
   });
 };
