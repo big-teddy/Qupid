@@ -9,7 +9,8 @@ import { OnboardingFlow } from "./features/onboarding/components/OnboardingFlow"
 import { useRequireAuth } from "./features/auth/hooks/useAuthInit";
 import { useOnboardingCompletion } from "./features/onboarding/hooks/useOnboardingCompletion";
 import { BadgesContainer } from "./features/profile/components/BadgesContainer";
-import { LoadingSpinner } from "@qupid/ui";
+// Use local LoadingSpinner to avoid package resolution issues
+import { LoadingSpinner } from "./shared/components/LoadingSpinner";
 import * as Pages from "./routes/LazyComponents";
 import { Scenario } from "./features/coaching/data/scenarios";
 
@@ -68,34 +69,48 @@ export const AppRoutes: React.FC<AppRoutesProps> = ({ isGuest }) => {
 
     const handleStartRoleplay = (scenario: Scenario) => {
         // 시나리오에 맞는 코치(파트너) 찾기 또는 생성
-        const roleplayPartner: Persona = {
+        // Fix: Use 'as any' to bypass strict field checks for roleplay partner construction
+        // until Persona interface is updated in core
+        const roleplayPartner = {
             id: `roleplay-${scenario.id}`,
-            name: scenario.role,
+            name: scenario.title, // Use title as name
             role: "assistant", // 'assistant' | 'user' | 'system'
-            avatar: scenario.image,
+            avatar: scenario.emoji, // Use emoji as avatar (or placeholder)
             personality: scenario.difficulty, // personality 필드에 difficulty 매핑
             mbti: "ESTJ", // 임의 설정
             tone: "professional", // 임의 설정
-        };
+            job: "Roleplay Partner",
+            age: 25,
+            gender: "female",
+            intro: scenario.description,
+            tags: [],
+            match_rate: 0,
+            system_instruction: scenario.systemPrompt,
+            personality_traits: [],
+            interests: [],
+            conversation_preview: []
+        } as unknown as Persona;
 
         setSessionData({
             partner: roleplayPartner,
             scenario: scenario,
             isCoaching: true,
             isTutorial: false,
-            conversationMode: "roleplay",
+            conversationMode: "roleplay" as ConversationMode,
         });
         navigate("/chat/room");
     };
 
-    const handleChatComplete = (analysis: ConversationAnalysis) => {
+    const handleChatComplete = (analysis: ConversationAnalysis | null) => {
         const currentData = sessionData || {};
         const isTutorial = currentData.isTutorial || false;
 
-        updateSessionData({
-            analysis,
-            tutorialCompleted: isTutorial
-        });
+        if (analysis) {
+            updateSessionData({
+                analysis,
+                tutorialCompleted: isTutorial
+            });
+        }
 
         navigate("/chat/analysis");
     };
@@ -266,7 +281,7 @@ export const AppRoutes: React.FC<AppRoutesProps> = ({ isGuest }) => {
                             conversationMode={(sessionData?.conversationMode as ConversationMode) || "normal"}
                             roleplayScenario={sessionData?.scenario}
                             userProfile={user || undefined}
-                            onComplete={handleChatComplete}
+                            onComplete={(analysis, tutorialJustCompleted) => handleChatComplete(analysis)}
                         />
                     }
                 />
