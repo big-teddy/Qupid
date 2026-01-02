@@ -1,17 +1,15 @@
-
-
 export enum Tab {
-  Home = 'Home',
-  Chat = 'Chat',
-  Coaching = 'Coaching',
-  My = 'My',
+  Home = "Home",
+  Chat = "Chat",
+  Coaching = "Coaching",
+  My = "My",
 }
 
 export interface Persona {
   id: string;
   name: string;
   age: number;
-  gender: 'male' | 'female';
+  gender: "male" | "female";
   job: string;
   mbti: string;
   avatar: string;
@@ -20,8 +18,8 @@ export interface Persona {
   match_rate: number;
   system_instruction: string;
   personality_traits: string[];
-  interests: { emoji: string; topic: string; description: string; }[];
-  conversation_preview: { sender: 'ai'; text: string; }[];
+  interests: { emoji: string; topic: string; description: string }[];
+  conversation_preview: { sender: "ai"; text: string }[];
 }
 
 export interface AICoach {
@@ -35,19 +33,19 @@ export interface AICoach {
 }
 
 export interface Message {
-  sender: 'user' | 'ai' | 'system';
+  sender: "user" | "ai" | "system";
   text: string;
   timestamp?: number;
 }
 
-export type ConversationMode = 'normal' | 'romantic';
+export type ConversationMode = "normal" | "romantic" | "roleplay" | "coaching";
 
 export interface TutorialStep {
-    step: number;
-    title: string;
-    description: string;
-    quickReplies: string[];
-    successCriteria: (message: string, context?: Message[]) => boolean;
+  step: number;
+  title: string;
+  description: string;
+  quickReplies: string[];
+  successCriteria: (message: string, context?: Message[]) => boolean;
 }
 
 export enum Screen {
@@ -71,14 +69,24 @@ export enum Screen {
   SIGNUP,
 }
 
-export type NavigationScreen = Screen | 'HOME' | 'CHAT_TAB' | 'COACHING_TAB' | 'MY_TAB' | 'ONBOARDING' | 'SETTINGS' | 'PERSONA_SELECTION' | 'AUTH_CALLBACK' | string;
+export type NavigationScreen =
+  | Screen
+  | "HOME"
+  | "CHAT_TAB"
+  | "COACHING_TAB"
+  | "MY_TAB"
+  | "ONBOARDING"
+  | "SETTINGS"
+  | "PERSONA_SELECTION"
+  | "AUTH_CALLBACK"
+  | string;
 
 export interface UserProfile {
   id?: string;
   created_at?: string;
   name: string;
-  user_gender: 'male' | 'female';
-  partner_gender?: 'male' | 'female';
+  user_gender: "male" | "female";
+  partner_gender?: "male" | "female";
   experience: string;
   confidence: number;
   difficulty: number;
@@ -89,18 +97,18 @@ export interface UserProfile {
 }
 
 export interface ConversationAnalysis {
-    totalScore: number;
-    feedback: string;
-    friendliness: { score: number; feedback: string };
-    curiosity: { score: number; feedback: string };
-    empathy: { score: number; feedback: string };
-    positivePoints: string[];
-    pointsToImprove: { topic: string; suggestion: string }[];
+  totalScore: number;
+  feedback: string;
+  friendliness: { score: number; feedback: string };
+  curiosity: { score: number; feedback: string };
+  empathy: { score: number; feedback: string };
+  positivePoints: string[];
+  pointsToImprove: { topic: string; suggestion: string }[];
 }
 
 export interface RealtimeFeedback {
-    isGood: boolean;
-    message: string;
+  isGood: boolean;
+  message: string;
 }
 
 export interface PerformanceData {
@@ -122,7 +130,7 @@ export interface PerformanceData {
     totalTime: string;
     sessionCount: number;
     avgTime: string;
-    longestSession: { time: string; persona: string; };
+    longestSession: { time: string; persona: string };
     preferredType: string;
   };
   categoryScores: {
@@ -134,15 +142,14 @@ export interface PerformanceData {
   }[];
 }
 
-
 export interface Badge {
   id: string;
   icon: string;
   name: string;
   description: string;
-  category: '대화' | '성장' | '특별';
-  rarity: 'Common' | 'Rare' | 'Epic';
+  category: "대화" | "성장" | "특별";
+  rarity: "Common" | "Rare" | "Epic";
   acquired: boolean;
-  progress?: { current: number; total: number; };
+  progress?: { current: number; total: number };
   featured?: boolean;
 }

@@ -1,2 +1,2 @@
 // UI package exports
-export * from './Icons';
+export * from "./Icons";
