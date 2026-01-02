@@ -25,6 +25,33 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Pretendard:wght@400;500;600;700;800;900&display=swap"
     rel="stylesheet" />
+  <style>
+    /* Mobile Frame Enforcer */
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #0e0e12;
+      /* Dark scaffolding */
+      overflow: hidden;
+      /* Prevent body scroll, handle in root */
+    }
+
+    #root {
+      max-width: 430px;
+      /* iPhone 14 Pro Max width */
+      margin: 0 auto;
+      height: 100%;
+      background-color: #ffffff;
+      /* App background */
+      position: relative;
+      overflow-x: hidden;
+      overflow-y: auto;
+      /* Allow scroll within app */
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+    }
+  </style>
   <script type="importmap">
       {
         "imports": {
