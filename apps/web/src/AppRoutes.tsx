@@ -30,8 +30,9 @@ export const AppRoutes: React.FC<AppRoutesProps> = ({ isGuest }) => {
 
     // 🚀 게스트 모드이거나 인증된 사용자만 접근 가능
     useEffect(() => {
-        const publicPaths = ["/login", "/signup", "/onboarding", "/auth/callback", "/tutorial"];
-        const isPublicPath = publicPaths.some(path => location.pathname.startsWith(path));
+        // "/" is included because it redirects to /onboarding for new users
+        const publicPaths = ["/", "/login", "/signup", "/onboarding", "/auth/callback", "/tutorial"];
+        const isPublicPath = publicPaths.some(path => location.pathname === path || location.pathname.startsWith(path + "/"));
 
         if (!isPublicPath) {
             requireAuth();
