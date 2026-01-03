@@ -3,8 +3,10 @@ import { Persona, AICoach, ConversationMode } from "@qupid/core";
 import { ArrowLeftIcon } from "@qupid/ui";
 
 // Type guard to check if partner is a Persona
-const isPersona = (partner: Persona | AICoach | undefined): partner is Persona => {
-  return partner !== undefined && 'age' in partner && 'gender' in partner;
+const isPersona = (
+  partner: Persona | AICoach | undefined,
+): partner is Persona => {
+  return partner !== undefined && "age" in partner && "gender" in partner;
 };
 
 interface ConversationPrepScreenProps {
@@ -112,10 +114,11 @@ const ConversationPrepScreen: React.FC<ConversationPrepScreenProps> = ({
             {/* 일반 모드 */}
             <button
               onClick={() => setSelectedMode("normal")}
-              className={`p-4 rounded-xl border-2 transition-all ${selectedMode === "normal"
-                ? "border-[#0AC5A8] bg-[#E6F7F5]"
-                : "border-[#E5E8EB] bg-white hover:border-[#0AC5A8]"
-                }`}
+              className={`p-4 rounded-xl border-2 transition-all ${
+                selectedMode === "normal"
+                  ? "border-[#0AC5A8] bg-[#E6F7F5]"
+                  : "border-[#E5E8EB] bg-white hover:border-[#0AC5A8]"
+              }`}
             >
               <div className="text-3xl mb-2">👋</div>
               <h3 className="font-bold text-base text-[#191F28] mb-1">
@@ -129,10 +132,11 @@ const ConversationPrepScreen: React.FC<ConversationPrepScreenProps> = ({
             {/* 연인 모드 */}
             <button
               onClick={() => setSelectedMode("romantic")}
-              className={`p-4 rounded-xl border-2 transition-all ${selectedMode === "romantic"
-                ? "border-[#F093B0] bg-[#FDF2F8]"
-                : "border-[#E5E8EB] bg-white hover:border-[#F093B0]"
-                }`}
+              className={`p-4 rounded-xl border-2 transition-all ${
+                selectedMode === "romantic"
+                  ? "border-[#F093B0] bg-[#FDF2F8]"
+                  : "border-[#E5E8EB] bg-white hover:border-[#F093B0]"
+              }`}
             >
               <div className="text-3xl mb-2">💕</div>
               <h3 className="font-bold text-base text-[#191F28] mb-1">
@@ -146,8 +150,9 @@ const ConversationPrepScreen: React.FC<ConversationPrepScreenProps> = ({
 
           {/* 선택된 모드 설명 */}
           <div
-            className={`mt-3 p-3 rounded-lg ${selectedMode === "normal" ? "bg-[#E6F7F5]" : "bg-[#FDF2F8]"
-              }`}
+            className={`mt-3 p-3 rounded-lg ${
+              selectedMode === "normal" ? "bg-[#E6F7F5]" : "bg-[#FDF2F8]"
+            }`}
           >
             <p className="text-xs text-[#191F28] leading-relaxed">
               {selectedMode === "normal"
@@ -161,8 +166,9 @@ const ConversationPrepScreen: React.FC<ConversationPrepScreenProps> = ({
       <footer className="flex-shrink-0 p-4">
         <button
           onClick={() => onStart(selectedMode)}
-          className={`w-full h-14 text-white text-lg font-bold rounded-xl transition-all hover:scale-[1.02] ${selectedMode === "normal" ? "bg-[#0AC5A8]" : "bg-[#F093B0]"
-            }`}
+          className={`w-full h-14 text-white text-lg font-bold rounded-xl transition-all hover:scale-[1.02] ${
+            selectedMode === "normal" ? "bg-[#0AC5A8]" : "bg-[#F093B0]"
+          }`}
         >
           {selectedMode === "normal" ? "👋 일반 모드로" : "💕 연인 모드로"} 대화
           시작하기

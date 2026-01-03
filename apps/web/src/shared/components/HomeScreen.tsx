@@ -29,11 +29,10 @@ interface HomeScreenProps {
   onSelectPersona?: (persona: any) => void;
 }
 
-const HomeScreen: React.FC<HomeScreenProps> = ({
-  onSelectPersona,
-}) => {
+const HomeScreen: React.FC<HomeScreenProps> = ({ onSelectPersona }) => {
   const navigate = useNavigate();
-  const { user } = useUserStore(); const currentUserId = user?.id;
+  const { user } = useUserStore();
+  const currentUserId = user?.id;
 
   // 슬라이드 상태 관리
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
@@ -219,34 +218,34 @@ const HomeScreen: React.FC<HomeScreenProps> = ({
     dynamicPersonas.length > 0
       ? dynamicPersonas[0]
       : {
-        id: "quick-start-persona",
-        name: "김민지",
-        age: 24,
-        gender: "female",
-        job: "디자이너",
-        avatar: getRandomAvatar("female"),
-        intro: "안녕하세요! 디자인을 좋아하는 민지예요 😊",
-        tags: ["디자인", "예술", "창의적"],
-        match_rate: 85,
-        systemInstruction:
-          "당신은 24세 디자이너 김민지입니다. 창의적이고 예술적인 대화를 좋아해요.",
-        personality_traits: ["창의적", "감성적", "친근함"],
-        interests: [
-          {
-            emoji: "🎨",
-            topic: "디자인",
-            description: "그래픽 디자인을 좋아해요",
-          },
-          {
-            emoji: "📸",
-            topic: "사진",
-            description: "일상 사진 찍는 걸 좋아해요",
-          },
-        ],
-        conversation_preview: [
-          { sender: "ai", text: "안녕하세요! 오늘 하루는 어땠나요? 😊" },
-        ],
-      };
+          id: "quick-start-persona",
+          name: "김민지",
+          age: 24,
+          gender: "female",
+          job: "디자이너",
+          avatar: getRandomAvatar("female"),
+          intro: "안녕하세요! 디자인을 좋아하는 민지예요 😊",
+          tags: ["디자인", "예술", "창의적"],
+          match_rate: 85,
+          systemInstruction:
+            "당신은 24세 디자이너 김민지입니다. 창의적이고 예술적인 대화를 좋아해요.",
+          personality_traits: ["창의적", "감성적", "친근함"],
+          interests: [
+            {
+              emoji: "🎨",
+              topic: "디자인",
+              description: "그래픽 디자인을 좋아해요",
+            },
+            {
+              emoji: "📸",
+              topic: "사진",
+              description: "일상 사진 찍는 걸 좋아해요",
+            },
+          ],
+          conversation_preview: [
+            { sender: "ai", text: "안녕하세요! 오늘 하루는 어땠나요? 😊" },
+          ],
+        };
 
   // 🚀 프로덕션용 로그 정리 - 개발 환경에서만 로그 출력
   if (process.env.NODE_ENV === "development") {
@@ -365,7 +364,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({
                   notifications={notifications}
                   isLoading={isLoadingNotifications}
                   onRead={(id) => markAsReadMutation.mutate(id)}
-                  onMarkAllRead={() => markAllAsReadMutation.mutate(currentUserId || "")}
+                  onMarkAllRead={() =>
+                    markAllAsReadMutation.mutate(currentUserId || "")
+                  }
                   onDelete={(id) => deleteNotificationMutation.mutate(id)}
                   onItemClick={(n) => {
                     if (n.link) navigate(n.link);
@@ -495,35 +496,37 @@ const HomeScreen: React.FC<HomeScreenProps> = ({
 
           {/* 🚀 동적 최근 대화 기록 - 실제 AI 페르소나 기반 */}
           <div className="space-y-3">
-            {(dynamicPersonas.length > 0 ? dynamicPersonas : apiPersonas).slice(0, 3).map((persona, index) => {
-              const timeAgo =
-                index === 0 ? "2시간 전" : index === 1 ? "어제" : "3일 전";
-              const duration =
-                index === 0
-                  ? "15분 대화"
-                  : index === 1
-                    ? "12분 대화"
-                    : "8분 대화";
+            {(dynamicPersonas.length > 0 ? dynamicPersonas : apiPersonas)
+              .slice(0, 3)
+              .map((persona, index) => {
+                const timeAgo =
+                  index === 0 ? "2시간 전" : index === 1 ? "어제" : "3일 전";
+                const duration =
+                  index === 0
+                    ? "15분 대화"
+                    : index === 1
+                      ? "12분 대화"
+                      : "8분 대화";
 
-              return (
-                <div
-                  key={persona.id}
-                  className="flex items-center p-3 rounded-lg border border-[#F2F4F6] hover:border-[#F093B0] transition-colors cursor-pointer"
-                  onClick={() => onSelectPersona && onSelectPersona(persona)}
-                >
-                  <img
-                    src={persona.avatar}
-                    alt={persona.name}
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                  <div className="ml-3 flex-1">
-                    <p className="font-semibold text-sm">{persona.name}</p>
-                    <p className="text-xs text-gray-500">{timeAgo}</p>
+                return (
+                  <div
+                    key={persona.id}
+                    className="flex items-center p-3 rounded-lg border border-[#F2F4F6] hover:border-[#F093B0] transition-colors cursor-pointer"
+                    onClick={() => onSelectPersona && onSelectPersona(persona)}
+                  >
+                    <img
+                      src={persona.avatar}
+                      alt={persona.name}
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                    <div className="ml-3 flex-1">
+                      <p className="font-semibold text-sm">{persona.name}</p>
+                      <p className="text-xs text-gray-500">{timeAgo}</p>
+                    </div>
+                    <div className="text-xs text-gray-400">{duration}</div>
                   </div>
-                  <div className="text-xs text-gray-400">{duration}</div>
-                </div>
-              );
-            })}
+                );
+              })}
 
             {/* 🚀 페르소나가 3개 미만일 때 fallback 표시 */}
             {dynamicPersonas.length < 3 && (

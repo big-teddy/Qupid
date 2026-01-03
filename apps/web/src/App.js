@@ -8,12 +8,12 @@ import { AppRoutes } from "./AppRoutes";
 import ErrorBoundary from "./shared/components/ErrorBoundary";
 import { ToastProvider } from "./shared/components/Toast";
 const queryClient = new QueryClient({
-    defaultOptions: {
-        queries: {
-            retry: 1,
-            refetchOnWindowFocus: false,
-        },
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
     },
+  },
 });
 /**
  * AppContent
@@ -22,12 +22,17 @@ const queryClient = new QueryClient({
  * Auth logic is now delegated to useAuthInit hook.
  */
 const AppContent = () => {
-    const { isGuest, isInitialized } = useAuthInit();
-    console.log("[DEBUG] AppContent render. Initialized:", isInitialized, "Guest:", isGuest);
-    if (!isInitialized) {
-        return _jsx("div", { children: "Loading Auth..." });
-    }
-    return _jsx(AppRoutes, { isGuest: isGuest });
+  const { isGuest, isInitialized } = useAuthInit();
+  console.log(
+    "[DEBUG] AppContent render. Initialized:",
+    isInitialized,
+    "Guest:",
+    isGuest,
+  );
+  if (!isInitialized) {
+    return _jsx("div", { children: "Loading Auth..." });
+  }
+  return _jsx(AppRoutes, { isGuest: isGuest });
 };
 /**
  * App
@@ -42,6 +47,20 @@ const AppContent = () => {
  * All routing and auth logic is delegated to child modules.
  */
 const App = () => {
-    return (_jsx(ErrorBoundary, { children: _jsxs(QueryClientProvider, { client: queryClient, children: [_jsx(BrowserRouter, { children: _jsx(Providers, { children: _jsx(ToastProvider, { children: _jsx(ErrorBoundary, { children: _jsx(AppContent, {}) }) }) }) }), _jsx(ReactQueryDevtools, { initialIsOpen: false })] }) }));
+  return _jsx(ErrorBoundary, {
+    children: _jsxs(QueryClientProvider, {
+      client: queryClient,
+      children: [
+        _jsx(BrowserRouter, {
+          children: _jsx(Providers, {
+            children: _jsx(ToastProvider, {
+              children: _jsx(ErrorBoundary, { children: _jsx(AppContent, {}) }),
+            }),
+          }),
+        }),
+        _jsx(ReactQueryDevtools, { initialIsOpen: false }),
+      ],
+    }),
+  });
 };
 export default App;

@@ -92,12 +92,24 @@ const PERSONA_ATTRIBUTES = {
     ],
     jobs: [
       { id: "hr", name: "인사팀장", description: "채용 및 인사 평가" },
-      { id: "developer", name: "개발 팀장", description: "기술 면접 및 코드 리뷰" },
-      { id: "sales", name: "영업 이사", description: "비즈니스 협상 및 세일즈" },
+      {
+        id: "developer",
+        name: "개발 팀장",
+        description: "기술 면접 및 코드 리뷰",
+      },
+      {
+        id: "sales",
+        name: "영업 이사",
+        description: "비즈니스 협상 및 세일즈",
+      },
       { id: "marketing", name: "마케터", description: "브랜딩 및 전략 수립" },
     ],
     hobbies: [
-      { id: "startup", name: "스타트업", description: "창업 및 비즈니스 트렌드" },
+      {
+        id: "startup",
+        name: "스타트업",
+        description: "창업 및 비즈니스 트렌드",
+      },
       {
         id: "leadership",
         name: "리더십",
@@ -149,7 +161,11 @@ const PERSONA_ATTRIBUTES = {
       { id: "expert", name: "전문가", description: "해당 분야의 프로" },
       { id: "enthusiast", name: "매니아", description: "순수한 열정의 소유자" },
       { id: "instructor", name: "강사", description: "가르치는 것이 직업" },
-      { id: "creator", name: "크리에이터", description: "콘텐츠를 만드는 사람" },
+      {
+        id: "creator",
+        name: "크리에이터",
+        description: "콘텐츠를 만드는 사람",
+      },
     ],
     hobbies: [
       { id: "game", name: "게임", description: "롤, 배그, 콘솔 게임 등" },
@@ -225,12 +241,15 @@ export const CustomPersonaForm: React.FC<CustomPersonaFormProps> = ({
           match_rate: 85,
           system_instruction: `당신은 ${result.name}입니다. 자연스럽고 친근한 대화를 나누세요.`,
           personality_traits: result.values?.slice(0, 3) || [],
-          interests: result.interests.slice(0, 3).map((topic: string) => ({
-            emoji: "✨",
-            topic,
-            description: `${topic}에 관심이 있어요`,
-          })) || [],
-          conversation_preview: [{ sender: "ai", text: "안녕하세요! 반가워요 😊" }],
+          interests:
+            result.interests.slice(0, 3).map((topic: string) => ({
+              emoji: "✨",
+              topic,
+              description: `${topic}에 관심이 있어요`,
+            })) || [],
+          conversation_preview: [
+            { sender: "ai", text: "안녕하세요! 반가워요 😊" },
+          ],
         };
 
         Logger.info("✅ 커스텀 페르소나 생성 성공:", persona);
@@ -268,17 +287,30 @@ export const CustomPersonaForm: React.FC<CustomPersonaFormProps> = ({
           avatar: result.avatar,
           job: result.occupation || job?.name || "알 수 없음",
           mbti: result.personality || "ENFP",
-          intro: result.conversationStyle || `${result.name}입니다. ${hobby?.name}에 대해 이야기 나누고 싶어요.`,
-          tags: [category, personality?.name || "", hobby?.name || ""].filter(Boolean),
+          intro:
+            result.conversationStyle ||
+            `${result.name}입니다. ${hobby?.name}에 대해 이야기 나누고 싶어요.`,
+          tags: [category, personality?.name || "", hobby?.name || ""].filter(
+            Boolean,
+          ),
           match_rate: 90,
           system_instruction: `당신은 ${result.name}입니다. ${category} 상황에 맞춰 대화하세요. 성격: ${personality?.name}, 직업: ${job?.name}, 관심사: ${hobby?.name}`,
-          personality_traits: [personality?.name || "", "친근함", "센스있는"].filter(Boolean),
+          personality_traits: [
+            personality?.name || "",
+            "친근함",
+            "센스있는",
+          ].filter(Boolean),
           interests: [hobby?.name].filter(Boolean).map((topic) => ({
             emoji: "✨",
             topic: topic || "취미",
             description: `${topic}를 좋아해요`,
           })) as { emoji: string; topic: string; description: string }[],
-          conversation_preview: [{ sender: "ai", text: `안녕하세요! ${hobby?.name} 좋아하시나요? 😊` }],
+          conversation_preview: [
+            {
+              sender: "ai",
+              text: `안녕하세요! ${hobby?.name} 좋아하시나요? 😊`,
+            },
+          ],
         };
 
         Logger.info("✅ 카테고리별 페르소나 생성 성공:", persona);
@@ -297,9 +329,7 @@ export const CustomPersonaForm: React.FC<CustomPersonaFormProps> = ({
       );
       const age = currentCategory.ages.find((a) => a.id === selectedAge);
       const job = currentCategory.jobs.find((j) => j.id === selectedJob);
-      const hobby = currentCategory.hobbies.find(
-        (h) => h.id === selectedHobby,
-      );
+      const hobby = currentCategory.hobbies.find((h) => h.id === selectedHobby);
 
       const fallbackPersona: Persona = {
         id: `custom-persona-${Date.now()}`,
@@ -316,8 +346,8 @@ export const CustomPersonaForm: React.FC<CustomPersonaFormProps> = ({
           {
             emoji: "✨",
             topic: hobby?.name || "여행",
-            description: "함께 이야기해요"
-          }
+            description: "함께 이야기해요",
+          },
         ],
         avatar: getRandomAvatar(partnerGender),
         match_rate: 85,
@@ -348,10 +378,11 @@ export const CustomPersonaForm: React.FC<CustomPersonaFormProps> = ({
           <button
             key={item.id}
             onClick={() => onSelect(item.id)}
-            className={`p-4 rounded-xl border-2 text-left transition-all relative overflow-hidden ${selectedValue === item.id
+            className={`p-4 rounded-xl border-2 text-left transition-all relative overflow-hidden ${
+              selectedValue === item.id
                 ? "border-[#F093B0] bg-[#FFF0F5]"
                 : "border-gray-100 bg-white hover:border-[#F093B0]/30"
-              }`}
+            }`}
           >
             <div className="font-bold text-[#191F28] mb-1">{item.name}</div>
             <div className="text-xs text-gray-500">{item.description}</div>
@@ -451,20 +482,21 @@ export const CustomPersonaForm: React.FC<CustomPersonaFormProps> = ({
             (category === "custom"
               ? !description
               : !selectedPersonality ||
-              !selectedAge ||
-              !selectedJob ||
-              !selectedHobby)
+                !selectedAge ||
+                !selectedJob ||
+                !selectedHobby)
           }
-          className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${isGenerating ||
-              (category === "custom"
-                ? !description
-                : !selectedPersonality ||
+          className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${
+            isGenerating ||
+            (category === "custom"
+              ? !description
+              : !selectedPersonality ||
                 !selectedAge ||
                 !selectedJob ||
                 !selectedHobby)
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
               : "bg-[#F093B0] text-white hover:bg-[#E082A0] shadow-lg shadow-[#F093B0]/30"
-            }`}
+          }`}
         >
           {isGenerating ? (
             <>

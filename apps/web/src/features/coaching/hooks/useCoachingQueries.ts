@@ -45,7 +45,7 @@ export const useCreateCoachingSession = () => {
     mutationFn: async ({ coachId, userId }: CreateCoachingSessionParams) => {
       const response = await api.post<ApiResponse<{ sessionId: string }>>(
         "/coaches/sessions",
-        { coachId, userId }
+        { coachId, userId },
       );
       return response.data.sessionId;
     },
@@ -68,7 +68,7 @@ export const useSendCoachingMessage = () => {
     mutationFn: async ({ sessionId, message }: SendCoachingMessageParams) => {
       const response = await api.post<ApiResponse<any>>(
         `/coaches/sessions/${sessionId}/messages`,
-        { message }
+        { message },
       );
       return response.data;
     },
@@ -88,7 +88,7 @@ export const useAnalyzeCoachingSession = () => {
     }: AnalyzeCoachingSessionParams) => {
       const response = await api.post<ApiResponse<any>>(
         `/coaches/sessions/${sessionId}/end`,
-        { messages }
+        { messages },
       );
       return response.data;
     },
@@ -110,7 +110,7 @@ export const useCoachingDashboard = (userId: string = "test-user") => {
     queryKey: queryKeys.coaching.dashboard(userId),
     queryFn: async () => {
       const response = await api.get<ApiResponse<any>>(
-        `/coaches/dashboard?userId=${userId}`
+        `/coaches/dashboard?userId=${userId}`,
       );
       return response.data;
     },
@@ -127,7 +127,7 @@ export const useUpdateGoal = () => {
     mutationFn: async ({ goalId, status, userId }: UpdateGoalParams) => {
       const response = await api.patch<ApiResponse<any>>(
         `/coaches/goals/${goalId}?userId=${userId}`,
-        { status }
+        { status },
       );
       return response.data;
     },
@@ -149,7 +149,7 @@ export const useCreateGoal = () => {
     mutationFn: async ({ title, userId }: CreateGoalParams) => {
       const response = await api.post<ApiResponse<any>>(
         `/coaches/goals?userId=${userId}`,
-        { title }
+        { title },
       );
       return response.data;
     },
@@ -178,7 +178,7 @@ export const useStylingAdvice = () => {
     mutationFn: async ({ prompt }: StylingAdviceParams) => {
       const response = await api.post<ApiResponse<StylingAdviceResponse>>(
         "/styling/advice",
-        { prompt }
+        { prompt },
       );
       return response.data;
     },

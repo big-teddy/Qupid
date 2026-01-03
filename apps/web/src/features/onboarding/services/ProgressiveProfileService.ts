@@ -1,257 +1,258 @@
 /**
  * ProgressiveProfileService - 점진적 프로파일링 시스템
- * 
+ *
  * 사용자 행동에 따라 적절한 시점에 추가 정보를 수집하는 트리거 시스템
  * Hinge/Bumble 스타일의 Progressive Profiling 구현
  */
 
 // 프로파일링 트리거 타입
 export type ProfileTriggerType =
-    | 'first_conversation'
-    | 'third_conversation'
-    | 'seventh_day'
-    | 'fourteenth_day'
-    | 'high_engagement'
-    | 'low_engagement';
+  | "first_conversation"
+  | "third_conversation"
+  | "seventh_day"
+  | "fourteenth_day"
+  | "high_engagement"
+  | "low_engagement";
 
 // 수집할 데이터 유형
 export type ProfileDataType =
-    | 'conversation_feedback'
-    | 'mbti'
-    | 'attachment_style'
-    | 'relationship_values'
-    | 'communication_preference'
-    | 'deal_breakers';
+  | "conversation_feedback"
+  | "mbti"
+  | "attachment_style"
+  | "relationship_values"
+  | "communication_preference"
+  | "deal_breakers";
 
 // 프로파일 완성도 레벨
 export interface ProfileCompleteness {
-    basicInfo: boolean;           // 가입 시 필수
-    personality: boolean;         // 빠른 성격 체크
-    conversationStyle: boolean;   // 대화 스타일 선호
-    mbti: boolean;               // MBTI
-    attachmentStyle: boolean;    // 애착 유형
-    relationshipGoals: boolean;  // 연애 목표
-    interests: boolean;          // 상세 관심사
+  basicInfo: boolean; // 가입 시 필수
+  personality: boolean; // 빠른 성격 체크
+  conversationStyle: boolean; // 대화 스타일 선호
+  mbti: boolean; // MBTI
+  attachmentStyle: boolean; // 애착 유형
+  relationshipGoals: boolean; // 연애 목표
+  interests: boolean; // 상세 관심사
 
-    totalScore: number;          // 0-100%
-    level: 'starter' | 'growing' | 'engaged' | 'complete';
-    nextReward?: string;
+  totalScore: number; // 0-100%
+  level: "starter" | "growing" | "engaged" | "complete";
+  nextReward?: string;
 }
 
 // 프로파일링 트리거 정의
 export interface ProfileTrigger {
-    id: string;
-    type: ProfileTriggerType;
-    condition: ProfileTriggerCondition;
-    dataToCollect: ProfileDataType;
-    question: {
-        title: string;
-        description?: string;
-        emoji: string;
-    };
-    priority: number; // 1-10, 높을수록 먼저
-    reward?: string;
+  id: string;
+  type: ProfileTriggerType;
+  condition: ProfileTriggerCondition;
+  dataToCollect: ProfileDataType;
+  question: {
+    title: string;
+    description?: string;
+    emoji: string;
+  };
+  priority: number; // 1-10, 높을수록 먼저
+  reward?: string;
 }
 
 interface ProfileTriggerCondition {
-    conversationCount?: number;
-    daysActive?: number;
-    engagementLevel?: 'high' | 'low';
-    hasCompleted?: ProfileDataType[];
-    notCompleted?: ProfileDataType[];
+  conversationCount?: number;
+  daysActive?: number;
+  engagementLevel?: "high" | "low";
+  hasCompleted?: ProfileDataType[];
+  notCompleted?: ProfileDataType[];
 }
 
 // 사용자 활동 상태
 export interface UserActivity {
-    conversationCount: number;
-    daysActive: number;
-    avgSessionDuration: number;
-    lastActiveAt: Date;
-    completedDataTypes: ProfileDataType[];
+  conversationCount: number;
+  daysActive: number;
+  avgSessionDuration: number;
+  lastActiveAt: Date;
+  completedDataTypes: ProfileDataType[];
 }
 
 // 트리거 정의
 const PROFILE_TRIGGERS: ProfileTrigger[] = [
-    {
-        id: 'first_chat_feedback',
-        type: 'first_conversation',
-        condition: {
-            conversationCount: 1,
-            notCompleted: ['conversation_feedback'],
-        },
-        dataToCollect: 'conversation_feedback',
-        question: {
-            title: '오늘 대화 어땠어요?',
-            description: '더 나은 대화를 위해 알려주세요',
-            emoji: '💬',
-        },
-        priority: 10,
-        reward: '맞춤형 대화 스타일 적용',
+  {
+    id: "first_chat_feedback",
+    type: "first_conversation",
+    condition: {
+      conversationCount: 1,
+      notCompleted: ["conversation_feedback"],
     },
-    {
-        id: 'third_chat_values',
-        type: 'third_conversation',
-        condition: {
-            conversationCount: 3,
-            notCompleted: ['relationship_values'],
-        },
-        dataToCollect: 'relationship_values',
-        question: {
-            title: '연애에서 가장 중요한 건?',
-            description: '더 나은 조언을 드릴게요',
-            emoji: '💕',
-        },
-        priority: 8,
-        reward: '프리미엄 코칭 팁 해금',
+    dataToCollect: "conversation_feedback",
+    question: {
+      title: "오늘 대화 어땠어요?",
+      description: "더 나은 대화를 위해 알려주세요",
+      emoji: "💬",
     },
-    {
-        id: 'seventh_day_mbti',
-        type: 'seventh_day',
-        condition: {
-            daysActive: 7,
-            notCompleted: ['mbti'],
-        },
-        dataToCollect: 'mbti',
-        question: {
-            title: 'MBTI가 뭐예요?',
-            description: '성격에 맞는 페르소나 추천해드릴게요',
-            emoji: '🔮',
-        },
-        priority: 7,
-        reward: 'MBTI 맞춤 페르소나 추천',
+    priority: 10,
+    reward: "맞춤형 대화 스타일 적용",
+  },
+  {
+    id: "third_chat_values",
+    type: "third_conversation",
+    condition: {
+      conversationCount: 3,
+      notCompleted: ["relationship_values"],
     },
-    {
-        id: 'fourteenth_day_attachment',
-        type: 'fourteenth_day',
-        condition: {
-            daysActive: 14,
-            notCompleted: ['attachment_style'],
-        },
-        dataToCollect: 'attachment_style',
-        question: {
-            title: '애착 유형 알아볼까요?',
-            description: '더 깊은 연애 인사이트를 제공해요 (선택)',
-            emoji: '🧠',
-        },
-        priority: 5,
+    dataToCollect: "relationship_values",
+    question: {
+      title: "연애에서 가장 중요한 건?",
+      description: "더 나은 조언을 드릴게요",
+      emoji: "💕",
     },
-    {
-        id: 'communication_pref',
-        type: 'high_engagement',
-        condition: {
-            conversationCount: 5,
-            notCompleted: ['communication_preference'],
-        },
-        dataToCollect: 'communication_preference',
-        question: {
-            title: '대화 스타일 취향',
-            description: 'AI 응답을 맞춤 설정해요',
-            emoji: '✨',
-        },
-        priority: 6,
-        reward: '맞춤형 AI 응답',
+    priority: 8,
+    reward: "프리미엄 코칭 팁 해금",
+  },
+  {
+    id: "seventh_day_mbti",
+    type: "seventh_day",
+    condition: {
+      daysActive: 7,
+      notCompleted: ["mbti"],
     },
+    dataToCollect: "mbti",
+    question: {
+      title: "MBTI가 뭐예요?",
+      description: "성격에 맞는 페르소나 추천해드릴게요",
+      emoji: "🔮",
+    },
+    priority: 7,
+    reward: "MBTI 맞춤 페르소나 추천",
+  },
+  {
+    id: "fourteenth_day_attachment",
+    type: "fourteenth_day",
+    condition: {
+      daysActive: 14,
+      notCompleted: ["attachment_style"],
+    },
+    dataToCollect: "attachment_style",
+    question: {
+      title: "애착 유형 알아볼까요?",
+      description: "더 깊은 연애 인사이트를 제공해요 (선택)",
+      emoji: "🧠",
+    },
+    priority: 5,
+  },
+  {
+    id: "communication_pref",
+    type: "high_engagement",
+    condition: {
+      conversationCount: 5,
+      notCompleted: ["communication_preference"],
+    },
+    dataToCollect: "communication_preference",
+    question: {
+      title: "대화 스타일 취향",
+      description: "AI 응답을 맞춤 설정해요",
+      emoji: "✨",
+    },
+    priority: 6,
+    reward: "맞춤형 AI 응답",
+  },
 ];
 
 /**
  * 프로필 완성도 계산
  */
 export function calculateProfileCompleteness(
-    completedDataTypes: ProfileDataType[],
-    hasBasicInfo: boolean = true,
+  completedDataTypes: ProfileDataType[],
+  hasBasicInfo: boolean = true,
 ): ProfileCompleteness {
-    const checks = {
-        basicInfo: hasBasicInfo,
-        personality: completedDataTypes.includes('conversation_feedback'),
-        conversationStyle: completedDataTypes.includes('communication_preference'),
-        mbti: completedDataTypes.includes('mbti'),
-        attachmentStyle: completedDataTypes.includes('attachment_style'),
-        relationshipGoals: completedDataTypes.includes('relationship_values'),
-        interests: completedDataTypes.includes('deal_breakers'),
-    };
+  const checks = {
+    basicInfo: hasBasicInfo,
+    personality: completedDataTypes.includes("conversation_feedback"),
+    conversationStyle: completedDataTypes.includes("communication_preference"),
+    mbti: completedDataTypes.includes("mbti"),
+    attachmentStyle: completedDataTypes.includes("attachment_style"),
+    relationshipGoals: completedDataTypes.includes("relationship_values"),
+    interests: completedDataTypes.includes("deal_breakers"),
+  };
 
-    const completed = Object.values(checks).filter(Boolean).length;
-    const total = Object.keys(checks).length;
-    const totalScore = Math.round((completed / total) * 100);
+  const completed = Object.values(checks).filter(Boolean).length;
+  const total = Object.keys(checks).length;
+  const totalScore = Math.round((completed / total) * 100);
 
-    let level: ProfileCompleteness['level'];
-    let nextReward: string | undefined;
+  let level: ProfileCompleteness["level"];
+  let nextReward: string | undefined;
 
-    if (totalScore < 30) {
-        level = 'starter';
-        nextReward = 'AI 코치 기능 해금 (50%)';
-    } else if (totalScore < 60) {
-        level = 'growing';
-        nextReward = '맞춤형 연애 조언 (75%)';
-    } else if (totalScore < 100) {
-        level = 'engaged';
-        nextReward = '프리미엄 페르소나 접근 (100%)';
-    } else {
-        level = 'complete';
-    }
+  if (totalScore < 30) {
+    level = "starter";
+    nextReward = "AI 코치 기능 해금 (50%)";
+  } else if (totalScore < 60) {
+    level = "growing";
+    nextReward = "맞춤형 연애 조언 (75%)";
+  } else if (totalScore < 100) {
+    level = "engaged";
+    nextReward = "프리미엄 페르소나 접근 (100%)";
+  } else {
+    level = "complete";
+  }
 
-    return { ...checks, totalScore, level, nextReward };
+  return { ...checks, totalScore, level, nextReward };
 }
 
 /**
  * 현재 활성화되어야 할 트리거 확인
  */
 export function getActiveProfileTrigger(
-    activity: UserActivity,
+  activity: UserActivity,
 ): ProfileTrigger | null {
-    const eligibleTriggers = PROFILE_TRIGGERS.filter(trigger => {
-        const { condition } = trigger;
+  const eligibleTriggers = PROFILE_TRIGGERS.filter((trigger) => {
+    const { condition } = trigger;
 
-        // 대화 횟수 조건
-        if (condition.conversationCount &&
-            activity.conversationCount < condition.conversationCount) {
-            return false;
-        }
+    // 대화 횟수 조건
+    if (
+      condition.conversationCount &&
+      activity.conversationCount < condition.conversationCount
+    ) {
+      return false;
+    }
 
-        // 활성 일수 조건
-        if (condition.daysActive &&
-            activity.daysActive < condition.daysActive) {
-            return false;
-        }
+    // 활성 일수 조건
+    if (condition.daysActive && activity.daysActive < condition.daysActive) {
+      return false;
+    }
 
-        // 미완료 조건 확인
-        if (condition.notCompleted) {
-            const allNotCompleted = condition.notCompleted.every(
-                dt => !activity.completedDataTypes.includes(dt)
-            );
-            if (!allNotCompleted) return false;
-        }
+    // 미완료 조건 확인
+    if (condition.notCompleted) {
+      const allNotCompleted = condition.notCompleted.every(
+        (dt) => !activity.completedDataTypes.includes(dt),
+      );
+      if (!allNotCompleted) return false;
+    }
 
-        // 완료 조건 확인
-        if (condition.hasCompleted) {
-            const allCompleted = condition.hasCompleted.every(
-                dt => activity.completedDataTypes.includes(dt)
-            );
-            if (!allCompleted) return false;
-        }
+    // 완료 조건 확인
+    if (condition.hasCompleted) {
+      const allCompleted = condition.hasCompleted.every((dt) =>
+        activity.completedDataTypes.includes(dt),
+      );
+      if (!allCompleted) return false;
+    }
 
-        return true;
-    });
+    return true;
+  });
 
-    if (eligibleTriggers.length === 0) return null;
+  if (eligibleTriggers.length === 0) return null;
 
-    // 우선순위로 정렬하여 가장 높은 것 반환
-    return eligibleTriggers.sort((a, b) => b.priority - a.priority)[0];
+  // 우선순위로 정렬하여 가장 높은 것 반환
+  return eligibleTriggers.sort((a, b) => b.priority - a.priority)[0];
 }
 
 /**
  * 프로필 트리거 알림 메시지 생성
  */
 export function createTriggerNotification(trigger: ProfileTrigger): {
-    title: string;
-    body: string;
-    action: string;
+  title: string;
+  body: string;
+  action: string;
 } {
-    return {
-        title: `${trigger.question.emoji} ${trigger.question.title}`,
-        body: trigger.question.description || '프로필을 완성해보세요!',
-        action: trigger.reward ? `완료하면: ${trigger.reward}` : '지금 완성하기',
-    };
+  return {
+    title: `${trigger.question.emoji} ${trigger.question.title}`,
+    body: trigger.question.description || "프로필을 완성해보세요!",
+    action: trigger.reward ? `완료하면: ${trigger.reward}` : "지금 완성하기",
+  };
 }
 
 export { PROFILE_TRIGGERS };

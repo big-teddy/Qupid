@@ -1,6 +1,6 @@
 /**
  * 페르소나 아바타 이미지 생성기
- * 
+ *
  * 🚀 로컬 프리셋 아바타 사용 (외부 서비스 의존성 제거)
  * - 안정성 향상 (504 에러 방지)
  * - 빠른 로딩
@@ -34,11 +34,11 @@ export const getRandomAvatar = (gender: "male" | "female"): string => {
   const pool = PREDEFINED_AVATARS[gender];
 
   // 사용 가능한 아바타 필터링
-  const available = pool.filter(avatar => !usedAvatars.has(avatar));
+  const available = pool.filter((avatar) => !usedAvatars.has(avatar));
 
   // 모두 사용되었으면 리셋
   if (available.length === 0) {
-    pool.forEach(avatar => usedAvatars.delete(avatar));
+    pool.forEach((avatar) => usedAvatars.delete(avatar));
     return getRandomAvatar(gender);
   }
 
@@ -70,4 +70,3 @@ export const generateAvatarUrl = (
 ): string => {
   return getRandomAvatar(gender);
 };
-

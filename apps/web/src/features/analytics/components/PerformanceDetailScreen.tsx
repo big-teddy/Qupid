@@ -14,7 +14,8 @@ interface PerformanceDetailScreenProps {
 const PerformanceDetailScreen: React.FC<PerformanceDetailScreenProps> = ({
   onBack,
 }) => {
-  const { user } = useUserStore(); const currentUserId = user?.id;
+  const { user } = useUserStore();
+  const currentUserId = user?.id;
   const {
     data: performanceData,
     isLoading,

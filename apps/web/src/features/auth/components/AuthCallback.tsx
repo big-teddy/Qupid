@@ -84,7 +84,11 @@ const AuthCallback: React.FC = () => {
       }
     } catch (err) {
       Logger.error("Auth callback error:", err);
-      setError(err instanceof Error ? err.message : "로그인 처리 중 오류가 발생했습니다.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "로그인 처리 중 오류가 발생했습니다.",
+      );
       setStatus("error");
     }
   };

@@ -46,31 +46,31 @@ const SettingItem: React.FC<{
   onClick,
   dangerous = false,
 }) => {
-    const isClickable = !!onClick;
-    const Component = isClickable ? "button" : "div";
+  const isClickable = !!onClick;
+  const Component = isClickable ? "button" : "div";
 
-    return (
-      <Component
-        onClick={onClick}
-        className={`flex items-center w-full h-[56px] px-5 bg-white ${isClickable ? "cursor-pointer hover:bg-gray-50" : ""}`}
-      >
-        <div className="flex items-center flex-1">
-          <span className="text-2xl w-6 text-center">{icon}</span>
-          <div className="ml-4 text-left">
-            <p
-              className={`text-base font-medium ${dangerous ? "text-[var(--warning-orange)]" : "text-[#191F28]"}`}
-            >
-              {title}
-            </p>
-            {subtitle && <p className="text-xs text-[#8B95A1]">{subtitle}</p>}
-          </div>
+  return (
+    <Component
+      onClick={onClick}
+      className={`flex items-center w-full h-[56px] px-5 bg-white ${isClickable ? "cursor-pointer hover:bg-gray-50" : ""}`}
+    >
+      <div className="flex items-center flex-1">
+        <span className="text-2xl w-6 text-center">{icon}</span>
+        <div className="ml-4 text-left">
+          <p
+            className={`text-base font-medium ${dangerous ? "text-[var(--warning-orange)]" : "text-[#191F28]"}`}
+          >
+            {title}
+          </p>
+          {subtitle && <p className="text-xs text-[#8B95A1]">{subtitle}</p>}
         </div>
-        <div className="flex items-center space-x-2 text-[#8B95A1]">
-          {rightComponent}
-        </div>
-      </Component>
-    );
-  };
+      </div>
+      <div className="flex items-center space-x-2 text-[#8B95A1]">
+        {rightComponent}
+      </div>
+    </Component>
+  );
+};
 
 const SectionContainer: React.FC<{
   title?: string;
@@ -87,13 +87,11 @@ const SectionContainer: React.FC<{
   </div>
 );
 
-const MyTabScreen: React.FC<MyTabScreenProps> = ({
-  onLogout,
-  isGuest,
-}) => {
+const MyTabScreen: React.FC<MyTabScreenProps> = ({ onLogout, isGuest }) => {
   const navigate = useNavigate();
   const requireAuth = useRequireAuth();
-  const { user } = useUserStore(); const currentUserId = user?.id;
+  const { user } = useUserStore();
+  const currentUserId = user?.id;
   const { data: userProfile } = useUserProfile(currentUserId || "");
 
   const handleRestrictedNavigate = (path: string) => {
@@ -264,19 +262,19 @@ const MyTabScreen: React.FC<MyTabScreenProps> = ({
           <SettingItem
             icon="❓"
             title="도움말"
-            onClick={() => { }}
+            onClick={() => {}}
             rightComponent={<ChevronRightIcon className="w-4 h-4" />}
           />
           <SettingItem
             icon="📞"
             title="고객센터 문의"
-            onClick={() => { }}
+            onClick={() => {}}
             rightComponent={<ChevronRightIcon className="w-4 h-4" />}
           />
           <SettingItem
             icon="⭐"
             title="앱 평가하기"
-            onClick={() => { }}
+            onClick={() => {}}
             rightComponent={<ChevronRightIcon className="w-4 h-4" />}
           />
           <SettingItem

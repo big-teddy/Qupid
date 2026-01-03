@@ -11,7 +11,11 @@ export default defineConfig(({ mode }) => {
       react(),
       VitePWA({
         registerType: "autoUpdate",
-        includeAssets: ["favicon.ico", "apple-touch-icon.png", "masked-icon.svg"],
+        includeAssets: [
+          "favicon.ico",
+          "apple-touch-icon.png",
+          "masked-icon.svg",
+        ],
         manifest: {
           name: "Qupid - AI 대화 코칭",
           short_name: "Qupid",

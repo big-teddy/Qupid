@@ -108,7 +108,7 @@ describe("Chat Query Hooks", () => {
 
       expect(api.post).toHaveBeenCalledWith(
         "/chat/sessions/session-123/messages",
-        { message: "Hello" }
+        { message: "Hello" },
       );
     });
   });

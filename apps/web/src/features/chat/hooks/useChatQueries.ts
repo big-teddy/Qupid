@@ -1,6 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
 import { api } from "../../../shared/lib/api-client";
-import { Message, ConversationAnalysis, RealtimeFeedback, Persona, AICoach } from "@qupid/core";
+import {
+  Message,
+  ConversationAnalysis,
+  RealtimeFeedback,
+  Persona,
+  AICoach,
+} from "@qupid/core";
 
 interface ApiResponse<T> {
   ok: boolean;
@@ -19,7 +25,7 @@ export const useChatSession = () => {
     }) => {
       const res = await api.post<ApiResponse<{ sessionId: string }>>(
         "/chat/sessions",
-        { personaId, systemInstruction }
+        { personaId, systemInstruction },
       );
       return res.data.sessionId;
     },
@@ -37,7 +43,7 @@ export const useSendMessage = () => {
     }) => {
       const res = await api.post<ApiResponse<{ response: string }>>(
         `/chat/sessions/${sessionId}/messages`,
-        { message }
+        { message },
       );
       return res.data.response;
     },
@@ -62,7 +68,7 @@ export const useAnalyzeConversation = () => {
       try {
         const res = await api.post<ApiResponse<ConversationAnalysis>>(
           "/chat/analyze",
-          { messages }
+          { messages },
         );
         return res.data;
       } catch (error) {
@@ -85,7 +91,7 @@ export const useRealtimeFeedback = () => {
       try {
         const res = await api.post<ApiResponse<RealtimeFeedback | null>>(
           "/chat/feedback",
-          { lastUserMessage, lastAiMessage }
+          { lastUserMessage, lastAiMessage },
         );
         return res.data;
       } catch (error) {
@@ -106,10 +112,9 @@ export const useCoachSuggestion = () => {
       persona?: Persona | AICoach | null;
     }) => {
       try {
-        const res = await api.post<ApiResponse<{ reason: string; suggestion: string }>>(
-          "/chat/coach-suggestion",
-          { messages, persona }
-        );
+        const res = await api.post<
+          ApiResponse<{ reason: string; suggestion: string }>
+        >("/chat/coach-suggestion", { messages, persona });
         return res.data;
       } catch (error) {
         console.error("Error getting coach suggestion:", error);
@@ -140,10 +145,9 @@ export const useGenerateDynamicPersonas = () => {
     }) => {
       try {
         // Note: Legacy client returned response.data || []
-        const res = await api.post<ApiResponse<{ success: boolean; data: Persona[] }>>(
-          "/personas/generate-dynamic",
-          { userProfile, count }
-        );
+        const res = await api.post<
+          ApiResponse<{ success: boolean; data: Persona[] }>
+        >("/personas/generate-dynamic", { userProfile, count });
         return res.data.data || [];
       } catch (error) {
         console.error("Error generating dynamic personas:", error);

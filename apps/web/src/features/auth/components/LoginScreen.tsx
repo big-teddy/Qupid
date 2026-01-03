@@ -8,9 +8,7 @@ interface LoginScreenProps {
   onLoginSuccess: (userData: { profile?: UserProfile }) => void;
 }
 
-const LoginScreen: React.FC<LoginScreenProps> = ({
-  onLoginSuccess,
-}) => {
+const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -120,10 +118,11 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
           <button
             type="submit"
             disabled={!isFormValid || isLoading}
-            className={`w-full h-14 rounded-xl font-bold text-lg transition-all ${isFormValid && !isLoading
-              ? "bg-[var(--primary-pink-main,#F093B0)] text-white"
-              : "bg-[#E5E8EB] text-[#8B95A1]"
-              }`}
+            className={`w-full h-14 rounded-xl font-bold text-lg transition-all ${
+              isFormValid && !isLoading
+                ? "bg-[var(--primary-pink-main,#F093B0)] text-white"
+                : "bg-[#E5E8EB] text-[#8B95A1]"
+            }`}
           >
             {isLoading ? "로그인 중..." : "로그인"}
           </button>

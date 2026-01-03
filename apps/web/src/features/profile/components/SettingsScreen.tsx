@@ -44,26 +44,26 @@ const SettingItem: React.FC<{
   dangerous = false,
   isLast = false,
 }) => (
-    <button
-      onClick={onClick}
-      className={`flex items-center w-full h-[56px] px-5 ${isLast ? "" : "border-b border-[#F2F4F6]"}`}
-    >
-      <div className="flex items-center flex-1">
-        <span className="text-2xl w-6 text-center">{icon}</span>
-        <div className="ml-4 text-left">
-          <p
-            className={`text-base font-medium ${dangerous ? "text-[var(--error-red)]" : "text-[#191F28]"}`}
-          >
-            {title}
-          </p>
-          {subtitle && <p className="text-sm text-[#8B95A1]">{subtitle}</p>}
-        </div>
+  <button
+    onClick={onClick}
+    className={`flex items-center w-full h-[56px] px-5 ${isLast ? "" : "border-b border-[#F2F4F6]"}`}
+  >
+    <div className="flex items-center flex-1">
+      <span className="text-2xl w-6 text-center">{icon}</span>
+      <div className="ml-4 text-left">
+        <p
+          className={`text-base font-medium ${dangerous ? "text-[var(--error-red)]" : "text-[#191F28]"}`}
+        >
+          {title}
+        </p>
+        {subtitle && <p className="text-sm text-[#8B95A1]">{subtitle}</p>}
       </div>
-      <div className="flex items-center space-x-2 text-[#8B95A1]">
-        {rightComponent}
-      </div>
-    </button>
-  );
+    </div>
+    <div className="flex items-center space-x-2 text-[#8B95A1]">
+      {rightComponent}
+    </div>
+  </button>
+);
 
 const SectionContainer: React.FC<{
   title?: string;
@@ -98,7 +98,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
     difficulty: 2,
     id: "",
     isTutorialCompleted: false,
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
   };
 
   const userProfile = user || defaultProfile;
@@ -209,7 +209,8 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
               {userProfile.name}
             </p>
             <p className="font-medium text-sm text-[#8B95A1]">
-              Level {userProfile.confidence || 1} · {userProfile.experience || "초급"}
+              Level {userProfile.confidence || 1} ·{" "}
+              {userProfile.experience || "초급"}
             </p>
             <div className="mt-1.5 h-1 w-full bg-white/30 rounded-full">
               <div
@@ -264,7 +265,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           <SettingItem
             icon="📊"
             title="실시간 분석 표시"
-            onClick={() => { }}
+            onClick={() => {}}
             rightComponent={
               <TossToggle
                 value={analysisDisplay}
@@ -288,10 +289,11 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
             rightComponent={
               <div className="flex items-center gap-2">
                 <span
-                  className={`text-base font-medium ${defaultConversationMode === "normal"
-                    ? "text-[#0AC5A8]"
-                    : "text-[#F093B0]"
-                    }`}
+                  className={`text-base font-medium ${
+                    defaultConversationMode === "normal"
+                      ? "text-[#0AC5A8]"
+                      : "text-[#F093B0]"
+                  }`}
                 >
                   {defaultConversationMode === "normal"
                     ? "👋 일반 모드"
@@ -315,7 +317,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           <SettingItem
             icon="🚻"
             title="성별 변경"
-            onClick={() => { }}
+            onClick={() => {}}
             rightComponent={
               <>
                 <span className="text-base font-medium">
@@ -328,13 +330,13 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           <SettingItem
             icon="📝"
             title="초기 설문 다시하기"
-            onClick={() => { }}
+            onClick={() => {}}
             rightComponent={<ChevronRightIcon className="w-4 h-4" />}
           />
           <SettingItem
             icon="🔐"
             title="개인정보 처리방침"
-            onClick={() => { }}
+            onClick={() => {}}
             rightComponent={<ChevronRightIcon className="w-4 h-4" />}
             isLast
           />
@@ -356,7 +358,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           <SettingItem
             icon="🌙"
             title="다크 모드"
-            onClick={() => { }}
+            onClick={() => {}}
             rightComponent={
               <TossToggle
                 value={darkMode}
@@ -367,7 +369,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           <SettingItem
             icon="🔊"
             title="사운드 효과"
-            onClick={() => { }}
+            onClick={() => {}}
             rightComponent={
               <TossToggle
                 value={soundEffects}
@@ -378,7 +380,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           <SettingItem
             icon="📱"
             title="햅틱 피드백"
-            onClick={() => { }}
+            onClick={() => {}}
             rightComponent={
               <TossToggle
                 value={hapticFeedback}
@@ -389,7 +391,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           <SettingItem
             icon="🌐"
             title="언어 설정"
-            onClick={() => { }}
+            onClick={() => {}}
             rightComponent={
               <>
                 <span className="text-base font-medium">한국어</span>
@@ -406,7 +408,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
             icon="📈"
             title="내 데이터 보기"
             subtitle="대화 기록, 분석 결과 등"
-            onClick={() => { }}
+            onClick={() => {}}
             rightComponent={<ChevronRightIcon className="w-4 h-4" />}
           />
           <SettingItem
@@ -420,13 +422,13 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
             icon="🗑️"
             title="대화 기록 삭제"
             subtitle="선택적 또는 전체 삭제"
-            onClick={() => { }}
+            onClick={() => {}}
             rightComponent={<ChevronRightIcon className="w-4 h-4" />}
           />
           <SettingItem
             icon="☁️"
             title="백업 설정"
-            onClick={() => { }}
+            onClick={() => {}}
             rightComponent={
               <>
                 <span className="text-base font-medium">자동 백업 ON</span>
@@ -442,25 +444,25 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({
           <SettingItem
             icon="❓"
             title="도움말"
-            onClick={() => { }}
+            onClick={() => {}}
             rightComponent={<ChevronRightIcon className="w-4 h-4" />}
           />
           <SettingItem
             icon="📞"
             title="고객센터 문의"
-            onClick={() => { }}
+            onClick={() => {}}
             rightComponent={<ChevronRightIcon className="w-4 h-4" />}
           />
           <SettingItem
             icon="⭐"
             title="앱 평가하기"
-            onClick={() => { }}
+            onClick={() => {}}
             rightComponent={<ChevronRightIcon className="w-4 h-4" />}
           />
           <SettingItem
             icon="📄"
             title="버전 정보"
-            onClick={() => { }}
+            onClick={() => {}}
             rightComponent={
               <span className="text-base font-medium">v1.2.3</span>
             }

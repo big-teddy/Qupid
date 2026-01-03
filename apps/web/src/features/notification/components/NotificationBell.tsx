@@ -107,8 +107,9 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                         notification.isRead,
                       )
                     }
-                    className={`p-4 border-b hover:bg-gray-50 cursor-pointer transition-colors ${!notification.isRead ? "bg-pink-50" : ""
-                      }`}
+                    className={`p-4 border-b hover:bg-gray-50 cursor-pointer transition-colors ${
+                      !notification.isRead ? "bg-pink-50" : ""
+                    }`}
                   >
                     <div className="flex items-start gap-3">
                       <span className="text-2xl">

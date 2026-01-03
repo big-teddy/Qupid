@@ -114,10 +114,11 @@ export const ChatScreen: React.FC<ChatScreenProps> = (props) => {
               <p className="text-sm text-[#0AC5A8] font-semibold">🟢 온라인</p>
               {!isTutorialMode && (
                 <span
-                  className={`text-xs px-2 py-0.5 rounded-full font-medium ${currentMode === "normal"
-                    ? "bg-[#E6F7F5] text-[#0AC5A8]"
-                    : "bg-[#FDF2F8] text-[#F093B0]"
-                    }`}
+                  className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                    currentMode === "normal"
+                      ? "bg-[#E6F7F5] text-[#0AC5A8]"
+                      : "bg-[#FDF2F8] text-[#F093B0]"
+                  }`}
                 >
                   {currentMode === "normal" ? "👋 친구모드" : "💕 연인모드"}
                 </span>
@@ -127,11 +128,16 @@ export const ChatScreen: React.FC<ChatScreenProps> = (props) => {
           <div className="flex items-center gap-2">
             {!isTutorialMode && !isCoaching && (
               <button
-                onClick={() => setCurrentMode(currentMode === "normal" ? "romantic" : "normal")}
-                className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all hover:scale-105 ${currentMode === "normal"
-                  ? "bg-[#FDF2F8] text-[#F093B0] border border-[#F093B0]"
-                  : "bg-[#E6F7F5] text-[#0AC5A8] border border-[#0AC5A8]"
-                  }`}
+                onClick={() =>
+                  setCurrentMode(
+                    currentMode === "normal" ? "romantic" : "normal",
+                  )
+                }
+                className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all hover:scale-105 ${
+                  currentMode === "normal"
+                    ? "bg-[#FDF2F8] text-[#F093B0] border border-[#F093B0]"
+                    : "bg-[#E6F7F5] text-[#0AC5A8] border border-[#0AC5A8]"
+                }`}
                 title="대화 모드 전환"
               >
                 {currentMode === "normal" ? "💕 연인 모드로" : "👋 일반 모드로"}
@@ -140,7 +146,8 @@ export const ChatScreen: React.FC<ChatScreenProps> = (props) => {
             {!isTutorialMode && !isCoaching && messages.length > 3 && (
               <button
                 onClick={async () => {
-                  const result = await styleAnalysisMutation.mutateAsync(messages);
+                  const result =
+                    await styleAnalysisMutation.mutateAsync(messages);
                   setStyleAnalysis(result);
                   setShowStyleModal(true);
                 }}

@@ -23,9 +23,7 @@ export function useUserBadges(userId: string) {
   return useQuery<Badge[]>({
     queryKey: ["userBadges", userId],
     queryFn: async () => {
-      const response = await api.get<BadgesResponse>(
-        `/users/${userId}/badges`,
-      );
+      const response = await api.get<BadgesResponse>(`/users/${userId}/badges`);
       return response.data;
     },
     enabled: !!userId,

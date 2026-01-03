@@ -9,9 +9,7 @@ interface SignupScreenProps {
   onSignupSuccess: (userData: { profile?: UserProfile }) => void;
 }
 
-const SignupScreen: React.FC<SignupScreenProps> = ({
-  onSignupSuccess,
-}) => {
+const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess }) => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1); // 1: 기본정보, 2: 성별선택
   // 게스트 데이터가 있으면 가져오기
@@ -235,10 +233,11 @@ const SignupScreen: React.FC<SignupScreenProps> = ({
                   onClick={() =>
                     setFormData({ ...formData, user_gender: "male" })
                   }
-                  className={`p-6 rounded-2xl border-2 transition-all ${formData.user_gender === "male"
-                    ? "border-[#F093B0] bg-[#FDF2F8]"
-                    : "border-[#E5E8EB] bg-white"
-                    }`}
+                  className={`p-6 rounded-2xl border-2 transition-all ${
+                    formData.user_gender === "male"
+                      ? "border-[#F093B0] bg-[#FDF2F8]"
+                      : "border-[#E5E8EB] bg-white"
+                  }`}
                 >
                   <p className="text-3xl mb-2">👨</p>
                   <p className="font-bold text-[#191F28]">남성</p>
@@ -247,10 +246,11 @@ const SignupScreen: React.FC<SignupScreenProps> = ({
                   onClick={() =>
                     setFormData({ ...formData, user_gender: "female" })
                   }
-                  className={`p-6 rounded-2xl border-2 transition-all ${formData.user_gender === "female"
-                    ? "border-[#F093B0] bg-[#FDF2F8]"
-                    : "border-[#E5E8EB] bg-white"
-                    }`}
+                  className={`p-6 rounded-2xl border-2 transition-all ${
+                    formData.user_gender === "female"
+                      ? "border-[#F093B0] bg-[#FDF2F8]"
+                      : "border-[#E5E8EB] bg-white"
+                  }`}
                 >
                   <p className="text-3xl mb-2">👩</p>
                   <p className="font-bold text-[#191F28]">여성</p>
@@ -267,10 +267,11 @@ const SignupScreen: React.FC<SignupScreenProps> = ({
                   onClick={() =>
                     setFormData({ ...formData, partner_gender: "male" })
                   }
-                  className={`p-6 rounded-2xl border-2 transition-all ${formData.partner_gender === "male"
-                    ? "border-[#F093B0] bg-[#FDF2F8]"
-                    : "border-[#E5E8EB] bg-white"
-                    }`}
+                  className={`p-6 rounded-2xl border-2 transition-all ${
+                    formData.partner_gender === "male"
+                      ? "border-[#F093B0] bg-[#FDF2F8]"
+                      : "border-[#E5E8EB] bg-white"
+                  }`}
                 >
                   <p className="text-3xl mb-2">👨</p>
                   <p className="font-bold text-[#191F28]">남성</p>
@@ -279,10 +280,11 @@ const SignupScreen: React.FC<SignupScreenProps> = ({
                   onClick={() =>
                     setFormData({ ...formData, partner_gender: "female" })
                   }
-                  className={`p-6 rounded-2xl border-2 transition-all ${formData.partner_gender === "female"
-                    ? "border-[#F093B0] bg-[#FDF2F8]"
-                    : "border-[#E5E8EB] bg-white"
-                    }`}
+                  className={`p-6 rounded-2xl border-2 transition-all ${
+                    formData.partner_gender === "female"
+                      ? "border-[#F093B0] bg-[#FDF2F8]"
+                      : "border-[#E5E8EB] bg-white"
+                  }`}
                 >
                   <p className="text-3xl mb-2">👩</p>
                   <p className="font-bold text-[#191F28]">여성</p>
@@ -315,10 +317,11 @@ const SignupScreen: React.FC<SignupScreenProps> = ({
         <button
           onClick={step === 1 ? handleNext : handleSignup}
           disabled={(step === 1 ? !isStep1Valid : !isStep2Valid) || isLoading}
-          className={`w-full h-14 rounded-xl font-bold text-lg transition-all ${(step === 1 ? isStep1Valid : isStep2Valid) && !isLoading
-            ? "bg-[var(--primary-pink-main,#F093B0)] text-white"
-            : "bg-[#E5E8EB] text-[#8B95A1]"
-            }`}
+          className={`w-full h-14 rounded-xl font-bold text-lg transition-all ${
+            (step === 1 ? isStep1Valid : isStep2Valid) && !isLoading
+              ? "bg-[var(--primary-pink-main,#F093B0)] text-white"
+              : "bg-[#E5E8EB] text-[#8B95A1]"
+          }`}
         >
           {isLoading ? "처리 중..." : step === 1 ? "다음" : "회원가입 완료"}
         </button>

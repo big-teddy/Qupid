@@ -8,7 +8,12 @@ interface StylingCoachProps {
 
 const StylingCoach: React.FC<StylingCoachProps> = ({ onBack }) => {
   const [prompt, setPrompt] = useState("");
-  const { mutate, data: result, isPending: isLoading, isError } = useStylingAdvice();
+  const {
+    mutate,
+    data: result,
+    isPending: isLoading,
+    isError,
+  } = useStylingAdvice();
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
@@ -17,7 +22,7 @@ const StylingCoach: React.FC<StylingCoachProps> = ({ onBack }) => {
 
       mutate({ prompt });
     },
-    [prompt, isLoading, mutate]
+    [prompt, isLoading, mutate],
   );
 
   const error = isError

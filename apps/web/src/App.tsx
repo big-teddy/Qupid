@@ -24,7 +24,12 @@ const queryClient = new QueryClient({
  */
 const AppContent: React.FC = () => {
   const { isGuest, isInitialized } = useAuthInit();
-  console.log("[DEBUG] AppContent render. Initialized:", isInitialized, "Guest:", isGuest);
+  console.log(
+    "[DEBUG] AppContent render. Initialized:",
+    isInitialized,
+    "Guest:",
+    isGuest,
+  );
 
   if (!isInitialized) {
     return <div>Loading Auth...</div>;

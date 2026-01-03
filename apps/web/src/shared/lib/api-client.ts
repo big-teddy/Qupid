@@ -32,7 +32,10 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401) {
       // 인증 오류 처리
       localStorage.removeItem("authToken");
-      if (!window.location.pathname.includes("/onboarding") && !window.location.pathname.includes("/auth")) {
+      if (
+        !window.location.pathname.includes("/onboarding") &&
+        !window.location.pathname.includes("/auth")
+      ) {
         window.location.href = "/onboarding";
       }
     }
@@ -43,15 +46,21 @@ apiClient.interceptors.response.use(
 // Generic helper methods
 export const api = {
   get: <T>(url: string, config?: AxiosRequestConfig) =>
-    apiClient.get<T, AxiosResponse<T>>(url, config).then(res => res.data),
+    apiClient.get<T, AxiosResponse<T>>(url, config).then((res) => res.data),
   post: <T>(url: string, data?: any, config?: AxiosRequestConfig) =>
-    apiClient.post<T, AxiosResponse<T>>(url, data, config).then(res => res.data),
+    apiClient
+      .post<T, AxiosResponse<T>>(url, data, config)
+      .then((res) => res.data),
   put: <T>(url: string, data?: any, config?: AxiosRequestConfig) =>
-    apiClient.put<T, AxiosResponse<T>>(url, data, config).then(res => res.data),
+    apiClient
+      .put<T, AxiosResponse<T>>(url, data, config)
+      .then((res) => res.data),
   patch: <T>(url: string, data?: any, config?: AxiosRequestConfig) =>
-    apiClient.patch<T, AxiosResponse<T>>(url, data, config).then(res => res.data),
+    apiClient
+      .patch<T, AxiosResponse<T>>(url, data, config)
+      .then((res) => res.data),
   delete: <T>(url: string, config?: AxiosRequestConfig) =>
-    apiClient.delete<T, AxiosResponse<T>>(url, config).then(res => res.data),
+    apiClient.delete<T, AxiosResponse<T>>(url, config).then((res) => res.data),
 };
 
 export default apiClient;

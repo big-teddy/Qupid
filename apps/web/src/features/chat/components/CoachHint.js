@@ -1,6 +1,95 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-export const CoachHint = ({ isLoading, suggestion, onApply, onClose, onManual, }) => {
-    if (!isLoading && !suggestion)
-        return null;
-    return (_jsx("div", { className: "absolute inset-0 bg-black/50 flex items-center justify-center z-20", children: _jsxs("div", { className: "bg-white p-6 rounded-2xl shadow-xl max-w-md w-full mx-4", children: [_jsxs("div", { className: "flex items-center justify-between mb-4", children: [_jsx("h3", { className: "text-lg font-bold text-[#191F28]", children: "\uD83D\uDCA1 \uCF54\uCE58 \uC81C\uC548" }), _jsx("button", { onClick: onClose, className: "text-gray-400 hover:text-gray-600", children: "\u2715" })] }), isLoading ? (_jsxs("div", { className: "flex items-center justify-center py-8", children: [_jsx("div", { className: "animate-spin rounded-full h-8 w-8 border-b-2 border-[#F093B0]" }), _jsx("p", { className: "ml-3 text-sm text-gray-500", children: "\uCF54\uCE58\uAC00 \uC81C\uC548\uC744 \uC900\uBE44\uD558\uACE0 \uC788\uC5B4\uC694..." })] })) : suggestion ? (_jsxs("div", { className: "space-y-4", children: [_jsx("div", { className: "p-4 bg-[#FDF2F8] rounded-xl border border-[#F093B0]", children: _jsx("p", { className: "text-sm text-[#191F28] leading-relaxed", children: suggestion.suggestion }) }), _jsxs("div", { className: "flex gap-2", children: [_jsx("button", { onClick: () => onApply(suggestion.suggestion), className: "flex-1 py-2 px-4 bg-[#F093B0] text-white rounded-lg font-medium hover:bg-[#E085A3] transition-colors", children: "\uC801\uC6A9\uD558\uAE30" }), _jsx("button", { onClick: onManual, className: "flex-1 py-2 px-4 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors", children: "\uC9C1\uC811 \uC785\uB825" })] })] })) : (_jsxs("div", { className: "text-center py-8", children: [_jsx("p", { className: "text-sm text-gray-500", children: "\uC81C\uC548\uC744 \uBD88\uB7EC\uC62C \uC218 \uC5C6\uC2B5\uB2C8\uB2E4." }), _jsx("button", { onClick: onClose, className: "mt-4 py-2 px-4 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors", children: "\uB2EB\uAE30" })] }))] }) }));
+export const CoachHint = ({
+  isLoading,
+  suggestion,
+  onApply,
+  onClose,
+  onManual,
+}) => {
+  if (!isLoading && !suggestion) return null;
+  return _jsx("div", {
+    className:
+      "absolute inset-0 bg-black/50 flex items-center justify-center z-20",
+    children: _jsxs("div", {
+      className: "bg-white p-6 rounded-2xl shadow-xl max-w-md w-full mx-4",
+      children: [
+        _jsxs("div", {
+          className: "flex items-center justify-between mb-4",
+          children: [
+            _jsx("h3", {
+              className: "text-lg font-bold text-[#191F28]",
+              children: "\uD83D\uDCA1 \uCF54\uCE58 \uC81C\uC548",
+            }),
+            _jsx("button", {
+              onClick: onClose,
+              className: "text-gray-400 hover:text-gray-600",
+              children: "\u2715",
+            }),
+          ],
+        }),
+        isLoading
+          ? _jsxs("div", {
+              className: "flex items-center justify-center py-8",
+              children: [
+                _jsx("div", {
+                  className:
+                    "animate-spin rounded-full h-8 w-8 border-b-2 border-[#F093B0]",
+                }),
+                _jsx("p", {
+                  className: "ml-3 text-sm text-gray-500",
+                  children:
+                    "\uCF54\uCE58\uAC00 \uC81C\uC548\uC744 \uC900\uBE44\uD558\uACE0 \uC788\uC5B4\uC694...",
+                }),
+              ],
+            })
+          : suggestion
+            ? _jsxs("div", {
+                className: "space-y-4",
+                children: [
+                  _jsx("div", {
+                    className:
+                      "p-4 bg-[#FDF2F8] rounded-xl border border-[#F093B0]",
+                    children: _jsx("p", {
+                      className: "text-sm text-[#191F28] leading-relaxed",
+                      children: suggestion.suggestion,
+                    }),
+                  }),
+                  _jsxs("div", {
+                    className: "flex gap-2",
+                    children: [
+                      _jsx("button", {
+                        onClick: () => onApply(suggestion.suggestion),
+                        className:
+                          "flex-1 py-2 px-4 bg-[#F093B0] text-white rounded-lg font-medium hover:bg-[#E085A3] transition-colors",
+                        children: "\uC801\uC6A9\uD558\uAE30",
+                      }),
+                      _jsx("button", {
+                        onClick: onManual,
+                        className:
+                          "flex-1 py-2 px-4 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors",
+                        children: "\uC9C1\uC811 \uC785\uB825",
+                      }),
+                    ],
+                  }),
+                ],
+              })
+            : _jsxs("div", {
+                className: "text-center py-8",
+                children: [
+                  _jsx("p", {
+                    className: "text-sm text-gray-500",
+                    children:
+                      "\uC81C\uC548\uC744 \uBD88\uB7EC\uC62C \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.",
+                  }),
+                  _jsx("button", {
+                    onClick: onClose,
+                    className:
+                      "mt-4 py-2 px-4 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors",
+                    children: "\uB2EB\uAE30",
+                  }),
+                ],
+              }),
+      ],
+    }),
+  });
 };

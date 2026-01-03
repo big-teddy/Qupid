@@ -1,30 +1,273 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useState } from "react";
 import { ArrowLeftIcon } from "@qupid/ui";
-const TossToggle = ({ value, onToggle, }) => (_jsx("button", { onClick: onToggle, className: `relative inline-flex items-center h-[30px] w-[50px] rounded-full transition-colors duration-300 ease-in-out focus:outline-none`, style: { backgroundColor: value ? "#F093B0" : "#E5E8EB" }, children: _jsx("span", { className: `inline-block w-[26px] h-[26px] transform bg-white rounded-full transition-transform duration-300 ease-in-out shadow-sm`, style: { transform: value ? "translateX(22px)" : "translateX(2px)" } }) }));
-const SettingItem = ({ icon, title, subtitle, rightComponent, onClick, isLast = false }) => (_jsxs("div", { className: `flex items-center w-full h-[56px] px-5 ${isLast ? "" : "border-b border-[#F2F4F6]"} ${onClick ? "cursor-pointer" : ""}`, onClick: onClick, children: [_jsxs("div", { className: "flex items-center flex-1", children: [_jsx("span", { className: "text-2xl w-6 text-center", children: icon }), _jsxs("div", { className: "ml-4 text-left", children: [_jsx("p", { className: "text-base font-medium text-[#191F28]", children: title }), subtitle && _jsx("p", { className: "text-sm text-[#8B95A1]", children: subtitle })] })] }), _jsx("div", { className: "flex items-center space-x-2 text-[#8B95A1]", children: rightComponent })] }));
-const SectionContainer = ({ title, children, className }) => (_jsxs("div", { className: `mt-4 ${className}`, children: [title && (_jsx("h3", { className: "px-5 pb-1 text-lg font-bold text-[#191F28]", children: title })), _jsx("div", { className: "bg-white rounded-2xl border border-[#F2F4F6] overflow-hidden", children: children })] }));
-const NotificationSettingsScreen = ({ onBack, notificationTime, doNotDisturbStart, doNotDisturbEnd, onSave, }) => {
-    const [localNotificationTime, setLocalNotificationTime] = useState(notificationTime);
-    const [localDoNotDisturbStart, setLocalDoNotDisturbStart] = useState(doNotDisturbStart);
-    const [localDoNotDisturbEnd, setLocalDoNotDisturbEnd] = useState(doNotDisturbEnd);
-    // 알림 설정 상태
-    const [weeklySummary, setWeeklySummary] = useState(true);
-    const [newAIRecommendation, setNewAIRecommendation] = useState(true);
-    const [badgeNotification, setBadgeNotification] = useState(true);
-    const [matchingNotification, setMatchingNotification] = useState(true);
-    const [appUpdateNotification, setAppUpdateNotification] = useState(true);
-    const handleSave = () => {
-        onSave(localNotificationTime, localDoNotDisturbStart, localDoNotDisturbEnd);
-        onBack();
-    };
-    const formatTime = (time) => {
-        const [hour, minute] = time.split(":");
-        const hourNum = parseInt(hour);
-        const period = hourNum >= 12 ? "오후" : "오전";
-        const displayHour = hourNum === 0 ? 12 : hourNum > 12 ? hourNum - 12 : hourNum;
-        return `${period} ${displayHour}:${minute}`;
-    };
-    return (_jsxs("div", { className: "flex flex-col h-full w-full bg-[#F9FAFB]", children: [_jsxs("header", { className: "flex-shrink-0 flex items-center justify-between p-3 bg-white", children: [_jsx("button", { onClick: onBack, className: "p-2 rounded-full hover:bg-gray-100", children: _jsx(ArrowLeftIcon, { className: "w-6 h-6 text-[#191F28]" }) }), _jsx("h1", { className: "text-xl font-bold text-[#191F28]", children: "\uC54C\uB9BC \uC124\uC815" }), _jsx("button", { onClick: handleSave, className: "px-3 py-1 text-sm font-medium text-[#F093B0] hover:text-[#DB7093]", children: "\uC800\uC7A5" })] }), _jsxs("main", { className: "flex-1 overflow-y-auto p-4", children: [_jsx(SectionContainer, { children: _jsx(SettingItem, { icon: "\uD83D\uDCCA", title: "\uC8FC\uAC04/\uC6D4\uAC04 \uC131\uACFC \uC694\uC57D", rightComponent: _jsx(TossToggle, { value: weeklySummary, onToggle: () => setWeeklySummary((v) => !v) }) }) }), _jsxs(SectionContainer, { children: [_jsx(SettingItem, { icon: "\uD83D\uDC95", title: "\uC0C8\uB85C\uC6B4 AI \uCD94\uCC9C", subtitle: "\uB9DE\uCDA4 AI \uCD94\uCC9C \uC2DC", rightComponent: _jsx(TossToggle, { value: newAIRecommendation, onToggle: () => setNewAIRecommendation((v) => !v) }) }), _jsx(SettingItem, { icon: "\uD83C\uDFC6", title: "\uBC30\uC9C0 \uD68D\uB4DD \uC54C\uB9BC", subtitle: "\uC0C8\uB85C\uC6B4 \uC131\uCDE8 \uB2EC\uC131 \uC2DC", rightComponent: _jsx(TossToggle, { value: badgeNotification, onToggle: () => setBadgeNotification((v) => !v) }) }), _jsx(SettingItem, { icon: "\uD83D\uDCAC", title: "\uB9E4\uCE6D \uC54C\uB9BC", subtitle: "\uC2E4\uC81C \uB9E4\uCE6D \uAD00\uB828 \uC54C\uB9BC", rightComponent: _jsx(TossToggle, { value: matchingNotification, onToggle: () => setMatchingNotification((v) => !v) }), isLast: true })] }), _jsxs(SectionContainer, { children: [_jsx(SettingItem, { icon: "\u2B06\uFE0F", title: "\uC571 \uC5C5\uB370\uC774\uD2B8 \uC54C\uB9BC", rightComponent: _jsx(TossToggle, { value: appUpdateNotification, onToggle: () => setAppUpdateNotification((v) => !v) }) }), _jsx(SettingItem, { icon: "\uD83D\uDD12", title: "\uBCF4\uC548 \uC54C\uB9BC", rightComponent: _jsx("span", { className: "text-sm text-[#8B95A1]", children: "\uD56D\uC0C1 ON" }), isLast: true })] }), _jsxs(SectionContainer, { children: [_jsx(SettingItem, { icon: "\u23F0", title: "\uC5F0\uC2B5 \uC54C\uB9BC \uC2DC\uAC04", rightComponent: _jsxs("div", { className: "flex items-center space-x-2", children: [_jsx("span", { className: "text-sm text-[#F093B0] font-medium", children: formatTime(localNotificationTime) }), _jsx("input", { type: "time", value: localNotificationTime, onChange: (e) => setLocalNotificationTime(e.target.value), className: "w-0 h-0 opacity-0 absolute", id: "notification-time" }), _jsx("label", { htmlFor: "notification-time", className: "cursor-pointer", children: _jsx("span", { className: "text-xs text-[#8B95A1]", children: "\uC218\uC815" }) })] }) }), _jsx(SettingItem, { icon: "\uD83D\uDD15", title: "\uBC29\uD574 \uAE08\uC9C0 \uC2DC\uAC04", rightComponent: _jsxs("div", { className: "flex items-center space-x-2", children: [_jsxs("span", { className: "text-sm text-[#8B95A1] font-medium", children: [formatTime(localDoNotDisturbStart), " ~", " ", formatTime(localDoNotDisturbEnd)] }), _jsx("input", { type: "time", value: localDoNotDisturbStart, onChange: (e) => setLocalDoNotDisturbStart(e.target.value), className: "w-0 h-0 opacity-0 absolute", id: "dnd-start" }), _jsx("input", { type: "time", value: localDoNotDisturbEnd, onChange: (e) => setLocalDoNotDisturbEnd(e.target.value), className: "w-0 h-0 opacity-0 absolute", id: "dnd-end" }), _jsx("label", { htmlFor: "dnd-start", className: "cursor-pointer", children: _jsx("span", { className: "text-xs text-[#8B95A1]", children: "\uC218\uC815" }) })] }), isLast: true })] })] })] }));
+const TossToggle = ({ value, onToggle }) =>
+  _jsx("button", {
+    onClick: onToggle,
+    className: `relative inline-flex items-center h-[30px] w-[50px] rounded-full transition-colors duration-300 ease-in-out focus:outline-none`,
+    style: { backgroundColor: value ? "#F093B0" : "#E5E8EB" },
+    children: _jsx("span", {
+      className: `inline-block w-[26px] h-[26px] transform bg-white rounded-full transition-transform duration-300 ease-in-out shadow-sm`,
+      style: { transform: value ? "translateX(22px)" : "translateX(2px)" },
+    }),
+  });
+const SettingItem = ({
+  icon,
+  title,
+  subtitle,
+  rightComponent,
+  onClick,
+  isLast = false,
+}) =>
+  _jsxs("div", {
+    className: `flex items-center w-full h-[56px] px-5 ${isLast ? "" : "border-b border-[#F2F4F6]"} ${onClick ? "cursor-pointer" : ""}`,
+    onClick: onClick,
+    children: [
+      _jsxs("div", {
+        className: "flex items-center flex-1",
+        children: [
+          _jsx("span", {
+            className: "text-2xl w-6 text-center",
+            children: icon,
+          }),
+          _jsxs("div", {
+            className: "ml-4 text-left",
+            children: [
+              _jsx("p", {
+                className: "text-base font-medium text-[#191F28]",
+                children: title,
+              }),
+              subtitle &&
+                _jsx("p", {
+                  className: "text-sm text-[#8B95A1]",
+                  children: subtitle,
+                }),
+            ],
+          }),
+        ],
+      }),
+      _jsx("div", {
+        className: "flex items-center space-x-2 text-[#8B95A1]",
+        children: rightComponent,
+      }),
+    ],
+  });
+const SectionContainer = ({ title, children, className }) =>
+  _jsxs("div", {
+    className: `mt-4 ${className}`,
+    children: [
+      title &&
+        _jsx("h3", {
+          className: "px-5 pb-1 text-lg font-bold text-[#191F28]",
+          children: title,
+        }),
+      _jsx("div", {
+        className:
+          "bg-white rounded-2xl border border-[#F2F4F6] overflow-hidden",
+        children: children,
+      }),
+    ],
+  });
+const NotificationSettingsScreen = ({
+  onBack,
+  notificationTime,
+  doNotDisturbStart,
+  doNotDisturbEnd,
+  onSave,
+}) => {
+  const [localNotificationTime, setLocalNotificationTime] =
+    useState(notificationTime);
+  const [localDoNotDisturbStart, setLocalDoNotDisturbStart] =
+    useState(doNotDisturbStart);
+  const [localDoNotDisturbEnd, setLocalDoNotDisturbEnd] =
+    useState(doNotDisturbEnd);
+  // 알림 설정 상태
+  const [weeklySummary, setWeeklySummary] = useState(true);
+  const [newAIRecommendation, setNewAIRecommendation] = useState(true);
+  const [badgeNotification, setBadgeNotification] = useState(true);
+  const [matchingNotification, setMatchingNotification] = useState(true);
+  const [appUpdateNotification, setAppUpdateNotification] = useState(true);
+  const handleSave = () => {
+    onSave(localNotificationTime, localDoNotDisturbStart, localDoNotDisturbEnd);
+    onBack();
+  };
+  const formatTime = (time) => {
+    const [hour, minute] = time.split(":");
+    const hourNum = parseInt(hour);
+    const period = hourNum >= 12 ? "오후" : "오전";
+    const displayHour =
+      hourNum === 0 ? 12 : hourNum > 12 ? hourNum - 12 : hourNum;
+    return `${period} ${displayHour}:${minute}`;
+  };
+  return _jsxs("div", {
+    className: "flex flex-col h-full w-full bg-[#F9FAFB]",
+    children: [
+      _jsxs("header", {
+        className:
+          "flex-shrink-0 flex items-center justify-between p-3 bg-white",
+        children: [
+          _jsx("button", {
+            onClick: onBack,
+            className: "p-2 rounded-full hover:bg-gray-100",
+            children: _jsx(ArrowLeftIcon, {
+              className: "w-6 h-6 text-[#191F28]",
+            }),
+          }),
+          _jsx("h1", {
+            className: "text-xl font-bold text-[#191F28]",
+            children: "\uC54C\uB9BC \uC124\uC815",
+          }),
+          _jsx("button", {
+            onClick: handleSave,
+            className:
+              "px-3 py-1 text-sm font-medium text-[#F093B0] hover:text-[#DB7093]",
+            children: "\uC800\uC7A5",
+          }),
+        ],
+      }),
+      _jsxs("main", {
+        className: "flex-1 overflow-y-auto p-4",
+        children: [
+          _jsx(SectionContainer, {
+            children: _jsx(SettingItem, {
+              icon: "\uD83D\uDCCA",
+              title: "\uC8FC\uAC04/\uC6D4\uAC04 \uC131\uACFC \uC694\uC57D",
+              rightComponent: _jsx(TossToggle, {
+                value: weeklySummary,
+                onToggle: () => setWeeklySummary((v) => !v),
+              }),
+            }),
+          }),
+          _jsxs(SectionContainer, {
+            children: [
+              _jsx(SettingItem, {
+                icon: "\uD83D\uDC95",
+                title: "\uC0C8\uB85C\uC6B4 AI \uCD94\uCC9C",
+                subtitle: "\uB9DE\uCDA4 AI \uCD94\uCC9C \uC2DC",
+                rightComponent: _jsx(TossToggle, {
+                  value: newAIRecommendation,
+                  onToggle: () => setNewAIRecommendation((v) => !v),
+                }),
+              }),
+              _jsx(SettingItem, {
+                icon: "\uD83C\uDFC6",
+                title: "\uBC30\uC9C0 \uD68D\uB4DD \uC54C\uB9BC",
+                subtitle: "\uC0C8\uB85C\uC6B4 \uC131\uCDE8 \uB2EC\uC131 \uC2DC",
+                rightComponent: _jsx(TossToggle, {
+                  value: badgeNotification,
+                  onToggle: () => setBadgeNotification((v) => !v),
+                }),
+              }),
+              _jsx(SettingItem, {
+                icon: "\uD83D\uDCAC",
+                title: "\uB9E4\uCE6D \uC54C\uB9BC",
+                subtitle: "\uC2E4\uC81C \uB9E4\uCE6D \uAD00\uB828 \uC54C\uB9BC",
+                rightComponent: _jsx(TossToggle, {
+                  value: matchingNotification,
+                  onToggle: () => setMatchingNotification((v) => !v),
+                }),
+                isLast: true,
+              }),
+            ],
+          }),
+          _jsxs(SectionContainer, {
+            children: [
+              _jsx(SettingItem, {
+                icon: "\u2B06\uFE0F",
+                title: "\uC571 \uC5C5\uB370\uC774\uD2B8 \uC54C\uB9BC",
+                rightComponent: _jsx(TossToggle, {
+                  value: appUpdateNotification,
+                  onToggle: () => setAppUpdateNotification((v) => !v),
+                }),
+              }),
+              _jsx(SettingItem, {
+                icon: "\uD83D\uDD12",
+                title: "\uBCF4\uC548 \uC54C\uB9BC",
+                rightComponent: _jsx("span", {
+                  className: "text-sm text-[#8B95A1]",
+                  children: "\uD56D\uC0C1 ON",
+                }),
+                isLast: true,
+              }),
+            ],
+          }),
+          _jsxs(SectionContainer, {
+            children: [
+              _jsx(SettingItem, {
+                icon: "\u23F0",
+                title: "\uC5F0\uC2B5 \uC54C\uB9BC \uC2DC\uAC04",
+                rightComponent: _jsxs("div", {
+                  className: "flex items-center space-x-2",
+                  children: [
+                    _jsx("span", {
+                      className: "text-sm text-[#F093B0] font-medium",
+                      children: formatTime(localNotificationTime),
+                    }),
+                    _jsx("input", {
+                      type: "time",
+                      value: localNotificationTime,
+                      onChange: (e) => setLocalNotificationTime(e.target.value),
+                      className: "w-0 h-0 opacity-0 absolute",
+                      id: "notification-time",
+                    }),
+                    _jsx("label", {
+                      htmlFor: "notification-time",
+                      className: "cursor-pointer",
+                      children: _jsx("span", {
+                        className: "text-xs text-[#8B95A1]",
+                        children: "\uC218\uC815",
+                      }),
+                    }),
+                  ],
+                }),
+              }),
+              _jsx(SettingItem, {
+                icon: "\uD83D\uDD15",
+                title: "\uBC29\uD574 \uAE08\uC9C0 \uC2DC\uAC04",
+                rightComponent: _jsxs("div", {
+                  className: "flex items-center space-x-2",
+                  children: [
+                    _jsxs("span", {
+                      className: "text-sm text-[#8B95A1] font-medium",
+                      children: [
+                        formatTime(localDoNotDisturbStart),
+                        " ~",
+                        " ",
+                        formatTime(localDoNotDisturbEnd),
+                      ],
+                    }),
+                    _jsx("input", {
+                      type: "time",
+                      value: localDoNotDisturbStart,
+                      onChange: (e) =>
+                        setLocalDoNotDisturbStart(e.target.value),
+                      className: "w-0 h-0 opacity-0 absolute",
+                      id: "dnd-start",
+                    }),
+                    _jsx("input", {
+                      type: "time",
+                      value: localDoNotDisturbEnd,
+                      onChange: (e) => setLocalDoNotDisturbEnd(e.target.value),
+                      className: "w-0 h-0 opacity-0 absolute",
+                      id: "dnd-end",
+                    }),
+                    _jsx("label", {
+                      htmlFor: "dnd-start",
+                      className: "cursor-pointer",
+                      children: _jsx("span", {
+                        className: "text-xs text-[#8B95A1]",
+                        children: "\uC218\uC815",
+                      }),
+                    }),
+                  ],
+                }),
+                isLast: true,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  });
 };
 export default NotificationSettingsScreen;

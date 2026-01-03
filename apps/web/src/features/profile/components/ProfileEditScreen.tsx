@@ -260,10 +260,11 @@ const ProfileEditScreen: React.FC<ProfileEditScreenProps> = ({
                     setExperience(exp);
                     setShowExperienceModal(false);
                   }}
-                  className={`w-full py-3 rounded-lg font-medium transition-colors ${experience === exp
+                  className={`w-full py-3 rounded-lg font-medium transition-colors ${
+                    experience === exp
                       ? "bg-[#F093B0] text-white"
                       : "bg-[#F9FAFB] text-[#191F28] hover:bg-[#F2F4F6]"
-                    }`}
+                  }`}
                 >
                   {exp}
                 </button>
@@ -304,10 +305,11 @@ const ProfileEditScreen: React.FC<ProfileEditScreenProps> = ({
                       setInterests([...interests, interest]);
                     }
                   }}
-                  className={`w-full py-3 rounded-lg font-medium transition-colors ${interests.includes(interest)
+                  className={`w-full py-3 rounded-lg font-medium transition-colors ${
+                    interests.includes(interest)
                       ? "bg-[#F093B0] text-white"
                       : "bg-[#F9FAFB] text-[#191F28] hover:bg-[#F2F4F6]"
-                    }`}
+                  }`}
                 >
                   {interest} {interests.includes(interest) && "✓"}
                 </button>

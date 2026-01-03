@@ -4,15 +4,18 @@ import { ArrowLeftIcon, CoachKeyIcon } from "@qupid/ui";
 import { TUTORIAL_STEPS } from "@qupid/core";
 
 // Fallback persona type for when no partner is available
-type TutorialPartner = Persona | AICoach | {
-  id: string;
-  name: string;
-  avatar: string;
-  role?: string;
-  personality?: string;
-  mbti?: string;
-  tone?: string;
-};
+type TutorialPartner =
+  | Persona
+  | AICoach
+  | {
+      id: string;
+      name: string;
+      avatar: string;
+      role?: string;
+      personality?: string;
+      mbti?: string;
+      tone?: string;
+    };
 
 interface TutorialIntroScreenProps {
   persona?: TutorialPartner;

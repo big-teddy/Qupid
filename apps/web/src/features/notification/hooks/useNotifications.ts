@@ -91,9 +91,9 @@ export const useNotificationSettings = (userId: string) => {
   return useQuery({
     queryKey: ["notification-settings", userId],
     queryFn: async () => {
-      const response = await api.get<NotificationResponse<NotificationSettings>>(
-        `/notifications/${userId}/settings`,
-      );
+      const response = await api.get<
+        NotificationResponse<NotificationSettings>
+      >(`/notifications/${userId}/settings`);
       return response.data;
     },
     enabled: !!userId,
