@@ -70,21 +70,24 @@ pnpm dev:web  # 프론트엔드 (http://localhost:5173)
 ## 🛠️ 기술 스택
 
 ### 백엔드 (`apps/api`)
+
 - **프레임워크**: Express.js with TypeScript
 - **AI 모델**: OpenAI GPT-4o-mini (채팅), DALL-E 3 (이미지 생성)
 - **데이터베이스**: Supabase (PostgreSQL)
 - **아키텍처**: 레이어드 아키텍처 (Controller → Service → Repository)
 
 ### 프론트엔드 (`apps/web`)
+
 - **프레임워크**: React 19 with TypeScript
 - **빌드 도구**: Vite
 - **스타일링**: Tailwind CSS
-- **상태 관리**: 
+- **상태 관리**:
   - TanStack Query (서버 상태)
   - Zustand (클라이언트 상태)
 - **폼 관리**: React Hook Form + Zod
 
 ### 공통
+
 - **패키지 매니저**: pnpm workspaces
 - **타입 시스템**: TypeScript (strict mode)
 - **코드 품질**: ESLint, Prettier
@@ -92,6 +95,7 @@ pnpm dev:web  # 프론트엔드 (http://localhost:5173)
 ## 📁 주요 디렉토리 구조
 
 ### 백엔드 (`apps/api/src`)
+
 ```
 modules/
 ├── chat/         # 채팅 기능
@@ -100,6 +104,7 @@ modules/
 ```
 
 ### 프론트엔드 (`apps/web/src`)
+
 ```
 features/
 ├── chat/         # 채팅 기능
@@ -116,6 +121,7 @@ shared/
 ## 🔌 API 엔드포인트
 
 ### Chat API
+
 - `POST /api/v1/chat/sessions` - 채팅 세션 생성
 - `POST /api/v1/chat/sessions/:id/messages` - 메시지 전송
 - `GET /api/v1/chat/sessions/:id` - 세션 정보 조회
@@ -124,6 +130,7 @@ shared/
 - `POST /api/v1/chat/coach-suggestion` - 코칭 제안
 
 ### Styling API
+
 - `POST /api/v1/styling/advice` - 스타일링 조언 및 이미지 생성
 
 ## 📝 스크립트

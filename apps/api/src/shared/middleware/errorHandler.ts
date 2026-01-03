@@ -1,7 +1,7 @@
-import { ErrorRequestHandler } from 'express';
-import { ZodError } from 'zod';
-import { AppError } from '../errors/AppError.js';
-import pino from 'pino';
+import { ErrorRequestHandler } from "express";
+import { ZodError } from "zod";
+import { AppError } from "../errors/AppError.js";
+import pino from "pino";
 
 const logger = pino();
 
@@ -13,7 +13,7 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
       stack: err.stack,
       code: err.code,
       status: err.status,
-    }
+    },
   });
 
   // Handle Zod validation errors
@@ -21,10 +21,10 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     return res.status(422).json({
       ok: false,
       error: {
-        code: 'VALIDATION_ERROR',
-        message: 'Invalid request data',
-        details: err.errors
-      }
+        code: "VALIDATION_ERROR",
+        message: "Invalid request data",
+        details: err.errors,
+      },
     });
   }
 
@@ -34,22 +34,23 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
       ok: false,
       error: {
         code: err.code,
-        message: err.message
-      }
+        message: err.message,
+      },
     });
   }
 
   // Handle unexpected errors
-  const error = err instanceof Error ? err : new Error('Unexpected error');
+  const error = err instanceof Error ? err : new Error("Unexpected error");
   const appError = AppError.internal(error.message, error);
-  
+
   return res.status(appError.status).json({
     ok: false,
     error: {
       code: appError.code,
-      message: process.env.NODE_ENV === 'production' 
-        ? 'An unexpected error occurred' 
-        : appError.message
-    }
+      message:
+        process.env.NODE_ENV === "production"
+          ? "An unexpected error occurred"
+          : appError.message,
+    },
   });
 };

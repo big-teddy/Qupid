@@ -1,7 +1,7 @@
-import { supabase } from '../../../config/supabase.js';
-import { openai } from '../../../shared/infra/openai.js';
-import { Message, ConversationAnalysis } from '@qupid/core';
-import { NotificationService } from '../../notification/app/NotificationService.js';
+import { supabase } from "../../../config/supabase.js";
+import { openai } from "../../../shared/infra/openai.js";
+import { Message, ConversationAnalysis } from "@qupid/core";
+import { NotificationService } from "../../notification/app/NotificationService.js";
 
 export class ConversationAnalyzer {
   private notificationService = new NotificationService();
@@ -14,8 +14,8 @@ export class ConversationAnalyzer {
     }
 
     const conversationText = messages
-      .map(m => `${m.sender === 'user' ? '사용자' : 'AI'}: ${m.text}`)
-      .join('\n');
+      .map((m) => `${m.sender === "user" ? "사용자" : "AI"}: ${m.text}`)
+      .join("\n");
 
     const prompt = `다음 연애 대화를 분석하고 JSON 형식으로 평가해주세요:
 
@@ -40,34 +40,48 @@ JSON 형식:
 
     try {
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: "gpt-4o-mini",
         messages: [
-          { role: 'system', content: 'You are a professional conversation analyzer. Respond only with valid JSON.' },
-          { role: 'user', content: prompt }
+          {
+            role: "system",
+            content:
+              "You are a professional conversation analyzer. Respond only with valid JSON.",
+          },
+          { role: "user", content: prompt },
         ],
         temperature: 0.7,
-        response_format: { type: 'json_object' }
+        response_format: { type: "json_object" },
       });
 
-      const result = JSON.parse(completion.choices[0].message.content || '{}');
-      
+      const result = JSON.parse(completion.choices[0].message.content || "{}");
+
       return {
         totalScore: result.totalScore || 75,
-        friendliness: result.friendliness || { score: 80, feedback: '친근한 대화였어요!' },
-        curiosity: result.curiosity || { score: 75, feedback: '호기심을 보여주셨어요!' },
-        empathy: result.empathy || { score: 70, feedback: '공감 능력을 보여주셨어요!' },
-        feedback: result.feedback || '좋은 대화였어요! 계속 연습하면 더 좋아질 거예요.',
-        positivePoints: result.strengths || ['친근한 태도', '적극적인 참여'],
-        pointsToImprove: result.improvements?.map((imp: string) => ({ 
+        friendliness: result.friendliness || {
+          score: 80,
+          feedback: "친근한 대화였어요!",
+        },
+        curiosity: result.curiosity || {
+          score: 75,
+          feedback: "호기심을 보여주셨어요!",
+        },
+        empathy: result.empathy || {
+          score: 70,
+          feedback: "공감 능력을 보여주셨어요!",
+        },
+        feedback:
+          result.feedback || "좋은 대화였어요! 계속 연습하면 더 좋아질 거예요.",
+        positivePoints: result.strengths || ["친근한 태도", "적극적인 참여"],
+        pointsToImprove: result.improvements?.map((imp: string) => ({
           topic: imp,
-          suggestion: imp
+          suggestion: imp,
         })) || [
-          { topic: '질문하기', suggestion: '더 많은 질문하기' },
-          { topic: '감정 표현', suggestion: '감정 표현 더하기' }
-        ]
+            { topic: "질문하기", suggestion: "더 많은 질문하기" },
+            { topic: "감정 표현", suggestion: "감정 표현 더하기" },
+          ],
       };
     } catch (error) {
-      console.error('Analysis error:', error);
+      console.error("Analysis error:", error);
       return this.getDefaultAnalysis();
     }
   }
@@ -75,15 +89,15 @@ JSON 형식:
   private getDefaultAnalysis(): ConversationAnalysis {
     return {
       totalScore: 75,
-      friendliness: { score: 80, feedback: '친근한 대화였어요!' },
-      curiosity: { score: 75, feedback: '호기심을 보여주셨어요!' },
-      empathy: { score: 70, feedback: '공감 능력을 보여주셨어요!' },
-      feedback: '좋은 대화였어요! 계속 연습하면 더 좋아질 거예요.',
-      positivePoints: ['친근한 태도', '적극적인 참여'],
+      friendliness: { score: 80, feedback: "친근한 대화였어요!" },
+      curiosity: { score: 75, feedback: "호기심을 보여주셨어요!" },
+      empathy: { score: 70, feedback: "공감 능력을 보여주셨어요!" },
+      feedback: "좋은 대화였어요! 계속 연습하면 더 좋아질 거예요.",
+      positivePoints: ["친근한 태도", "적극적인 참여"],
       pointsToImprove: [
-        { topic: '질문하기', suggestion: '더 많은 질문하기' },
-        { topic: '감정 표현', suggestion: '감정 표현 더하기' }
-      ]
+        { topic: "질문하기", suggestion: "더 많은 질문하기" },
+        { topic: "감정 표현", suggestion: "감정 표현 더하기" },
+      ],
     };
   }
 
@@ -94,87 +108,111 @@ JSON 형식:
     try {
       // Get all messages from the conversation
       const { data: messages, error } = await supabase
-        .from('messages')
-        .select('*')
-        .eq('conversation_id', conversationId)
-        .order('sent_at', { ascending: true });
+        .from("messages")
+        .select("*")
+        .eq("conversation_id", conversationId)
+        .order("sent_at", { ascending: true });
 
       if (error || !messages || messages.length < 2) {
-        console.log('Not enough messages to analyze');
+
         return;
       }
 
       // Calculate basic metrics
-      const userMessages = messages.filter(m => m.sender === 'user');
-      const aiMessages = messages.filter(m => m.sender === 'ai');
-      
-      const totalUserWords = userMessages.reduce((sum, m) => 
-        sum + m.content.split(' ').length, 0);
+      const userMessages = messages.filter((m) => m.sender === "user");
+      const aiMessages = messages.filter((m) => m.sender === "ai");
+
+      const totalUserWords = userMessages.reduce(
+        (sum, m) => sum + m.content.split(" ").length,
+        0,
+      );
       const avgUserMessageLength = totalUserWords / userMessages.length;
-      
+
       // Calculate scores based on simple heuristics
-      const questionCount = userMessages.filter(m => 
-        m.content.includes('?')).length;
-      const curiosityScore = Math.min(100, (questionCount / userMessages.length) * 150);
-      
-      const empathyKeywords = ['이해', '공감', '맞아', '그렇', '알아', '느낌'];
-      const empathyCount = userMessages.filter(m => 
-        empathyKeywords.some(k => m.content.includes(k))).length;
-      const empathyScore = Math.min(100, (empathyCount / userMessages.length) * 120);
-      
-      const friendlinessScore = Math.min(100, 
-        avgUserMessageLength > 5 ? 70 + Math.random() * 30 : 40 + Math.random() * 30);
-      
-      const totalScore = Math.round((curiosityScore + empathyScore + friendlinessScore) / 3);
+      const questionCount = userMessages.filter((m) =>
+        m.content.includes("?"),
+      ).length;
+      const curiosityScore = Math.min(
+        100,
+        (questionCount / userMessages.length) * 150,
+      );
+
+      const empathyKeywords = ["이해", "공감", "맞아", "그렇", "알아", "느낌"];
+      const empathyCount = userMessages.filter((m) =>
+        empathyKeywords.some((k) => m.content.includes(k)),
+      ).length;
+      const empathyScore = Math.min(
+        100,
+        (empathyCount / userMessages.length) * 120,
+      );
+
+      const friendlinessScore = Math.min(
+        100,
+        avgUserMessageLength > 5
+          ? 70 + Math.random() * 30
+          : 40 + Math.random() * 30,
+      );
+
+      const totalScore = Math.round(
+        (curiosityScore + empathyScore + friendlinessScore) / 3,
+      );
 
       // Update conversation with end time
       await supabase
-        .from('conversations')
-        .update({ 
-          ended_at: new Date().toISOString() 
+        .from("conversations")
+        .update({
+          ended_at: new Date().toISOString(),
         })
-        .eq('id', conversationId);
+        .eq("id", conversationId);
 
       // Save analysis
       const { error: analysisError } = await supabase
-        .from('conversation_analysis')
+        .from("conversation_analysis")
         .insert({
           conversation_id: conversationId,
           overall_score: totalScore,
           affinity_score: Math.round((friendlinessScore + empathyScore) / 2),
-          improvements: totalScore < 70 ? ['더 많은 질문하기', '공감 표현 늘리기'] : [],
-          achievements: totalScore > 70 ? ['좋은 대화 진행', '적절한 질문'] : [],
-          tips: ['상대방의 관심사에 대해 질문해보세요', '자신의 경험을 공유해보세요'],
-          analyzed_at: new Date().toISOString()
+          improvements:
+            totalScore < 70 ? ["더 많은 질문하기", "공감 표현 늘리기"] : [],
+          achievements:
+            totalScore > 70 ? ["좋은 대화 진행", "적절한 질문"] : [],
+          tips: [
+            "상대방의 관심사에 대해 질문해보세요",
+            "자신의 경험을 공유해보세요",
+          ],
+          analyzed_at: new Date().toISOString(),
         });
 
       if (analysisError) {
-        console.error('Failed to save analysis:', analysisError);
+        console.error("Failed to save analysis:", analysisError);
       }
 
       // Update user stats
       await this.updateUserStats(conversationId, totalScore);
     } catch (error) {
-      console.error('Failed to analyze conversation:', error);
+      console.error("Failed to analyze conversation:", error);
     }
   }
 
-  private async updateUserStats(conversationId: string, score: number): Promise<void> {
+  private async updateUserStats(
+    conversationId: string,
+    score: number,
+  ): Promise<void> {
     try {
       // Get user ID from conversation
       const { data: conversation } = await supabase
-        .from('conversations')
-        .select('user_id')
-        .eq('id', conversationId)
+        .from("conversations")
+        .select("user_id")
+        .eq("id", conversationId)
         .single();
 
       if (!conversation) return;
 
       // Get current user stats
       const { data: user } = await supabase
-        .from('users')
-        .select('total_conversations, average_score')
-        .eq('id', conversation.user_id)
+        .from("users")
+        .select("total_conversations, average_score")
+        .eq("id", conversation.user_id)
         .single();
 
       if (!user) return;
@@ -182,58 +220,58 @@ JSON 형식:
       // Calculate new average
       const newTotal = (user.total_conversations || 0) + 1;
       const currentAvg = user.average_score || 0;
-      const newAvg = ((currentAvg * (newTotal - 1)) + score) / newTotal;
+      const newAvg = (currentAvg * (newTotal - 1) + score) / newTotal;
 
       // Update user stats
       await supabase
-        .from('users')
+        .from("users")
         .update({
           total_conversations: newTotal,
-          average_score: Math.round(newAvg)
+          average_score: Math.round(newAvg),
         })
-        .eq('id', conversation.user_id);
+        .eq("id", conversation.user_id);
 
       // Check for badge achievements
       await this.checkBadgeAchievements(conversation.user_id, newTotal, newAvg);
     } catch (error) {
-      console.error('Failed to update user stats:', error);
+      console.error("Failed to update user stats:", error);
     }
   }
 
   private async checkBadgeAchievements(
-    userId: string, 
-    totalConversations: number, 
-    avgScore: number
+    userId: string,
+    totalConversations: number,
+    avgScore: number,
   ): Promise<void> {
     try {
       // Check conversation count badges
       if (totalConversations === 1) {
-        await this.awardBadge(userId, 'first-chat'); // 첫 대화
+        await this.awardBadge(userId, "first-chat"); // 첫 대화
         await this.notificationService.createAchievementNotification(
           userId,
-          '🎉 첫 대화를 완료했어요! 큐피드와 함께하는 연애 연습이 시작되었습니다.',
-          'first-chat'
+          "🎉 첫 대화를 완료했어요! 큐피드와 함께하는 연애 연습이 시작되었습니다.",
+          "first-chat",
         );
       } else if (totalConversations === 10) {
-        await this.awardBadge(userId, 'conversation-10'); // 대화 10회
+        await this.awardBadge(userId, "conversation-10"); // 대화 10회
         await this.notificationService.createAchievementNotification(
           userId,
-          '🏆 10번의 대화를 완료했어요! 당신은 이제 연애 대화 중급자입니다.',
-          'conversation-10'
+          "🏆 10번의 대화를 완료했어요! 당신은 이제 연애 대화 중급자입니다.",
+          "conversation-10",
         );
       }
 
       // Check score badges
       if (avgScore >= 80 && totalConversations >= 5) {
-        await this.awardBadge(userId, 'high-scorer'); // 고득점자
+        await this.awardBadge(userId, "high-scorer"); // 고득점자
         await this.notificationService.createAchievementNotification(
           userId,
-          '⭐ 평균 80점 이상을 달성했어요! 당신의 연애 대화 실력이 뛰어납니다.',
-          'high-scorer'
+          "⭐ 평균 80점 이상을 달성했어요! 당신의 연애 대화 실력이 뛰어납니다.",
+          "high-scorer",
         );
       }
     } catch (error) {
-      console.error('Failed to check badges:', error);
+      console.error("Failed to check badges:", error);
     }
   }
 
@@ -241,35 +279,33 @@ JSON 형식:
     try {
       // Get badge ID
       const { data: badge } = await supabase
-        .from('badges')
-        .select('id')
-        .eq('slug', badgeSlug)
+        .from("badges")
+        .select("id")
+        .eq("slug", badgeSlug)
         .single();
 
       if (!badge) return;
 
       // Check if already has badge
       const { data: existing } = await supabase
-        .from('user_badges')
-        .select('id')
-        .eq('user_id', userId)
-        .eq('badge_id', badge.id)
+        .from("user_badges")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("badge_id", badge.id)
         .single();
 
       if (existing) return;
 
       // Award badge
-      await supabase
-        .from('user_badges')
-        .insert({
-          user_id: userId,
-          badge_id: badge.id,
-          acquired_at: new Date().toISOString()
-        });
+      await supabase.from("user_badges").insert({
+        user_id: userId,
+        badge_id: badge.id,
+        acquired_at: new Date().toISOString(),
+      });
 
-      console.log(`Badge '${badgeSlug}' awarded to user ${userId}`);
+
     } catch (error) {
-      console.error('Failed to award badge:', error);
+      console.error("Failed to award badge:", error);
     }
   }
 }

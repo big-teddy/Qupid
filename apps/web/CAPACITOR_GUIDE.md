@@ -25,18 +25,21 @@ apps/web/
 ## 🚀 다음 단계 (Mac에서 진행)
 
 ### 1. Xcode 설치
+
 ```bash
 # App Store에서 Xcode 다운로드 (무료)
 # 설치 후 Xcode 실행하여 라이센스 동의
 ```
 
 ### 2. CocoaPods 의존성 설치
+
 ```bash
 cd apps/web/ios/App
 pod install
 ```
 
 ### 3. Xcode로 프로젝트 열기
+
 ```bash
 cd apps/web
 pnpm exec cap open ios
@@ -45,18 +48,21 @@ pnpm exec cap open ios
 ### 4. Xcode에서 설정
 
 #### a) 팀 및 서명 설정
+
 1. Xcode에서 프로젝트 선택
 2. "Signing & Capabilities" 탭
 3. Team: Apple Developer Account 선택
 4. Bundle Identifier 확인: `com.qupid.app`
 
 #### b) 앱 정보 설정
+
 1. "General" 탭
 2. Display Name: `Qupid`
 3. Version: `1.0.0`
 4. Build: `1`
 
 #### c) 앱 아이콘 추가 (필수!)
+
 ```
 apps/web/ios/App/App/Assets.xcassets/AppIcon.appiconset/
 
@@ -76,6 +82,7 @@ apps/web/ios/App/App/Assets.xcassets/AppIcon.appiconset/
 ```
 
 ### 5. 시뮬레이터에서 테스트
+
 ```bash
 # Xcode에서:
 1. 상단 바에서 시뮬레이터 선택 (예: iPhone 15 Pro)
@@ -84,6 +91,7 @@ apps/web/ios/App/App/Assets.xcassets/AppIcon.appiconset/
 ```
 
 ### 6. 실제 기기에서 테스트
+
 ```bash
 1. iPhone을 USB로 Mac에 연결
 2. Xcode 상단에서 연결된 기기 선택
@@ -114,19 +122,23 @@ railway status
 ```
 
 ### API URL 업데이트
+
 `apps/web/src/config/api.ts` 파일에서:
+
 ```typescript
 // 실제 Railway URL로 변경
-return 'https://qupid-api.railway.app/api/v1';
+return "https://qupid-api.railway.app/api/v1";
 ```
 
 ## 📲 App Store 제출
 
 ### 1. Apple Developer Account 가입
+
 - https://developer.apple.com
 - 비용: $99/년
 
 ### 2. App Store Connect 설정
+
 1. https://appstoreconnect.apple.com 접속
 2. "My Apps" → "+" → "New App"
 3. 앱 정보 입력:
@@ -136,6 +148,7 @@ return 'https://qupid-api.railway.app/api/v1';
    - SKU: QUPID001
 
 ### 3. Archive 및 Upload (Xcode)
+
 ```bash
 1. Xcode 상단: Product → Destination → Any iOS Device
 2. Product → Archive
@@ -148,6 +161,7 @@ return 'https://qupid-api.railway.app/api/v1';
 ### 4. App Store Connect에서 앱 정보 입력
 
 필수 항목:
+
 - [ ] 앱 스크린샷 (5-8장)
   - iPhone 6.9" (1290x2796)
   - iPhone 6.7" (1290x2796)
@@ -158,6 +172,7 @@ return 'https://qupid-api.railway.app/api/v1';
 - [ ] 카테고리: Social Networking
 
 ### 5. 심사 제출
+
 1. "Submit for Review" 버튼
 2. 심사 대기 (보통 1-3일)
 3. 승인되면 자동 출시 (또는 수동 출시 선택)
@@ -165,6 +180,7 @@ return 'https://qupid-api.railway.app/api/v1';
 ## 🔄 업데이트 방법
 
 ### 방법 1: 웹 코드만 변경 (심사 없음)
+
 ```bash
 # 코드 수정
 cd apps/web
@@ -177,6 +193,7 @@ git push
 ```
 
 ### 방법 2: 네이티브 변경 (심사 필요)
+
 ```bash
 # 코드 수정
 cd apps/web
@@ -213,6 +230,7 @@ pnpm exec cap update
 ## 🐛 문제 해결
 
 ### "xcode-select: error: tool 'xcodebuild' requires Xcode"
+
 ```bash
 # Xcode 설치 확인
 xcode-select --print-path
@@ -222,16 +240,19 @@ sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
 ```
 
 ### "pod install failed"
+
 ```bash
 cd apps/web/ios/App
 pod install --repo-update
 ```
 
 ### "Developer Disk Image not found" (실제 기기 테스트)
+
 - Xcode를 최신 버전으로 업데이트
 - 또는 iOS 버전을 다운그레이드
 
 ### API 연결 오류
+
 1. Railway에 API가 배포되었는지 확인
 2. `apps/web/src/config/api.ts`의 URL 확인
 3. CORS 설정 확인 (`apps/api/.env`의 ALLOWED_ORIGINS)
@@ -246,6 +267,7 @@ pod install --repo-update
 ## 🎯 체크리스트
 
 ### 출시 전
+
 - [ ] API 서버 Railway에 배포
 - [ ] 앱 아이콘 추가 (1024x1024)
 - [ ] 스플래시 스크린 이미지
@@ -254,6 +276,7 @@ pod install --repo-update
 - [ ] 모든 기능 작동 확인
 
 ### App Store
+
 - [ ] Apple Developer Account ($99/년)
 - [ ] 앱 스크린샷 준비
 - [ ] 앱 설명 작성

@@ -120,8 +120,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
           <button
             type="submit"
             disabled={!isFormValid || isLoading}
-            className={`w-full h-14 rounded-full font-bold text-lg transition-all ${isFormValid && !isLoading
-              ? "bg-[#F093B0] text-white"
+            className={`w-full h-14 rounded-xl font-bold text-lg transition-all ${isFormValid && !isLoading
+              ? "bg-[var(--primary-pink-main,#F093B0)] text-white"
               : "bg-[#E5E8EB] text-[#8B95A1]"
               }`}
           >

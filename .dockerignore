@@ -9,3 +9,21 @@ apps/*/dist
 apps/*/node_modules
 packages/*/dist
 packages/*/node_modules
+
+# Documentation and Configs
+.github
+.vscode
+README.md
+CHANGELOG.md
+MIGRATE_SERVICES.md
+**/*.md
+
+# Tests
+apps/*/e2e
+apps/*/tests
+**/*.spec.ts
+**/*.test.ts
+
+# Artifacts
+.gemini
+artifacts

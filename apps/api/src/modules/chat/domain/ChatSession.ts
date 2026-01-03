@@ -1,20 +1,21 @@
-import { Message } from '@qupid/core';
+import { Message } from "@qupid/core";
 
 export class ChatSession {
   private messages: Message[] = [];
-  
+
   constructor(
     public readonly id: string,
     public readonly userId: string,
-    public readonly personaId: string,
+    public readonly partnerId: string,
+    public readonly partnerType: 'persona' | 'coach',
     public readonly systemInstruction: string,
-    public readonly createdAt: Date = new Date()
-  ) {}
+    public readonly createdAt: Date = new Date(),
+  ) { }
 
   addMessage(message: Message): void {
     this.messages.push({
       ...message,
-      timestamp: (message as any).timestamp || new Date()
+      timestamp: (message as any).timestamp || new Date(),
     } as any);
   }
 
@@ -23,15 +24,11 @@ export class ChatSession {
   }
 
   getLastUserMessage(): Message | undefined {
-    return this.messages
-      .filter(m => m.sender === 'user')
-      .pop();
+    return this.messages.filter((m) => m.sender === "user").pop();
   }
 
   getLastAiMessage(): Message | undefined {
-    return this.messages
-      .filter(m => m.sender === 'ai')
-      .pop();
+    return this.messages.filter((m) => m.sender === "ai").pop();
   }
 
   getMessageCount(): number {
@@ -39,6 +36,6 @@ export class ChatSession {
   }
 
   getUserMessageCount(): number {
-    return this.messages.filter(m => m.sender === 'user').length;
+    return this.messages.filter((m) => m.sender === "user").length;
   }
 }

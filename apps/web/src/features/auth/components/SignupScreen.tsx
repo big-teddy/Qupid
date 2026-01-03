@@ -315,8 +315,8 @@ const SignupScreen: React.FC<SignupScreenProps> = ({
         <button
           onClick={step === 1 ? handleNext : handleSignup}
           disabled={(step === 1 ? !isStep1Valid : !isStep2Valid) || isLoading}
-          className={`w-full h-14 rounded-full font-bold text-lg transition-all ${(step === 1 ? isStep1Valid : isStep2Valid) && !isLoading
-            ? "bg-[#F093B0] text-white"
+          className={`w-full h-14 rounded-xl font-bold text-lg transition-all ${(step === 1 ? isStep1Valid : isStep2Valid) && !isLoading
+            ? "bg-[var(--primary-pink-main,#F093B0)] text-white"
             : "bg-[#E5E8EB] text-[#8B95A1]"
             }`}
         >

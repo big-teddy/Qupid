@@ -50,6 +50,7 @@ pnpm migrate:db
 ### 핵심 테이블
 
 #### 1. **users** - 사용자 프로필
+
 - `id`: UUID (auth.users 참조)
 - `name`: 이름
 - `user_gender`: 성별
@@ -57,6 +58,7 @@ pnpm migrate:db
 - `is_tutorial_completed`: 튜토리얼 완료 여부
 
 #### 2. **personas** - AI 페르소나
+
 - `id`: 고유 ID
 - `name`: 이름
 - `mbti`: MBTI 타입
@@ -65,6 +67,7 @@ pnpm migrate:db
 - `match_rate`: 매칭률
 
 #### 3. **coaches** - AI 코치
+
 - `id`: 고유 ID
 - `name`: 이름
 - `specialty`: 전문 분야
@@ -72,6 +75,7 @@ pnpm migrate:db
 - `expertise_areas`: 전문 영역
 
 #### 4. **conversations** - 대화 세션
+
 - `id`: UUID
 - `user_id`: 사용자 ID
 - `partner_type`: 'persona' 또는 'coach'
@@ -79,12 +83,14 @@ pnpm migrate:db
 - `status`: 대화 상태
 
 #### 5. **messages** - 대화 메시지
+
 - `id`: UUID
 - `conversation_id`: 대화 ID
 - `sender_type`: 'user' 또는 'ai'
 - `content`: 메시지 내용
 
 #### 6. **performance_metrics** - 성과 데이터
+
 - `user_id`: 사용자 ID
 - `week_start`: 주 시작일
 - `weekly_score`: 주간 점수
@@ -92,12 +98,14 @@ pnpm migrate:db
 - `category_scores`: 카테고리별 점수 (JSON)
 
 #### 7. **badges** - 뱃지 정의
+
 - `id`: 뱃지 ID
 - `name`: 뱃지 이름
 - `icon`: 이모지 아이콘
 - `rarity`: 희귀도
 
 #### 8. **user_badges** - 획득한 뱃지
+
 - `user_id`: 사용자 ID
 - `badge_id`: 뱃지 ID
 - `acquired_at`: 획득 시간
@@ -126,7 +134,7 @@ pnpm migrate:db
 - **8개 페르소나**: 다양한 MBTI와 성격
 - **3명 코치**: 공감력, 대화 스킬, 매력 어필 전문
 - **10개 뱃지**: Common ~ Legendary 등급
-- **테스트 사용자**: 
+- **테스트 사용자**:
   - ID: `11111111-1111-1111-1111-111111111111`
   - Email: `test1@example.com`
   - Password: `test1234`
@@ -134,6 +142,7 @@ pnpm migrate:db
 ### 데이터베이스 초기화
 
 필요시 데이터를 완전히 초기화:
+
 ```sql
 -- 1. docs/reset-database.sql 실행 (모든 데이터 삭제)
 -- 2. 위의 마이그레이션 단계 재실행
@@ -181,6 +190,7 @@ ORDER BY conversation_count DESC;
 ### 롤백
 
 각 마이그레이션에 대응하는 롤백 스크립트 작성:
+
 - `2025-08-24-add-new-feature-rollback.sql`
 
 ## 🔧 트러블슈팅
@@ -189,7 +199,7 @@ ORDER BY conversation_count DESC;
 
 1. **"permission denied for table" 오류**
    - 원인: RLS(Row Level Security)가 활성화되어 있음
-   - 해결: 
+   - 해결:
      - `docs/fix-rls-policies.sql` 실행하여 RLS 비활성화
      - 또는 Supabase 대시보드 > Authentication > Policies에서 직접 수정
    - 참고: Service Role Key를 사용해도 RLS가 활성화되면 접근 제한됨

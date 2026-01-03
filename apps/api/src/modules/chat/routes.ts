@@ -1,135 +1,120 @@
-import { Router } from 'express';
-import * as controller from './controller.js';
-import { authenticate } from '../../shared/middleware/authenticate.js';
-import { requestValidator } from '../../shared/middleware/requestValidator.js';
-import { z } from 'zod';
+import { Router } from "express";
+import * as controller from "./controller.js";
+import { authenticate } from "../../shared/middleware/authenticate.js";
+import { requestValidator } from "../../shared/middleware/requestValidator.js";
+import { z } from "zod";
 
 const router = Router();
 
 // Create a new chat session (requires authentication)
 router.post(
-  '/sessions',
+  "/sessions",
   // authenticate, // 임시로 인증 비활성화
-  controller.createSession
+  controller.createSession,
 );
 
 // Send a message to a chat session
 router.post(
-  '/sessions/:sessionId/messages',
+  "/sessions/:sessionId/messages",
   requestValidator({
     params: z.object({
-      sessionId: z.string()
-    })
+      sessionId: z.string(),
+    }),
   }),
-  controller.sendMessage
+  controller.sendMessage,
 );
 
 // Stream a message response (SSE)
 router.post(
-  '/sessions/:sessionId/stream',
+  "/sessions/:sessionId/stream",
   requestValidator({
     params: z.object({
-      sessionId: z.string()
-    })
+      sessionId: z.string(),
+    }),
   }),
-  controller.streamMessage
+  controller.streamMessage,
 );
 
 // 🚀 새로운 스트리밍 엔드포인트 (POST body로 데이터 전송)
-router.post(
-  '/stream',
-  controller.streamMessageNew
-);
+router.post("/stream", controller.streamMessageNew);
 
 // Get session information
 router.get(
-  '/sessions/:sessionId',
+  "/sessions/:sessionId",
   requestValidator({
     params: z.object({
-      sessionId: z.string()
-    })
+      sessionId: z.string(),
+    }),
   }),
-  controller.getSessionInfo
+  controller.getSessionInfo,
 );
 
 // End conversation and trigger analysis
 router.post(
-  '/sessions/:sessionId/end',
+  "/sessions/:sessionId/end",
   requestValidator({
     params: z.object({
-      sessionId: z.string()
-    })
+      sessionId: z.string(),
+    }),
   }),
-  controller.endConversation
+  controller.endConversation,
 );
 
 // Analyze conversation
-router.post(
-  '/analyze',
-  controller.analyzeConversation
-);
+router.post("/analyze", controller.analyzeConversation);
 
 // Analyze conversation with session ID (saves to database)
 router.post(
-  '/sessions/:sessionId/analyze',
+  "/sessions/:sessionId/analyze",
   requestValidator({
     params: z.object({
-      sessionId: z.string()
-    })
+      sessionId: z.string(),
+    }),
   }),
-  controller.analyzeConversation
+  controller.analyzeConversation,
 );
 
 // Get realtime feedback
-router.post(
-  '/feedback',
-  controller.getRealtimeFeedback
-);
+router.post("/feedback", controller.getRealtimeFeedback);
 
 // Get coach suggestion
-router.post(
-  '/coach-suggestion',
-  controller.getCoachSuggestion
-);
+router.post("/coach-suggestion", controller.getCoachSuggestion);
 
 // 대화 히스토리 조회
 router.get(
-  '/history/:userId',
+  "/history/:userId",
   requestValidator({
     params: z.object({
-      userId: z.string()
-    })
+      userId: z.string(),
+    }),
   }),
-  controller.getConversationHistory
+  controller.getConversationHistory,
 );
 
 // 특정 대화 상세 조회
 router.get(
-  '/history/:userId/conversation/:conversationId',
+  "/history/:userId/conversation/:conversationId",
   requestValidator({
     params: z.object({
       userId: z.string(),
-      conversationId: z.string()
-    })
+      conversationId: z.string(),
+    }),
   }),
-  controller.getConversationDetail
+  controller.getConversationDetail,
 );
 
 // 대화 통계 조회
 router.get(
-  '/history/:userId/stats',
+  "/history/:userId/stats",
   requestValidator({
     params: z.object({
-      userId: z.string()
-    })
+      userId: z.string(),
+    }),
   }),
-  controller.getConversationStats
+  controller.getConversationStats,
 );
 
 // 대화 스타일 분석 및 추천
-router.post(
-  '/style-analysis',
-  controller.analyzeConversationStyle
-);
+router.post("/style-analysis", controller.analyzeConversationStyle);
 
 export default router;

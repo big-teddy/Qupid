@@ -1,204 +1,144 @@
-import { ChatService } from '../ChatService.js';
-import { ConversationAnalyzer } from '../ConversationAnalyzer.js';
+import { ChatService } from "../ChatService.js";
+import { ConversationService } from "../ConversationService.js";
+import { MessageService } from "../MessageService.js";
+import { AnalysisService } from "../AnalysisService.js";
+import { AIService } from "../AIService.js";
+import { ChatSession } from "../../domain/ChatSession.js";
 
-// Mock dependencies before importing
-jest.mock('../../../../shared/infra/openai');
-jest.mock('../../../../config/supabase');
-jest.mock('../ConversationAnalyzer');
-
-describe('ChatService', () => {
+describe("ChatService", () => {
   let chatService: ChatService;
-  let mockSupabase: any;
-  let mockOpenAI: any;
-  let mockAnalyzer: jest.Mocked<ConversationAnalyzer>;
+  let mockConvService: jest.Mocked<ConversationService>;
+  let mockMsgService: jest.Mocked<MessageService>;
+  let mockAnalysisService: jest.Mocked<AnalysisService>;
+  let mockAIService: jest.Mocked<AIService>;
 
   beforeEach(() => {
-    // Set up Supabase mock
-    mockSupabase = {
-      from: jest.fn()
-    };
-    require('../../../../config/supabase').supabase = mockSupabase;
-
-    // Set up OpenAI mock
-    mockOpenAI = {
-      streamCompletion: jest.fn()
-    };
-    require('../../../../shared/infra/openai').streamCompletion = mockOpenAI.streamCompletion;
-
-    // Set up ConversationAnalyzer mock
-    mockAnalyzer = {
-      analyzeConversation: jest.fn()
+    mockConvService = {
+      createSession: jest.fn(),
+      ensureSession: jest.fn(),
+      getUserConversationHistory: jest.fn(),
+      getSession: jest.fn(),
+      endSession: jest.fn(),
+      cleanupOldSessions: jest.fn(),
+      getConversationDetail: jest.fn(),
+      getConversationStats: jest.fn(),
+      calculateStreak: jest.fn(),
     } as any;
-    (ConversationAnalyzer as jest.Mock).mockImplementation(() => mockAnalyzer);
 
-    chatService = new ChatService();
-    jest.clearAllMocks();
+    mockMsgService = {
+      saveMessage: jest.fn(),
+      getMessages: jest.fn(),
+    } as any;
+
+    mockAnalysisService = {
+      analyzeConversation: jest.fn(),
+      getRealtimeFeedback: jest.fn(),
+      getCoachSuggestion: jest.fn(),
+      saveConversationAnalysis: jest.fn(),
+      getConversationAnalysis: jest.fn(),
+      analyzeConversationStyle: jest.fn(),
+    } as any;
+
+    mockAIService = {
+      generateResponse: jest.fn(),
+      streamResponse: jest.fn(),
+      processPostExchange: jest.fn(),
+    } as any;
+
+    chatService = new ChatService(
+      mockConvService,
+      mockMsgService,
+      mockAnalysisService,
+      mockAIService
+    );
   });
 
-  describe('createSession', () => {
-    it('should create a chat session successfully', async () => {
-      const mockSession = {
-        id: 'session-123',
-        user_id: 'user-123',
-        partner_id: 'persona-123',
-        partner_type: 'persona',
-        created_at: new Date().toISOString()
-      };
+  describe("createSession", () => {
+    it("should delegate to ConversationService.createSession", async () => {
+      mockConvService.createSession.mockResolvedValue("session-123");
 
-      mockSupabase.from.mockReturnValue({
-        insert: jest.fn().mockReturnValue({
-          select: jest.fn().mockReturnValue({
-            single: jest.fn().mockResolvedValue({
-              data: mockSession,
-              error: null
-            })
-          })
-        })
-      });
+      const result = await chatService.createSession("user1", "persona1", "sys");
 
-      const sessionId = await chatService.createSession('user-123', 'persona-123', 'Be helpful');
-
-      expect(sessionId).toBe('session-123');
-      expect(mockSupabase.from).toHaveBeenCalledWith('conversations');
-    });
-
-    it('should handle session creation error', async () => {
-      mockSupabase.from.mockReturnValue({
-        insert: jest.fn().mockReturnValue({
-          select: jest.fn().mockReturnValue({
-            single: jest.fn().mockResolvedValue({
-              data: null,
-              error: { message: 'Database error' }
-            })
-          })
-        })
-      });
-
-      await expect(chatService.createSession('user-123', 'persona-123', 'Be helpful'))
-        .rejects.toThrow('Failed to create conversation');
+      expect(result).toBe("session-123");
+      expect(mockConvService.createSession).toHaveBeenCalledWith("user1", "persona1", "sys");
     });
   });
 
-  describe('sendMessage', () => {
-    it('should send a message and save it', async () => {
-      // First create a session
-      const mockSession = {
-        id: 'session-123',
-        user_id: 'user-123',
-        partner_id: 'persona-123',
-        partner_type: 'persona',
-        started_at: new Date().toISOString()
-      };
+  describe("sendMessage", () => {
+    it("should coordinate session, message saving, and AI response", async () => {
+      const mockSession = { addMessage: jest.fn() } as unknown as ChatSession;
+      mockConvService.ensureSession.mockResolvedValue(mockSession);
+      mockAIService.generateResponse.mockResolvedValue("AI Response");
 
-      mockSupabase.from.mockReturnValueOnce({
-        insert: jest.fn().mockReturnValue({
-          select: jest.fn().mockReturnValue({
-            single: jest.fn().mockResolvedValue({
-              data: mockSession,
-              error: null
-            })
-          })
-        })
-      });
+      const result = await chatService.sendMessage("session-123", "Hello AI");
 
-      const sessionId = await chatService.createSession('user-123', 'persona-123', 'Be helpful');
+      expect(result).toBe("AI Response");
 
-      // Mock message save
-      mockSupabase.from.mockReturnValueOnce({
-        insert: jest.fn().mockResolvedValue({
-          data: { id: 'msg-123' },
-          error: null
-        })
-      });
+      // 1. Ensure Session
+      expect(mockConvService.ensureSession).toHaveBeenCalledWith("session-123");
 
-      // Mock OpenAI
-      const mockOpenAI = require('../../../../shared/infra/openai');
-      mockOpenAI.openai = {
-        chat: {
-          completions: {
-            create: jest.fn().mockResolvedValue({
-              choices: [{ message: { content: 'Hello back!' } }]
-            })
-          }
-        }
-      };
+      // 2. Save User Message
+      expect(mockSession.addMessage).toHaveBeenCalledWith(expect.objectContaining({
+        sender: "user",
+        text: "Hello AI"
+      }));
+      expect(mockMsgService.saveMessage).toHaveBeenCalledWith("session-123", expect.objectContaining({
+        sender: "user",
+        text: "Hello AI"
+      }));
 
-      // Mock second message save for AI response
-      mockSupabase.from.mockReturnValueOnce({
-        insert: jest.fn().mockResolvedValue({
-          data: { id: 'msg-124' },
-          error: null
-        })
-      });
+      // 3. AI Service
+      expect(mockAIService.generateResponse).toHaveBeenCalledWith(mockSession, "Hello AI");
 
-      const response = await chatService.sendMessage(sessionId, 'Hello!');
+      // 4. Save AI Message
+      expect(mockSession.addMessage).toHaveBeenCalledWith(expect.objectContaining({
+        sender: "ai",
+        text: "AI Response"
+      }));
+      expect(mockMsgService.saveMessage).toHaveBeenCalledWith("session-123", expect.objectContaining({
+        sender: "ai",
+        text: "AI Response"
+      }));
 
-      expect(response).toBe('Hello back!');
-      expect(mockSupabase.from).toHaveBeenCalledWith('messages');
+      // 5. Post Exchange
+      expect(mockAIService.processPostExchange).toHaveBeenCalledWith(mockSession);
     });
 
-    it('should handle message sending error', async () => {
-      // Session doesn't exist
-      await expect(chatService.sendMessage('non-existent', 'Hello!'))
-        .rejects.toThrow('Chat session not found');
+    it("should propagate errors from sub-services", async () => {
+      mockConvService.ensureSession.mockRejectedValue(new Error("Database error"));
+
+      await expect(chatService.sendMessage("session-123", "Hi"))
+        .rejects.toThrow("Database error");
     });
   });
 
-  // streamResponse method doesn't exist in current implementation
-  // Removing this test
+  describe("analyzeConversation", () => {
+    it("should delegate to AnalysisService", async () => {
+      const mockMessages = [] as any;
+      const mockAnalysis = { totalScore: 100 } as any;
+      mockAnalysisService.analyzeConversation.mockResolvedValue(mockAnalysis);
 
-  describe('analyzeConversationStyle', () => {
-    it('should analyze conversation style with sufficient messages', async () => {
-      const mockMessages: any[] = [
-        { sender: 'user', text: 'Hello', timestamp: Date.now() },
-        { sender: 'ai', text: 'Hi there!', timestamp: Date.now() },
-        { sender: 'user', text: 'How are you?', timestamp: Date.now() },
-        { sender: 'ai', text: 'I am doing well!', timestamp: Date.now() },
-        { sender: 'user', text: 'Nice!', timestamp: Date.now() }
-      ];
+      const result = await chatService.analyzeConversation(mockMessages);
 
-      // Mock OpenAI for style analysis
-      const mockOpenAI = require('../../../../shared/infra/openai');
-      mockOpenAI.openai = {
-        chat: {
-          completions: {
-            create: jest.fn().mockResolvedValue({
-              choices: [{
-                message: {
-                  content: JSON.stringify({
-                    currentStyle: {
-                      type: '친근한',
-                      characteristics: ['따뜻한 대화', '적극적인 반응'],
-                      strengths: ['친근함', '반응성'],
-                      weaknesses: ['깊이 부족']
-                    },
-                    recommendations: []
-                  })
-                }
-              }]
-            })
-          }
-        }
-      };
-
-
-      const analysis = await chatService.analyzeConversationStyle(mockMessages);
-
-      expect(analysis.currentStyle).toBeDefined();
-      expect(analysis.currentStyle.type).toBeDefined();
-    });
-
-    it('should return default analysis with insufficient messages', async () => {
-      const mockMessages: any[] = [
-        { sender: 'user', text: 'Hello', timestamp: Date.now() }
-      ];
-
-      const analysis = await chatService.analyzeConversationStyle(mockMessages);
-
-      expect(analysis.currentStyle).toBeDefined();
-      expect(analysis.currentStyle.type).toBe('분석 중');
+      expect(result).toBe(mockAnalysis);
+      expect(mockAnalysisService.analyzeConversation).toHaveBeenCalledWith(mockMessages);
     });
   });
 
-  // endConversation method doesn't exist in current implementation
+  describe("streamMessage", () => {
+    it("should coordinate streaming flow properly", async () => {
+      const mockSession = { addMessage: jest.fn() } as unknown as ChatSession;
+      const onChunk = jest.fn();
+      mockConvService.ensureSession.mockResolvedValue(mockSession);
+      mockAIService.streamResponse.mockResolvedValue("Full AI Response");
+
+      await chatService.streamMessage("session-123", "User Msg", onChunk);
+
+      expect(mockConvService.ensureSession).toHaveBeenCalledWith("session-123");
+      expect(mockMsgService.saveMessage).toHaveBeenCalledWith("session-123", expect.objectContaining({ text: "User Msg" }));
+      expect(mockAIService.streamResponse).toHaveBeenCalledWith(mockSession, "User Msg", onChunk);
+      expect(mockMsgService.saveMessage).toHaveBeenCalledWith("session-123", expect.objectContaining({ text: "Full AI Response" }));
+      expect(mockAIService.processPostExchange).toHaveBeenCalledWith(mockSession);
+    });
+  });
 });

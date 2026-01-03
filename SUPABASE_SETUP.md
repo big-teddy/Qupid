@@ -146,4 +146,3 @@ INSERT INTO user_profiles (email, name, user_gender, partner_gender, experience,
 INSERT INTO personas (name, age, gender, personality, occupation, education, location, height, body_type, interests, values, communication_style, dating_style, appearance_style, speech_pattern, lifestyle, big_five_scores, conversation_style) VALUES
 ('김서현', 25, 'female', 'ENFP', '초등학교 교사', '교육학 학사', '서울 강남구', '163cm', '보통', ARRAY['캠핑', '베이킹', '넷플릭스 시청'], ARRAY['가정 지향적', '따뜻한 인간관계 중시'], '따뜻하고 격려하는 말투, 이모티콘 자주 사용', '친구 같은 관계 선호, 솔직한 소통 중시', '내추럴', '맞아요~, 우와!, 정말요? 자주 사용', '아침형, 밖돌이, 계획형', '{"openness": 8, "conscientiousness": 7, "extraversion": 9, "agreeableness": 8, "neuroticism": 4}', '따뜻하고 격려하는 말투로 대화하는 교사입니다. 공감 능력이 높고 자연스러운 대화를 좋아해요.');
 ```
-

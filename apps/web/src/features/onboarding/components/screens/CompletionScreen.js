@@ -1,0 +1,10 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { CheckIcon } from "@qupid/ui";
+import { OnboardingHeader } from "../OnboardingHeader";
+import { FixedBottomButton } from "../FixedBottomButton";
+export const CompletionScreen = ({ onComplete, profile, progress, }) => {
+    const partnerGender = profile.user_gender === "male" ? "여성 AI" : "남성 AI";
+    return (_jsxs("div", { className: "flex flex-col h-full w-full animate-fade-in p-6", children: [_jsx(OnboardingHeader, { progress: progress }), _jsxs("main", { className: "flex-1 flex flex-col justify-center -mt-14", children: [_jsx("div", { className: "w-32 h-32 rounded-full bg-[#F093B0] flex items-center justify-center animate-scale-in self-center", children: _jsx(CheckIcon, { className: "w-16 h-16 text-white" }) }), _jsxs("h1", { className: "mt-8 text-[28px] font-bold text-center", style: { color: "#191F28" }, children: ["\uB2F9\uC2E0\uC758 \uD504\uB85C\uD544\uC774", _jsx("br", {}), "\uC644\uC131\uB410\uC5B4\uC694!"] }), _jsx("div", { className: "mt-6 p-6 bg-[#F9FAFB] rounded-2xl border border-[#E5E8EB]", children: _jsxs("ul", { className: "space-y-3", children: [_jsxs("li", { className: "flex justify-between", children: [_jsx("span", { className: "font-bold", children: "\uC131\uBCC4" }), _jsxs("span", { children: [profile.user_gender === "male" ? "남성" : "여성", " (", partnerGender, "\uC640 \uC5F0\uC2B5)"] })] }), _jsxs("li", { className: "flex justify-between", children: [_jsx("span", { className: "font-bold", children: "\uACBD\uD5D8" }), _jsx("span", { children: profile.experience })] }), _jsxs("li", { className: "flex justify-between", children: [_jsx("span", { className: "font-bold", children: "\uAD00\uC2EC\uC0AC" }), _jsx("span", { className: "truncate ml-4", children: profile.interests
+                                                .map((i) => i.split(" ")[1])
+                                                .join(", ") })] })] }) })] }), _jsx(FixedBottomButton, { onClick: onComplete, children: "\uCCAB \uB300\uD654 \uC2DC\uC791\uD558\uAE30" })] }));
+};

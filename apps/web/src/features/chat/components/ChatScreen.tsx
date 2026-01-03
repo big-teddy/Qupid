@@ -101,9 +101,12 @@ export const ChatScreen: React.FC<ChatScreenProps> = (props) => {
             <ArrowLeftIcon className="w-6 h-6 text-[#8B95A1]" />
           </button>
           <img
-            src={partner.avatar}
+            src={partner.avatar || "/icons/icon-192x192.png"}
             alt={partner.name}
-            className="w-10 h-10 rounded-full object-cover ml-2"
+            className="w-10 h-10 rounded-full object-cover ml-2 bg-[#F2F4F6]"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "/icons/icon-192x192.png";
+            }}
           />
           <div className="ml-3 flex-1">
             <h2 className="font-bold text-lg text-[#191F28]">{partner.name}</h2>

@@ -44,9 +44,8 @@ test.describe("Authentication Flow (Auth-First)", () => {
     // 하지만 여기까지 에러 없이 동작하는지 확인.
   });
 
-  // Skip: Interest buttons clicks are flaky in E2E environment (overlay/animation issue).
-  // Manual verification confirmed this flow works correctly.
-  test.skip("should complete signup and redirect to onboarding", async ({ page }) => {
+  // Fixed: Use data-testid for stable element selection
+  test("should complete signup and redirect to onboarding", async ({ page }) => {
     // 1. Signup Screen 진입
     await page.click("text=무료로 시작하기");
 
@@ -64,18 +63,17 @@ test.describe("Authentication Flow (Auth-First)", () => {
 
     // 4. 성별 선택 (Step 2)
     await expect(page.locator("text=당신의 성별은?")).toBeVisible();
-    await page.click("text=남성"); // 본인 성별
-    await page.locator("button:has-text('여성')").last().click(); // 상대 성별 (마지막 여성 버튼)
+    await page.click("text=남성");
+    await page.locator("button:has-text('여성')").last().click();
 
     // 5. 회원가입 완료 버튼 클릭
     await page.click("text=회원가입 완료");
 
     // 6. 회원가입 성공 후 온보딩(skipIntro)으로 리다이렉트 확인
-    // Intro 화면(무료로 시작하기)이 아니라 성별 선택 화면이 나와야 함 (하지만 이미 가입시 성별 선택했으므로 중복됨 - flow 개선 필요하지만 현재 로직상)
-    // OnboardingFlow의 첫 화면: "본인의 성별을 선택해주세요"
     await expect(page.locator("text=본인의 성별을 선택해주세요")).toBeVisible({ timeout: 20000 });
 
-    // 7. 온보딩 진행 (이미 로그인된 상태)
+    // 7. 온보딩 진행
+    // 성별 선택 (이미 선택되어 있을 수 있으나 다시 클릭)
     await page.click("text=남성");
     await page.click("text=다음 단계로");
 
@@ -86,18 +84,22 @@ test.describe("Authentication Flow (Auth-First)", () => {
     // 관심사 선택
     await expect(page.locator("text=평소 관심 있는 분야")).toBeVisible({ timeout: 10000 });
 
-    // 단순 텍스트 클릭 (강제 클릭 시도 - 애니메이션/가려짐 대응)
-    await page.click("text=게임", { force: true });
-    await page.click("text=영화", { force: true });
-    await page.click("text=독서", { force: true });
+    // data-testid를 사용하여 안정적으로 클릭
+    await page.click('[data-testid="interest-option-🎮 게임"]');
+    await page.click('[data-testid="interest-option-🎬 영화/드라마"]');
+    await page.click('[data-testid="interest-option-📚 독서"]');
 
-    // "분석 시작하기" 버튼이 활성화될 때까지 대기
-    const submitButton = page.locator("button", { hasText: "분석 시작하기" });
-    await expect(submitButton).toBeEnabled({ timeout: 10000 });
+    // "설문 완료하기" 또는 "분석 시작하기" 버튼 클릭
+    // 버튼 텍스트가 상태에 따라 다를 수 있으므로 확인 (InterestsScreen.tsx: "설문 완료하기")
+    const submitButton = page.locator("button", { hasText: "설문 완료하기" });
+    await expect(submitButton).toBeEnabled();
     await submitButton.click();
 
-    // 결과: 튜토리얼 인트로 화면 확인
-    // "튜토리얼 목표" 텍스트가 있는지 확인
-    await expect(page.locator("text=튜토리얼 목표")).toBeVisible({ timeout: 30000 });
+    // 결과: 튜토리얼 인트로 화면 확인 (또는 완료 화면)
+    // CompletionScreen이 렌더링됨: "당신의 프로필이 완성됐어요!"
+    await expect(page.locator("text=당신의 프로필이")).toBeVisible({ timeout: 30000 });
+
+    // 최종 완료 버튼 클릭 ("첫 대화 시작하기")
+    await page.click("text=첫 대화 시작하기");
   });
 });

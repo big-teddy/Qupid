@@ -17,12 +17,14 @@ interface TavilySearchResponse {
 
 export class TavilySearchService {
   private apiKey: string;
-  private baseUrl = 'https://api.tavily.com';
+  private baseUrl = "https://api.tavily.com";
 
   constructor() {
-    this.apiKey = process.env.TAVILY_API_KEY || '';
+    this.apiKey = process.env.TAVILY_API_KEY || "";
     if (!this.apiKey) {
-      console.warn('⚠️ TAVILY_API_KEY not set. Search functionality will be limited.');
+      console.warn(
+        "⚠️ TAVILY_API_KEY not set. Search functionality will be limited.",
+      );
     }
   }
 
@@ -37,37 +39,37 @@ export class TavilySearchService {
     try {
       // 전문 분야에 맞는 검색 쿼리 생성
       const enhancedQuery = this.buildCoachingQuery(query, specialty);
-      
+
       const response = await fetch(`${this.baseUrl}/search`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.apiKey}`,
         },
         body: JSON.stringify({
           query: enhancedQuery,
-          search_depth: 'advanced',
+          search_depth: "advanced",
           include_answer: true,
           include_domains: [
-            'psychology.org',
-            'apa.org',
-            'sciencedirect.com',
-            'pubmed.ncbi.nlm.nih.gov',
-            'scholar.google.com'
+            "psychology.org",
+            "apa.org",
+            "sciencedirect.com",
+            "pubmed.ncbi.nlm.nih.gov",
+            "scholar.google.com",
           ],
-          max_results: 5
-        })
+          max_results: 5,
+        }),
       });
 
       if (!response.ok) {
         throw new Error(`Tavily API error: ${response.status}`);
       }
 
-      const data = await response.json() as TavilySearchResponse;
-      
+      const data = (await response.json()) as TavilySearchResponse;
+
       return this.formatSearchResults(data, specialty);
     } catch (error) {
-      console.error('Tavily search error:', error);
+      console.error("Tavily search error:", error);
       return this.getFallbackCoachingAdvice(query, specialty);
     }
   }
@@ -77,21 +79,27 @@ export class TavilySearchService {
    */
   private buildCoachingQuery(userQuery: string, specialty: string): string {
     const specialtyKeywords: Record<string, string> = {
-      '첫 만남 코칭': 'first impression psychology communication skills research',
-      '깊은 대화 코칭': 'deep conversation emotional intelligence empathy research',
-      '갈등 해결 코칭': 'conflict resolution communication psychology research',
-      '관계 발전 코칭': 'relationship development attachment theory research'
+      "첫 만남 코칭":
+        "first impression psychology communication skills research",
+      "깊은 대화 코칭":
+        "deep conversation emotional intelligence empathy research",
+      "갈등 해결 코칭": "conflict resolution communication psychology research",
+      "관계 발전 코칭": "relationship development attachment theory research",
     };
 
-    const keywords = specialtyKeywords[specialty] || 'communication psychology research';
+    const keywords =
+      specialtyKeywords[specialty] || "communication psychology research";
     return `${userQuery} ${keywords} latest research 2024`;
   }
 
   /**
    * 검색 결과 포맷팅
    */
-  private formatSearchResults(data: TavilySearchResponse, specialty: string): string {
-    let formattedResult = '';
+  private formatSearchResults(
+    data: TavilySearchResponse,
+    specialty: string,
+  ): string {
+    let formattedResult = "";
 
     // AI가 생성한 답변이 있으면 사용
     if (data.answer) {
@@ -100,7 +108,7 @@ export class TavilySearchService {
 
     // 주요 출처 추가
     if (data.results && data.results.length > 0) {
-      formattedResult += '🔍 참고 자료:\n';
+      formattedResult += "🔍 참고 자료:\n";
       data.results.slice(0, 3).forEach((result, index) => {
         formattedResult += `${index + 1}. ${result.title}\n`;
         formattedResult += `   ${result.content.substring(0, 150)}...\n\n`;
@@ -115,7 +123,7 @@ export class TavilySearchService {
    */
   private getFallbackCoachingAdvice(query: string, specialty: string): string {
     const fallbackAdvice: Record<string, string> = {
-      '첫 만남 코칭': `
+      "첫 만남 코칭": `
 첫 만남에서 중요한 것은 **진정성**과 **호기심**입니다.
 
 📚 연구 기반 조언:
@@ -128,7 +136,7 @@ export class TavilySearchService {
 2. 상대방의 답변에서 키워드를 찾아 후속 질문하기
 3. 자신의 경험도 적절히 공유하여 공감대 형성
       `,
-      '깊은 대화 코칭': `
+      "깊은 대화 코칭": `
 깊은 대화는 **감정적 연결**과 **취약성 공유**에서 시작됩니다.
 
 📚 연구 기반 조언:
@@ -141,7 +149,7 @@ export class TavilySearchService {
 2. 자신의 취약한 경험도 공유하여 신뢰 구축
 3. 판단 없이 경청하고 공감 표현하기
       `,
-      '갈등 해결 코칭': `
+      "갈등 해결 코칭": `
 갈등은 **이해**와 **존중**으로 해결됩니다.
 
 📚 연구 기반 조언:
@@ -154,7 +162,7 @@ export class TavilySearchService {
 2. 상대방의 입장에서 생각해보기: "당신 입장에서는..."
 3. 해결책 함께 찾기: "우리가 어떻게 하면 좋을까?"
       `,
-      '관계 발전 코칭': `
+      "관계 발전 코칭": `
 관계 발전은 **지속적인 관심**과 **성장 마인드셋**이 필요합니다.
 
 📚 연구 기반 조언:
@@ -166,10 +174,10 @@ export class TavilySearchService {
 1. 정기적으로 깊은 대화 시간 만들기
 2. 상대방의 성장과 변화에 관심 가지기
 3. 감사한 점을 구체적으로 표현하기
-      `
+      `,
     };
 
-    return fallbackAdvice[specialty] || fallbackAdvice['첫 만남 코칭'];
+    return fallbackAdvice[specialty] || fallbackAdvice["첫 만남 코칭"];
   }
 }
 

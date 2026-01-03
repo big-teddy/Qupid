@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
-import { ChatService } from './app/ChatService.js';
-import { ConversationAnalyzer } from './app/ConversationAnalyzer.js';
-import { AppError } from '../../shared/errors/AppError.js';
+import { Request, Response, NextFunction } from "express";
+import { ChatService } from "./app/ChatService.js";
+import { ConversationAnalyzer } from "./app/ConversationAnalyzer.js";
+import { AppError } from "../../shared/errors/AppError.js";
 
 const chatService = new ChatService();
 const sessionService = chatService; // ChatService를 세션 서비스로도 사용
@@ -14,26 +14,26 @@ const analyzer = new ConversationAnalyzer();
 export const createSession = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { userId, personaId, systemInstruction } = req.body;
-    
+
     if (!personaId) {
-      throw AppError.badRequest('Persona ID is required');
+      throw AppError.badRequest("Persona ID is required");
     }
 
     const sessionId = await chatService.createSession(
-      userId || 'guest_' + Date.now(), 
-      personaId, 
-      systemInstruction || ''
+      userId || "guest_" + Date.now(),
+      personaId,
+      systemInstruction || "",
     );
-    
+
     res.json({
       ok: true,
       data: {
-        sessionId
-      }
+        sessionId,
+      },
     });
   } catch (error) {
     next(error);
@@ -47,21 +47,21 @@ export const createSession = async (
 export const sendMessage = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { sessionId } = req.params;
     const { message } = req.body;
-    
+
     if (!message) {
-      throw AppError.badRequest('Message is required');
+      throw AppError.badRequest("Message is required");
     }
 
     const response = await sessionService.sendMessage(sessionId, message);
-    
+
     res.json({
       ok: true,
-      data: response
+      data: response,
     });
   } catch (error) {
     next(error);
@@ -75,32 +75,28 @@ export const sendMessage = async (
 export const streamMessage = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { sessionId } = req.params;
     const { message } = req.body;
-    
+
     if (!message) {
-      throw AppError.badRequest('Message is required');
+      throw AppError.badRequest("Message is required");
     }
 
     // Set SSE headers
     res.writeHead(200, {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
-      'Access-Control-Allow-Origin': '*'
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
+      "Access-Control-Allow-Origin": "*",
     });
 
     // Stream the response
-    await chatService.streamMessage(
-      sessionId,
-      message,
-      (chunk: string) => {
-        res.write(`data: ${JSON.stringify({ text: chunk })}\n\n`);
-      }
-    );
+    await chatService.streamMessage(sessionId, message, (chunk: string) => {
+      res.write(`data: ${JSON.stringify({ text: chunk })}\n\n`);
+    });
 
     // Send completion signal
     res.write(`data: [DONE]\n\n`);
@@ -117,20 +113,20 @@ export const streamMessage = async (
 export const getSessionInfo = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { sessionId } = req.params;
-    
+
     const session = await sessionService.getSession(sessionId);
-    
+
     if (!session) {
-      throw AppError.notFound('Session');
+      throw AppError.notFound("Session");
     }
 
     res.json({
       ok: true,
-      data: session
+      data: session,
     });
   } catch (error) {
     next(error);
@@ -144,20 +140,20 @@ export const getSessionInfo = async (
 export const analyzeConversation = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { messages } = req.body;
-    
+
     if (!messages || !Array.isArray(messages)) {
-      throw AppError.badRequest('Messages array is required');
+      throw AppError.badRequest("Messages array is required");
     }
 
     const analysis = await analyzer.analyze(messages);
-    
+
     res.json({
       ok: true,
-      data: analysis
+      data: analysis,
     });
   } catch (error) {
     next(error);
@@ -171,23 +167,23 @@ export const analyzeConversation = async (
 export const getRealtimeFeedback = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { lastUserMessage, lastAiMessage } = req.body;
-    
+
     if (!lastUserMessage) {
-      throw AppError.badRequest('Last user message is required');
+      throw AppError.badRequest("Last user message is required");
     }
 
     const feedback = await chatService.getRealtimeFeedback(
       lastUserMessage,
-      lastAiMessage
+      lastAiMessage,
     );
-    
+
     res.json({
       ok: true,
-      data: feedback
+      data: feedback,
     });
   } catch (error) {
     next(error);
@@ -201,20 +197,20 @@ export const getRealtimeFeedback = async (
 export const getCoachSuggestion = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { messages, persona } = req.body;
-    
+
     if (!messages || !Array.isArray(messages)) {
-      throw AppError.badRequest('Messages array is required');
+      throw AppError.badRequest("Messages array is required");
     }
 
     const suggestion = await chatService.getCoachSuggestion(messages, persona);
-    
+
     res.json({
       ok: true,
-      data: suggestion
+      data: suggestion,
     });
   } catch (error) {
     next(error);
@@ -228,19 +224,19 @@ export const getCoachSuggestion = async (
 export const endConversation = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { sessionId } = req.params;
-    
+
     // End the session
     await chatService.endSession(sessionId);
-    
+
     res.json({
       ok: true,
       data: {
-        message: 'Conversation ended'
-      }
+        message: "Conversation ended",
+      },
     });
   } catch (error) {
     next(error);
@@ -254,23 +250,23 @@ export const endConversation = async (
 export const analyzeAndSave = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { sessionId } = req.params;
-    
+
     // Trigger automatic analysis
     await analyzer.analyzeAndSave(sessionId);
-    
+
     // Get the analysis result
     const analysis = await chatService.getConversationAnalysis(sessionId);
-    
+
     res.json({
       ok: true,
       data: {
-        message: 'Conversation ended and analyzed',
-        analysis
-      }
+        message: "Conversation ended and analyzed",
+        analysis,
+      },
     });
   } catch (error) {
     next(error);
@@ -284,22 +280,22 @@ export const analyzeAndSave = async (
 export const getConversationHistory = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { userId } = req.params;
     const { page = 1, limit = 20, filter } = req.query;
-    
+
     const history = await chatService.getUserConversationHistory(
       userId,
       Number(page),
       Number(limit),
-      filter as string
+      filter as string,
     );
-    
+
     res.json({
       ok: true,
-      data: history
+      data: history,
     });
   } catch (error) {
     next(error);
@@ -313,19 +309,19 @@ export const getConversationHistory = async (
 export const getConversationDetail = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { userId, conversationId } = req.params;
-    
+
     const detail = await chatService.getConversationDetail(
       userId,
-      conversationId
+      conversationId,
     );
-    
+
     res.json({
       ok: true,
-      data: detail
+      data: detail,
     });
   } catch (error) {
     next(error);
@@ -339,16 +335,16 @@ export const getConversationDetail = async (
 export const getConversationStats = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { userId } = req.params;
-    
+
     const stats = await chatService.getConversationStats(userId);
-    
+
     res.json({
       ok: true,
-      data: stats
+      data: stats,
     });
   } catch (error) {
     next(error);
@@ -362,20 +358,20 @@ export const getConversationStats = async (
 export const analyzeConversationStyle = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { messages } = req.body;
-    
+
     if (!messages || !Array.isArray(messages)) {
-      throw AppError.badRequest('Messages array is required');
+      throw AppError.badRequest("Messages array is required");
     }
 
     const analysis = await chatService.analyzeConversationStyle(messages);
-    
+
     res.json({
       ok: true,
-      data: analysis
+      data: analysis,
     });
   } catch (error) {
     next(error);
@@ -389,41 +385,36 @@ export const analyzeConversationStyle = async (
 export const streamMessageNew = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { sessionId, message, isCoaching = false } = req.body;
 
     if (!sessionId || !message) {
-      throw AppError.badRequest('SessionId and message are required');
+      throw AppError.badRequest("SessionId and message are required");
     }
 
     // SSE 헤더 설정
     res.writeHead(200, {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': 'Cache-Control'
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Cache-Control",
     });
 
     // 스트리밍 시작
-    await chatService.streamMessage(
-      sessionId,
-      message,
-      (chunk: string) => {
-        // SSE 형식으로 데이터 전송
-        res.write(`data: ${JSON.stringify({ content: chunk })}\n\n`);
-      }
-    );
+    await chatService.streamMessage(sessionId, message, (chunk: string) => {
+      // SSE 형식으로 데이터 전송
+      res.write(`data: ${JSON.stringify({ content: chunk })}\n\n`);
+    });
 
     // 스트리밍 완료
-    res.write('data: [DONE]\n\n');
+    res.write("data: [DONE]\n\n");
     res.end();
-
   } catch (error) {
-    console.error('Streaming error:', error);
-    res.write(`data: ${JSON.stringify({ error: 'Streaming failed' })}\n\n`);
+    console.error("Streaming error:", error);
+    res.write(`data: ${JSON.stringify({ error: "Streaming failed" })}\n\n`);
     res.end();
   }
 };

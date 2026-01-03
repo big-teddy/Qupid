@@ -1,104 +1,115 @@
-import { Router } from 'express';
-import * as controller from './controller.js';
-import { requestValidator } from '../../shared/middleware/requestValidator.js';
-import { z } from 'zod';
+import { Router } from "express";
+import * as controller from "./controller.js";
+import { requestValidator } from "../../shared/middleware/requestValidator.js";
+import { authenticate } from "../../shared/middleware/authenticate.js";
+import { z } from "zod";
 
 const router = Router();
 
-// 사용자 알림 목록 조회
+// 사용자 알림 목록 조회 (authenticated)
 router.get(
-  '/:userId',
+  "/:userId",
+  authenticate,
   requestValidator({
     params: z.object({
-      userId: z.string()
-    })
+      userId: z.string(),
+    }),
   }),
-  controller.getUserNotifications
+  controller.getUserNotifications,
 );
 
-// 읽지 않은 알림 개수 조회
+// 읽지 않은 알림 개수 조회 (authenticated)
 router.get(
-  '/:userId/unread-count',
+  "/:userId/unread-count",
+  authenticate,
   requestValidator({
     params: z.object({
-      userId: z.string()
-    })
+      userId: z.string(),
+    }),
   }),
-  controller.getUnreadCount
+  controller.getUnreadCount,
 );
 
-// 알림 설정 조회
+// 알림 설정 조회 (authenticated)
 router.get(
-  '/:userId/settings',
+  "/:userId/settings",
+  authenticate,
   requestValidator({
     params: z.object({
-      userId: z.string()
-    })
+      userId: z.string(),
+    }),
   }),
-  controller.getNotificationSettings
+  controller.getNotificationSettings,
 );
 
-// 알림 읽음 처리
+// 알림 읽음 처리 (authenticated)
 router.put(
-  '/:notificationId/read',
+  "/:notificationId/read",
+  authenticate,
   requestValidator({
     params: z.object({
-      notificationId: z.string()
-    })
+      notificationId: z.string(),
+    }),
   }),
-  controller.markAsRead
+  controller.markAsRead,
 );
 
-// 모든 알림 읽음 처리
+// 모든 알림 읽음 처리 (authenticated)
 router.put(
-  '/:userId/read-all',
+  "/:userId/read-all",
+  authenticate,
   requestValidator({
     params: z.object({
-      userId: z.string()
-    })
+      userId: z.string(),
+    }),
   }),
-  controller.markAllAsRead
+  controller.markAllAsRead,
 );
 
-// 알림 설정 업데이트
+// 알림 설정 업데이트 (authenticated)
 router.put(
-  '/:userId/settings',
+  "/:userId/settings",
+  authenticate,
   requestValidator({
     params: z.object({
-      userId: z.string()
+      userId: z.string(),
     }),
     body: z.object({
       practiceReminder: z.boolean().optional(),
       achievementAlerts: z.boolean().optional(),
       coachingTips: z.boolean().optional(),
       systemNotices: z.boolean().optional(),
-      reminderTime: z.string().optional()
-    })
+      reminderTime: z.string().optional(),
+    }),
   }),
-  controller.updateNotificationSettings
+  controller.updateNotificationSettings,
 );
 
-// 알림 삭제
+// 알림 삭제 (authenticated)
 router.delete(
-  '/:notificationId',
+  "/:notificationId",
+  authenticate,
   requestValidator({
     params: z.object({
-      notificationId: z.string()
-    })
+      notificationId: z.string(),
+    }),
   }),
-  controller.deleteNotification
+  controller.deleteNotification,
 );
 
-// 테스트 알림 발송
+// 테스트 알림 발송 (authenticated)
 router.post(
-  '/test',
+  "/test",
+  authenticate,
   requestValidator({
     body: z.object({
       userId: z.string(),
-      type: z.enum(['practice_reminder', 'achievement', 'coaching', 'system']).optional()
-    })
+      type: z
+        .enum(["practice_reminder", "achievement", "coaching", "system"])
+        .optional(),
+    }),
   }),
-  controller.sendTestNotification
+  controller.sendTestNotification,
 );
 
 export default router;
