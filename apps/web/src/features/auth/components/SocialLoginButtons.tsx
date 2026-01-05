@@ -15,6 +15,7 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
 }) => {
   const [socialUrls, setSocialUrls] = useState<SocialLoginUrls | null>(null);
   const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(false);
 
   useEffect(() => {
     fetchSocialLoginUrls();
@@ -28,23 +29,33 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
     try {
       const API_URL =
         import.meta.env.VITE_API_URL || "http://localhost:4000/api/v1";
-      const response = await fetch(`${API_URL}/auth/social/urls`);
+      const response = await fetch(`${API_URL}/auth/social/urls`, {
+        signal: AbortSignal.timeout(5000), // 5초 타임아웃
+      });
       const data = await response.json();
 
       if (data.success) {
         setSocialUrls(data.data);
+      } else {
+        setFetchError(true);
       }
     } catch (error) {
       console.error("Failed to fetch social login URLs:", error);
+      setFetchError(true);
     }
   };
 
   const handleSocialLogin = (provider: string, url: string) => {
+    if (!url || url === "#") {
+      alert("소셜 로그인 서비스가 현재 이용 불가능합니다. 잠시 후 다시 시도해주세요.");
+      return;
+    }
     setLoading(true);
     window.location.href = url;
   };
 
-  if (!socialUrls) {
+  // 로딩 중 - 스켈레톤 표시 (5초 이내)
+  if (!socialUrls && !fetchError) {
     return (
       <div className="space-y-3">
         <div className="h-14 bg-gray-200 rounded-xl animate-pulse"></div>
@@ -54,11 +65,14 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
     );
   }
 
+  // 에러 발생 또는 URL 없음 - 비활성화된 버튼 표시
+  const urls = socialUrls || { kakao: "#", naver: "#", google: "#" };
+
   return (
     <div className="space-y-3">
       {/* 카카오 로그인 */}
       <button
-        onClick={() => handleSocialLogin("kakao", socialUrls.kakao)}
+        onClick={() => handleSocialLogin("kakao", urls.kakao)}
         disabled={loading}
         className="w-full h-14 bg-[#FEE500] hover:bg-[#FDD835] disabled:bg-[#F5F5F5] rounded-xl flex items-center justify-center space-x-3 transition-all"
       >
@@ -72,7 +86,7 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
 
       {/* 네이버 로그인 */}
       <button
-        onClick={() => handleSocialLogin("naver", socialUrls.naver)}
+        onClick={() => handleSocialLogin("naver", urls.naver)}
         disabled={loading}
         className="w-full h-14 bg-[#03C75A] hover:bg-[#02B351] disabled:bg-[#F5F5F5] rounded-xl flex items-center justify-center space-x-3 transition-all"
       >
@@ -86,7 +100,7 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
 
       {/* 구글 로그인 */}
       <button
-        onClick={() => handleSocialLogin("google", socialUrls.google)}
+        onClick={() => handleSocialLogin("google", urls.google)}
         disabled={loading}
         className="w-full h-14 bg-white hover:bg-gray-50 disabled:bg-[#F5F5F5] border border-[#E5E8EB] rounded-xl flex items-center justify-center space-x-3 transition-all"
       >
