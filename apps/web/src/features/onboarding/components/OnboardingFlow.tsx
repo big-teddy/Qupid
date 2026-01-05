@@ -5,9 +5,14 @@ import { useCreateUserProfile } from "../../../shared/hooks/api/useUser";
 import { useUserStore } from "../../../shared/stores/userStore";
 import { useGeneratePersona } from "../../../shared/hooks/usePersonaGeneration";
 import { getConsistentAvatar } from "../../../shared/utils/avatarGenerator";
+import {
+  AgeRangeScreen,
+  GoalsScreen,
+  PainPointsScreen,
+} from "./EnhancedOnboardingScreens";
 // import SocialLoginScreen from './SocialLoginScreen'; // 소셜 로그인 기능 임시 비활성화
 
-const TOTAL_ONBOARDING_STEPS = 4;
+const TOTAL_ONBOARDING_STEPS = 7;
 
 // --- Reusable Components ---
 const ProgressIndicator: React.FC<{ current: number; total: number }> = ({
@@ -117,10 +122,16 @@ type NewUserProfile = Omit<
 const initialProfile: NewUserProfile = {
   name: "준호",
   user_gender: "male",
+  partner_gender: "female",
+  age_range: "20s_early",
+  partner_age_range: "20s_early",
   experience: "없음",
   confidence: 3,
   difficulty: 2,
   interests: [],
+  goals: [],
+  pain_points: [],
+  preferred_style: "casual",
 };
 
 // --- Onboarding Screens ---
@@ -234,37 +245,37 @@ const SurveyScreen: React.FC<{
   field,
   progress,
 }) => {
-  const [selectedValue, setSelectedValue] = useState<string>("");
+    const [selectedValue, setSelectedValue] = useState<string>("");
 
-  const handleSelect = (value: string) => {
-    setSelectedValue(value);
-    setTimeout(() => onComplete(field, value), 300);
+    const handleSelect = (value: string) => {
+      setSelectedValue(value);
+      setTimeout(() => onComplete(field, value), 300);
+    };
+
+    return (
+      <div className="flex flex-col h-full w-full animate-fade-in p-6">
+        <OnboardingHeader onBack={onBack} progress={progress} />
+        <main className="flex-1 flex flex-col pt-24">
+          <h1 className="text-3xl font-bold leading-tight text-[#191F28]">
+            {question}
+          </h1>
+          <p className="text-base mt-2 text-[#8B95A1]">{description}</p>
+          <div className="mt-8 space-y-3">
+            {options.map((opt) => (
+              <CheckableCard
+                key={opt.title}
+                {...(opt.icon ? { icon: opt.icon } : {})}
+                title={opt.title}
+                {...(opt.subtitle ? { subtitle: opt.subtitle } : {})}
+                checked={selectedValue === opt.title}
+                onClick={() => handleSelect(opt.title)}
+              />
+            ))}
+          </div>
+        </main>
+      </div>
+    );
   };
-
-  return (
-    <div className="flex flex-col h-full w-full animate-fade-in p-6">
-      <OnboardingHeader onBack={onBack} progress={progress} />
-      <main className="flex-1 flex flex-col pt-24">
-        <h1 className="text-3xl font-bold leading-tight text-[#191F28]">
-          {question}
-        </h1>
-        <p className="text-base mt-2 text-[#8B95A1]">{description}</p>
-        <div className="mt-8 space-y-3">
-          {options.map((opt) => (
-            <CheckableCard
-              key={opt.title}
-              {...(opt.icon ? { icon: opt.icon } : {})}
-              title={opt.title}
-              {...(opt.subtitle ? { subtitle: opt.subtitle } : {})}
-              checked={selectedValue === opt.title}
-              onClick={() => handleSelect(opt.title)}
-            />
-          ))}
-        </div>
-      </main>
-    </div>
-  );
-};
 
 const InterestsScreen: React.FC<{
   onComplete: (interests: string[]) => void;
@@ -496,29 +507,29 @@ export const OnboardingFlow: React.FC<{
           interests:
             partnerGender === "female"
               ? [
-                  {
-                    emoji: "👶",
-                    topic: "아이들",
-                    description: "아이들과 함께하는 시간을 좋아해요",
-                  },
-                  {
-                    emoji: "📚",
-                    topic: "교육",
-                    description: "교육에 대한 열정이 있어요",
-                  },
-                ]
+                {
+                  emoji: "👶",
+                  topic: "아이들",
+                  description: "아이들과 함께하는 시간을 좋아해요",
+                },
+                {
+                  emoji: "📚",
+                  topic: "교육",
+                  description: "교육에 대한 열정이 있어요",
+                },
+              ]
               : [
-                  {
-                    emoji: "💻",
-                    topic: "코딩",
-                    description: "새로운 기술을 배우는 걸 좋아해요",
-                  },
-                  {
-                    emoji: "🎮",
-                    topic: "게임",
-                    description: "게임 개발에 관심이 있어요",
-                  },
-                ],
+                {
+                  emoji: "💻",
+                  topic: "코딩",
+                  description: "새로운 기술을 배우는 걸 좋아해요",
+                },
+                {
+                  emoji: "🎮",
+                  topic: "게임",
+                  description: "게임 개발에 관심이 있어요",
+                },
+              ],
           conversation_preview: [
             { sender: "ai", text: "안녕하세요! 반가워요 😊" },
           ],
@@ -564,29 +575,29 @@ export const OnboardingFlow: React.FC<{
         interests:
           partnerGender === "female"
             ? [
-                {
-                  emoji: "👶",
-                  topic: "아이들",
-                  description: "아이들과 함께하는 시간을 좋아해요",
-                },
-                {
-                  emoji: "📚",
-                  topic: "교육",
-                  description: "교육에 대한 열정이 있어요",
-                },
-              ]
+              {
+                emoji: "👶",
+                topic: "아이들",
+                description: "아이들과 함께하는 시간을 좋아해요",
+              },
+              {
+                emoji: "📚",
+                topic: "교육",
+                description: "교육에 대한 열정이 있어요",
+              },
+            ]
             : [
-                {
-                  emoji: "💻",
-                  topic: "코딩",
-                  description: "새로운 기술을 배우는 걸 좋아해요",
-                },
-                {
-                  emoji: "🎮",
-                  topic: "게임",
-                  description: "게임 개발에 관심이 있어요",
-                },
-              ],
+              {
+                emoji: "💻",
+                topic: "코딩",
+                description: "새로운 기술을 배우는 걸 좋아해요",
+              },
+              {
+                emoji: "🎮",
+                topic: "게임",
+                description: "게임 개발에 관심이 있어요",
+              },
+            ],
         conversation_preview: [
           { sender: "ai", text: "안녕하세요! 반가워요 😊" },
         ],
@@ -656,39 +667,39 @@ export const OnboardingFlow: React.FC<{
         interests:
           partnerGender === "female"
             ? [
-                {
-                  emoji: "👶",
-                  topic: "아이들",
-                  description: "아이들과 함께하는 시간을 좋아해요",
-                },
-                {
-                  emoji: "📚",
-                  topic: "교육",
-                  description: "교육에 대한 열정이 있어요",
-                },
-                ...interests.slice(0, 2).map((interest: string) => ({
-                  emoji: "✨",
-                  topic: interest,
-                  description: `${interest}에 관심이 있어요`,
-                })),
-              ]
+              {
+                emoji: "👶",
+                topic: "아이들",
+                description: "아이들과 함께하는 시간을 좋아해요",
+              },
+              {
+                emoji: "📚",
+                topic: "교육",
+                description: "교육에 대한 열정이 있어요",
+              },
+              ...interests.slice(0, 2).map((interest: string) => ({
+                emoji: "✨",
+                topic: interest,
+                description: `${interest}에 관심이 있어요`,
+              })),
+            ]
             : [
-                {
-                  emoji: "💻",
-                  topic: "코딩",
-                  description: "새로운 기술을 배우는 걸 좋아해요",
-                },
-                {
-                  emoji: "🎮",
-                  topic: "게임",
-                  description: "게임 개발에 관심이 있어요",
-                },
-                ...interests.slice(0, 2).map((interest: string) => ({
-                  emoji: "✨",
-                  topic: interest,
-                  description: `${interest}에 관심이 있어요`,
-                })),
-              ],
+              {
+                emoji: "💻",
+                topic: "코딩",
+                description: "새로운 기술을 배우는 걸 좋아해요",
+              },
+              {
+                emoji: "🎮",
+                topic: "게임",
+                description: "게임 개발에 관심이 있어요",
+              },
+              ...interests.slice(0, 2).map((interest: string) => ({
+                emoji: "✨",
+                topic: interest,
+                description: `${interest}에 관심이 있어요`,
+              })),
+            ],
         education: "대학 졸업",
         location: "서울 강남구",
         height: partnerGender === "female" ? "160-165cm" : "175-180cm",
@@ -742,6 +753,28 @@ export const OnboardingFlow: React.FC<{
     nextStep();
   };
 
+  const handleAgeRangeComplete = (
+    ageRange: string,
+    partnerAgeRange: string
+  ) => {
+    setProfile((p) => ({
+      ...p,
+      age_range: ageRange as any,
+      partner_age_range: partnerAgeRange as any,
+    }));
+    nextStep();
+  };
+
+  const handleGoalsComplete = (goals: string[]) => {
+    setProfile((p) => ({ ...p, goals }));
+    nextStep();
+  };
+
+  const handlePainPointsComplete = (painPoints: string[]) => {
+    setProfile((p) => ({ ...p, pain_points: painPoints }));
+    nextStep();
+  };
+
   const renderStep = () => {
     const currentProgress = step + 1;
     console.log(
@@ -762,6 +795,33 @@ export const OnboardingFlow: React.FC<{
           />
         );
       case 2:
+        return (
+          <AgeRangeScreen
+            onNext={handleAgeRangeComplete}
+            onBack={prevStep}
+            progress={currentProgress}
+            total={TOTAL_ONBOARDING_STEPS}
+          />
+        );
+      case 3:
+        return (
+          <GoalsScreen
+            onComplete={handleGoalsComplete}
+            onBack={prevStep}
+            progress={currentProgress}
+            total={TOTAL_ONBOARDING_STEPS}
+          />
+        );
+      case 4:
+        return (
+          <PainPointsScreen
+            onComplete={handlePainPointsComplete}
+            onBack={prevStep}
+            progress={currentProgress}
+            total={TOTAL_ONBOARDING_STEPS}
+          />
+        );
+      case 5:
         return (
           <SurveyScreen
             onComplete={handleSurveyComplete}
@@ -794,7 +854,7 @@ export const OnboardingFlow: React.FC<{
             field="experience"
           />
         );
-      case 3:
+      case 6:
         return (
           <InterestsScreen
             onComplete={handleInterestComplete}
@@ -802,7 +862,7 @@ export const OnboardingFlow: React.FC<{
             progress={currentProgress}
           />
         );
-      case 4:
+      case 7:
         // Completion screen
         return (
           <CompletionScreen

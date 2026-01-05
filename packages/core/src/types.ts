@@ -87,6 +87,22 @@ export interface UserProfile {
   name: string;
   user_gender: "male" | "female";
   partner_gender?: "male" | "female";
+
+  // 새로운 필드: 기본 정보
+  age_range?: "10s" | "20s_early" | "20s_late" | "30s" | "40s+";
+  partner_age_range?: "10s" | "20s_early" | "20s_late" | "30s" | "40s+";
+
+  // 새로운 필드: 성격
+  mbti?: string;
+  personality_prompt?: string;
+
+  // 새로운 필드: 목표 및 스타일
+  goals?: string[];
+  pain_points?: string[];
+  preferred_style?: "casual" | "romantic" | "humorous" | "deep";
+  occupation?: string;
+
+  // 기존 필드
   experience: string;
   confidence: number;
   difficulty: number;

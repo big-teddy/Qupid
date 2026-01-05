@@ -5,8 +5,9 @@ import { useCreateUserProfile } from "../../../shared/hooks/api/useUser";
 import { useUserStore } from "../../../shared/stores/userStore";
 import { useGeneratePersona } from "../../../shared/hooks/usePersonaGeneration";
 import { getConsistentAvatar } from "../../../shared/utils/avatarGenerator";
+import { AgeRangeScreen, GoalsScreen, PainPointsScreen, } from "./EnhancedOnboardingScreens";
 // import SocialLoginScreen from './SocialLoginScreen'; // 소셜 로그인 기능 임시 비활성화
-const TOTAL_ONBOARDING_STEPS = 4;
+const TOTAL_ONBOARDING_STEPS = 7;
 // --- Reusable Components ---
 const ProgressIndicator = ({ current, total, }) => (_jsx("div", { className: "flex items-center justify-center space-x-2", children: Array.from({ length: total }).map((_, i) => (_jsx("div", { className: `rounded-full transition-all duration-300 ${i < current ? "w-2.5 h-2.5 bg-[#F093B0]" : "w-2 h-2 bg-[#E5E8EB]"}` }, i))) }));
 const OnboardingHeader = ({ onBack, progress, title, questionNumber }) => (_jsxs("div", { className: "absolute top-0 left-0 right-0 px-4 pt-4 z-10", children: [_jsxs("div", { className: "h-14 flex items-center justify-between", children: [_jsx("div", { className: "w-10", children: onBack && (_jsx("button", { onClick: onBack, className: "p-2 -ml-2", children: _jsx(ArrowLeftIcon, { className: "w-6 h-6", style: { color: "var(--text-secondary)" } }) })) }), _jsx(ProgressIndicator, { total: TOTAL_ONBOARDING_STEPS, current: progress }), _jsx("div", { className: "w-10" })] }), title && (_jsxs("div", { className: "mt-4", children: [questionNumber && (_jsx("p", { className: "text-lg font-bold text-[#F093B0]", children: questionNumber })), _jsx("h1", { className: "text-3xl font-bold leading-tight text-[#191F28]", children: title })] }))] }));
@@ -17,10 +18,16 @@ const CheckableCard = ({ icon, title, subtitle, checked, onClick }) => (_jsxs("b
 const initialProfile = {
     name: "준호",
     user_gender: "male",
+    partner_gender: "female",
+    age_range: "20s_early",
+    partner_age_range: "20s_early",
     experience: "없음",
     confidence: 3,
     difficulty: 2,
     interests: [],
+    goals: [],
+    pain_points: [],
+    preferred_style: "casual",
 };
 // --- Onboarding Screens ---
 const IntroScreen = ({ onNext, progress, }) => {
@@ -382,6 +389,22 @@ export const OnboardingFlow = ({ onComplete, onLogin, skipIntro = false }) => {
         setProfile((p) => ({ ...p, interests }));
         nextStep();
     };
+    const handleAgeRangeComplete = (ageRange, partnerAgeRange) => {
+        setProfile((p) => ({
+            ...p,
+            age_range: ageRange,
+            partner_age_range: partnerAgeRange,
+        }));
+        nextStep();
+    };
+    const handleGoalsComplete = (goals) => {
+        setProfile((p) => ({ ...p, goals }));
+        nextStep();
+    };
+    const handlePainPointsComplete = (painPoints) => {
+        setProfile((p) => ({ ...p, pain_points: painPoints }));
+        nextStep();
+    };
     const renderStep = () => {
         const currentProgress = step + 1;
         console.log("renderStep 호출됨, step:", step, "currentProgress:", currentProgress);
@@ -391,6 +414,12 @@ export const OnboardingFlow = ({ onComplete, onLogin, skipIntro = false }) => {
             case 1:
                 return (_jsx(GenderSelectionScreen, { onNext: handleGenderSelect, onBack: prevStep, progress: currentProgress }));
             case 2:
+                return (_jsx(AgeRangeScreen, { onNext: handleAgeRangeComplete, onBack: prevStep, progress: currentProgress, total: TOTAL_ONBOARDING_STEPS }));
+            case 3:
+                return (_jsx(GoalsScreen, { onComplete: handleGoalsComplete, onBack: prevStep, progress: currentProgress, total: TOTAL_ONBOARDING_STEPS }));
+            case 4:
+                return (_jsx(PainPointsScreen, { onComplete: handlePainPointsComplete, onBack: prevStep, progress: currentProgress, total: TOTAL_ONBOARDING_STEPS }));
+            case 5:
                 return (_jsx(SurveyScreen, { onComplete: handleSurveyComplete, onBack: prevStep, progress: currentProgress, question: "이성과의 연애 경험이\n어느 정도인가요?", description: "\uACBD\uD5D8\uC5D0 \uB9DE\uB294 \uC801\uC808\uD55C \uB09C\uC774\uB3C4\uB85C \uC2DC\uC791\uD574\uB4DC\uB824\uC694", options: [
                         {
                             icon: "😅",
@@ -413,9 +442,9 @@ export const OnboardingFlow = ({ onComplete, onLogin, skipIntro = false }) => {
                             subtitle: "더 나은 소통을 원해요",
                         },
                     ], field: "experience" }));
-            case 3:
+            case 6:
                 return (_jsx(InterestsScreen, { onComplete: handleInterestComplete, onBack: prevStep, progress: currentProgress }));
-            case 4:
+            case 7:
                 // Completion screen
                 return (_jsx(CompletionScreen, { onComplete: handleFinalComplete, profile: profile, progress: TOTAL_ONBOARDING_STEPS }));
             default:
